@@ -1,0 +1,84 @@
+<div class="browser-page">
+  <div class="browser-page__header">
+    <h3 class="text-headline-sm">Browse Packages</h3>
+    <p class="text-body-md">Search and view details of every package on Planura — read only.</p>
+  </div>
+
+  <form class="browser-filters card-luxe luxe-shadow" [formGroup]="filterForm" (ngSubmit)="runSearch()">
+    <ui-text-field label="Search by title" placeholder="e.g. Wedding" formControlName="title" />
+    <ui-select-field
+      label="Category"
+      placeholder="All categories"
+      [options]="categoryOptions()"
+      formControlName="categoryId"
+    />
+    <label class="browser-filters__checkbox">
+      <input type="checkbox" formControlName="activeOnly" />
+      <span class="text-body-md">Active only</span>
+    </label>
+    <div class="browser-filters__actions">
+      <ui-button [fullWidth]="false" variant="outline" type="button" (click)="resetFilters()">
+        Reset
+      </ui-button>
+      <ui-button [fullWidth]="false" type="submit" [loading]="loading()">Search</ui-button>
+    </div>
+  </form>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <div class="card-luxe luxe-shadow browser-table-wrap">
+    @if (loading()) {
+      <p class="text-body-md browser-page__empty">Searching packages...</p>
+    } @else if (packages().length === 0) {
+      <p class="text-body-md browser-page__empty">No packages match your search.</p>
+    } @else {
+      <table class="package-table">
+        <thead>
+          <tr>
+            <th>Package</th>
+            <th>Vendor</th>
+            <th>Status</th>
+            <th>Price</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pkg of packages(); track pkg.id) {
+            <tr class="browser-row" (click)="viewDetails(pkg)">
+              <td>
+                <span class="text-body-md package-table__title">{{ pkg.title }}</span>
+                @if (pkg.description) {
+                  <p class="text-label-sm package-table__desc">{{ pkg.description }}</p>
+                }
+              </td>
+              <td>#{{ pkg.vendorId }}</td>
+              <td>
+                <span
+                  class="package-badge"
+                  [class.package-badge--active]="pkg.isActive"
+                  [class.package-badge--inactive]="!pkg.isActive"
+                >
+                  {{ pkg.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ pkg.basePrice | number: '1.0-2' }} {{ pkg.currency }}</td>
+              <td class="package-table__actions">
+                <button class="icon-btn" type="button" title="View details" (click)="viewDetails(pkg)">
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+@if (selectedPackage(); as pkg) {
+  <div class="modal-backdrop" (click)="closeDetails()">
+    <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
+      <app-package-details [package]="pkg" [loading]="detailsLoading()" (closed)="closeDetails()" />
+    </div>
+  </div>
+}

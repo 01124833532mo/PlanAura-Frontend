@@ -137,3 +137,121 @@ a {
   font-size: var(--font-label-md-size);
   font-weight: var(--font-label-md-weight);
 }
+
+/* ==========================================================================
+   Shared vendor-dashboard chrome (modal, icon buttons) — used by both the
+   packages and availability features, so it lives here instead of being
+   duplicated per feature.
+   ========================================================================== */
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: var(--color-secondary);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--color-soft-beige);
+  color: var(--color-primary);
+}
+
+.icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.icon-btn--danger:hover:not(:disabled) {
+  color: var(--color-error);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 26, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  z-index: 50;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.package-table-wrap {
+  overflow-x: auto;
+}
+
+.package-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.package-table thead {
+  background: var(--color-soft-beige);
+  color: var(--color-secondary);
+  font-size: var(--font-label-sm-size);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.package-table th,
+.package-table td {
+  padding: 1.1rem 1.5rem;
+}
+
+.package-table tbody tr {
+  border-top: 1px solid var(--color-subtle-border);
+}
+
+.package-table tbody tr:hover {
+  background: var(--color-soft-beige);
+}
+
+.package-table__title {
+  font-weight: 600;
+  color: var(--color-charcoal);
+}
+
+.package-table__desc {
+  color: var(--color-secondary);
+  margin-top: 0.15rem;
+  max-width: 320px;
+}
+
+.package-table__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.package-badge {
+  display: inline-block;
+  padding: 0.3rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-label-sm-size);
+  font-weight: 700;
+}
+
+.package-badge--active {
+  background: #dcf5e3;
+  color: #1f7a3f;
+}
+
+.package-badge--inactive {
+  background: var(--color-surface-container);
+  color: var(--color-secondary);
+}

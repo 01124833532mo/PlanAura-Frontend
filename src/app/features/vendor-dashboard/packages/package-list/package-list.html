@@ -1,0 +1,99 @@
+<div class="package-page">
+  <div class="package-page__header">
+    <div>
+      <h3 class="text-headline-sm">Package Management</h3>
+      <p class="text-body-md">Create and manage the packages clients can book from you.</p>
+    </div>
+    <ui-button [fullWidth]="false" (click)="openCreate()">
+      <span class="material-symbols-outlined">add</span>
+      Add package
+    </ui-button>
+  </div>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <div class="card-luxe luxe-shadow package-table-wrap">
+    @if (loading()) {
+      <p class="text-body-md package-page__empty">Loading your packages...</p>
+    } @else if (packages().length === 0) {
+      <p class="text-body-md package-page__empty">
+        You don't have any packages yet. Add your first one to start getting bookings.
+      </p>
+    } @else {
+      <table class="package-table">
+        <thead>
+          <tr>
+            <th>Package</th>
+            <th>Status</th>
+            <th>Price</th>
+            <th>Max guests</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pkg of packages(); track pkg.id) {
+            <tr>
+              <td>
+                <span class="text-body-md package-table__title">{{ pkg.title }}</span>
+                @if (pkg.description) {
+                  <p class="text-label-sm package-table__desc">{{ pkg.description }}</p>
+                }
+              </td>
+              <td>
+                <span
+                  class="package-badge"
+                  [class.package-badge--active]="pkg.isActive"
+                  [class.package-badge--inactive]="!pkg.isActive"
+                >
+                  {{ pkg.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ pkg.basePrice | number: '1.0-2' }} {{ pkg.currency }}</td>
+              <td>{{ pkg.maxGuests ?? '—' }}</td>
+              <td class="package-table__actions">
+                <button
+                  class="icon-btn"
+                  type="button"
+                  title="Toggle active"
+                  [disabled]="savingId() === pkg.id"
+                  (click)="toggleActive(pkg)"
+                >
+                  <span class="material-symbols-outlined">{{
+                    pkg.isActive ? 'toggle_on' : 'toggle_off'
+                  }}</span>
+                </button>
+                <button class="icon-btn" type="button" title="Edit" (click)="openEdit(pkg)">
+                  <span class="material-symbols-outlined">edit</span>
+                </button>
+                <button
+                  class="icon-btn icon-btn--danger"
+                  type="button"
+                  title="Delete"
+                  [disabled]="savingId() === pkg.id"
+                  (click)="deletePackage(pkg)"
+                >
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+@if (formOpen()) {
+  <div class="modal-backdrop" (click)="closeForm()">
+    <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
+      <h4 class="text-headline-sm">{{ editingPackage() ? 'Edit package' : 'New package' }}</h4>
+      <app-package-form
+        [package]="editingPackage()"
+        [saving]="savingId() !== null"
+        [error]="error()"
+        (save)="handleSave($event)"
+        (cancelled)="closeForm()"
+      />
+    </div>
+  </div>
+}

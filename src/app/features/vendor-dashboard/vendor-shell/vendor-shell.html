@@ -1,0 +1,57 @@
+<aside class="vendor-nav">
+  <div class="vendor-nav__brand">
+    <span class="text-headline-sm">Planura Pro</span>
+    <p class="text-label-sm vendor-nav__brand-sub">Vendor Dashboard</p>
+  </div>
+
+  <nav class="vendor-nav__links">
+    <a
+      class="vendor-nav__link"
+      routerLink="/vendor/dashboard/packages"
+      routerLinkActive="vendor-nav__link--active"
+    >
+      <span class="material-symbols-outlined">inventory_2</span>
+      <span class="text-label-md">My Packages</span>
+    </a>
+    <a
+      class="vendor-nav__link"
+      routerLink="/vendor/dashboard/availability"
+      routerLinkActive="vendor-nav__link--active"
+    >
+      <span class="material-symbols-outlined">event_available</span>
+      <span class="text-label-md">Availability</span>
+    </a>
+    <a
+      class="vendor-nav__link"
+      routerLink="/vendor/dashboard/browse-packages"
+      routerLinkActive="vendor-nav__link--active"
+    >
+      <span class="material-symbols-outlined">search</span>
+      <span class="text-label-md">Browse Packages</span>
+    </a>
+  </nav>
+
+  <div class="vendor-nav__footer">
+    <button class="vendor-nav__logout" type="button" (click)="logout()">
+      <span class="material-symbols-outlined">logout</span>
+      <span class="text-label-md">Log Out</span>
+    </button>
+  </div>
+</aside>
+
+<main class="vendor-main">
+  <header class="vendor-topbar">
+    <h2 class="text-headline-md vendor-topbar__title">Overview</h2>
+
+    @if (vendorProfileState.profile(); as profile) {
+      <div class="vendor-topbar__profile">
+        <span class="text-body-md vendor-topbar__name">{{ profile.businessName }}</span>
+        <span class="vendor-topbar__avatar">{{ profile.businessName.charAt(0) }}</span>
+      </div>
+    }
+  </header>
+
+  <div class="vendor-content">
+    <router-outlet />
+  </div>
+</main>

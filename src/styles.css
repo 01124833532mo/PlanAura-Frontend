@@ -1,1 +1,139 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* ==========================================================================
+   Planura design tokens
+   Derived from the Stitch design export (auth page + vendor profile
+   reference). Recreated as CSS custom properties rather than copying the
+   Tailwind config directly, so the rest of the app (Bootstrap included)
+   can layer on top of a single source of truth for color/type/space.
+   ========================================================================== */
+
+  :root {
+  /* Color: gold/charcoal "luxe" palette */
+  --color-primary: #735c00;
+  --color-primary-container: #d4af37;
+  --color-on-primary: #ffffff;
+  --color-primary-fixed: #ffe088;
+
+  --color-charcoal: #1a1a1a;
+  --color-on-background: #1a1c1c;
+  --color-secondary: #5d5f5b;
+  --color-on-secondary-container: #62635f;
+
+  --color-surface: #f9f9f9;
+  --color-surface-bright: #f9f9f9;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f3f4;
+  --color-surface-container: #eeeeee;
+  --color-soft-beige: #f5f5f0;
+  --color-subtle-border: #e5e5e0;
+  --color-outline-variant: #d0c5af;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+
+  /* Spacing scale */
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 32px;
+  --space-xl: 64px;
+  --gutter: 24px;
+  --margin-mobile: 16px;
+  --margin-desktop: 64px;
+  --container-max: 1280px;
+
+  /* Radius scale */
+  --radius-md: 0.5rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Typography scale (Inter) */
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --font-label-sm-size: 12px;
+  --font-label-sm-weight: 500;
+  --font-label-md-size: 14px;
+  --font-label-md-weight: 600;
+  --font-body-md-size: 16px;
+  --font-body-lg-size: 18px;
+  --font-headline-sm-size: 24px;
+  --font-headline-md-size: 30px;
+  --font-display-lg-size: 48px;
+
+  /* Elevation */
+  --shadow-luxe: 0 20px 30px rgba(26, 26, 26, 0.04);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  background-color: var(--color-surface);
+  color: var(--color-charcoal);
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-primary);
+}
+
+/* ==========================================================================
+   Shared utility classes used across feature components
+   ========================================================================== */
+
+.luxe-shadow {
+  box-shadow: var(--shadow-luxe);
+}
+
+.card-luxe {
+  background: var(--color-surface-container-lowest);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-subtle-border);
+}
+
+.text-headline-md {
+  font-size: var(--font-headline-md-size);
+  font-weight: 500;
+  color: var(--color-charcoal);
+}
+
+.text-headline-sm {
+  font-size: var(--font-headline-sm-size);
+  font-weight: 500;
+  color: var(--color-charcoal);
+}
+
+.text-body-md {
+  font-size: var(--font-body-md-size);
+  color: var(--color-secondary);
+}
+
+.text-label-md {
+  font-size: var(--font-label-md-size);
+  font-weight: var(--font-label-md-weight);
+}

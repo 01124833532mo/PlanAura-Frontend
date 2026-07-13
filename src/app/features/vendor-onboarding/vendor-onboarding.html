@@ -1,0 +1,61 @@
+<main class="onboarding-shell luxe-shadow">
+  <span class="onboarding-shell__brand">Planura</span>
+
+  <div class="onboarding-shell__content">
+    @if (submitted()) {
+      <div class="onboarding-shell__success">
+        <span class="material-symbols-outlined onboarding-shell__success-icon">check_circle</span>
+        <h1 class="text-headline-md">Application submitted</h1>
+        <p class="text-body-md">
+          Thanks for registering with Planura. Your documents have been sent for review — you'll be
+          notified once an admin approves or requests changes. You're already signed in.
+        </p>
+        <ui-button (click)="goToSignIn()">Back to sign in</ui-button>
+      </div>
+    } @else {
+      <h1 class="text-headline-md">Vendor onboarding</h1>
+      <p class="text-body-md onboarding-shell__intro">
+        A few steps to get your business verified and listed on Planura.
+      </p>
+
+      <ui-stepper-header [steps]="stepLabels" [currentIndex]="currentStep()" />
+
+      <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+      @switch (currentStep()) {
+        @case (0) {
+          <app-step-account [group]="accountGroup" />
+        }
+        @case (1) {
+          <app-step-business [group]="businessGroup" [categories]="categories()" />
+        }
+        @case (2) {
+          <app-step-documents [group]="documentsGroup" [vendorType]="businessGroup.controls.vendorType.value" />
+        }
+        @case (3) {
+          <app-step-portfolio [group]="portfolioGroup" />
+        }
+        @case (4) {
+          <app-step-review
+            [account]="accountGroup"
+            [business]="businessGroup"
+            [documents]="documentsGroup"
+            [portfolio]="portfolioGroup"
+            [categoryName]="categoryName()"
+          />
+        }
+      }
+
+      <div class="onboarding-shell__nav">
+        @if (currentStep() > 0) {
+          <ui-button variant="outline" [fullWidth]="false" (click)="back()">Back</ui-button>
+        }
+        @if (currentStep() < stepLabels.length - 1) {
+          <ui-button [fullWidth]="false" (click)="next()">Next</ui-button>
+        } @else {
+          <ui-button [fullWidth]="false" [loading]="submitting()" (click)="submit()">Submit application</ui-button>
+        }
+      </div>
+    }
+  </div>
+</main>

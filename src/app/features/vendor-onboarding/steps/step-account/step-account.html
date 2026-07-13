@@ -1,0 +1,39 @@
+<div class="wizard-step" [formGroup]="group">
+  <h2 class="text-headline-sm">Your account</h2>
+  <p class="text-body-md">Let's start with who you are and how to reach you.</p>
+
+  <ui-text-field
+    label="Full Name"
+    placeholder="e.g. Julian Hart"
+    formControlName="fullName"
+    [errorMessage]="touchedInvalid('fullName') ? 'Full name must be between 2 and 150 characters.' : null"
+  />
+  <ui-text-field
+    label="Email Address"
+    type="email"
+    placeholder="e.g. julian@luxe.com"
+    formControlName="email"
+    [errorMessage]="touchedInvalid('email') ? 'A valid email address is required.' : null"
+  />
+  <ui-text-field
+    label="Phone Number"
+    type="tel"
+    placeholder="e.g. 01012345678"
+    formControlName="phoneNumber"
+    [errorMessage]="touchedInvalid('phoneNumber') ? 'Phone number is required.' : null"
+  />
+  <ui-password-field
+    label="Password"
+    formControlName="password"
+    [errorMessage]="
+      touchedInvalid('password')
+        ? 'Password must be at least 8 characters, with an uppercase letter, a lowercase letter, and a digit.'
+        : null
+    "
+  />
+  <ui-password-field
+    label="Confirm Password"
+    formControlName="confirmPassword"
+    [errorMessage]="passwordMismatch() ? 'Passwords do not match.' : null"
+  />
+</div>

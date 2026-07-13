@@ -1,0 +1,41 @@
+<div class="wizard-step" [formGroup]="group">
+  <h2 class="text-headline-sm">Your business</h2>
+  <p class="text-body-md">Tell us about the business you'll be listing on Planura.</p>
+
+  <div class="wizard-step__roles">
+    <ui-selectable-card
+      icon="person"
+      title="Individual"
+      subtitle="Freelancer or sole proprietor"
+      [selected]="group.controls.vendorType.value === VendorType.Individual"
+      (select)="selectVendorType(VendorType.Individual)"
+    />
+    <ui-selectable-card
+      icon="storefront"
+      title="Business"
+      subtitle="Registered company"
+      [selected]="group.controls.vendorType.value === VendorType.Business"
+      (select)="selectVendorType(VendorType.Business)"
+    />
+  </div>
+
+  <ui-text-field
+    label="Business Name"
+    placeholder="e.g. Luxe Events Co."
+    formControlName="businessName"
+    [errorMessage]="touchedInvalid('businessName') ? 'Business name is required.' : null"
+  />
+  <ui-text-field
+    label="Business Description (optional)"
+    placeholder="A short description of your services"
+    formControlName="businessDescription"
+  />
+  <ui-select-field
+    label="Category (optional)"
+    placeholder="Select a category"
+    [options]="categoryOptions"
+    formControlName="categoryId"
+  />
+  <ui-text-field label="City (optional)" placeholder="e.g. Cairo" formControlName="city" />
+  <ui-text-field label="Address (optional)" placeholder="Street address" formControlName="address" />
+</div>

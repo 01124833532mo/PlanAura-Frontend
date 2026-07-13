@@ -1,0 +1,44 @@
+@if (label) {
+  <label class="ui-field__label" [for]="fieldId">{{ label }}</label>
+}
+<div
+  class="ui-dropzone"
+  [class.ui-dropzone--dragging]="dragging()"
+  [class.ui-dropzone--invalid]="!!errorMessage"
+  (dragover)="handleDragOver($event)"
+  (dragleave)="handleDragLeave()"
+  (drop)="handleDrop($event)"
+>
+  <input
+    class="ui-dropzone__input"
+    [id]="fieldId"
+    type="file"
+    accept=".png,.jpg,.jpeg"
+    [multiple]="multiple"
+    [disabled]="disabled"
+    (change)="handleFileInput($event)"
+  />
+  <label [for]="fieldId" class="ui-dropzone__prompt">
+    <span class="material-symbols-outlined">upload_file</span>
+    <span class="ui-dropzone__prompt-text">Drag & drop, or click to browse</span>
+    <span class="ui-dropzone__hint">{{ hint }}</span>
+  </label>
+</div>
+
+@if (files.length) {
+  <ul class="ui-dropzone__list">
+    @for (file of files; track file.name + file.size; let i = $index) {
+      <li class="ui-dropzone__chip">
+        <span class="material-symbols-outlined">image</span>
+        <span class="ui-dropzone__chip-name">{{ file.name }}</span>
+        <button type="button" class="ui-dropzone__chip-remove" (click)="removeFile(i)" aria-label="Remove file">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </li>
+    }
+  </ul>
+}
+
+@if (errorMessage) {
+  <p class="ui-field__error">{{ errorMessage }}</p>
+}

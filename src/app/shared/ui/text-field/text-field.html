@@ -1,0 +1,19 @@
+@if (label) {
+  <label class="ui-field__label" [for]="fieldId">{{ label }}</label>
+}
+<input
+  class="ui-field__input"
+  [class.ui-field__input--invalid]="!!errorMessage"
+  [id]="fieldId"
+  [type]="type"
+  [placeholder]="placeholder"
+  [disabled]="disabled"
+  [value]="value"
+  (input)="handleInput($event)"
+  (blur)="handleBlur()"
+/>
+@if (errorMessage) {
+  <p class="ui-field__error">{{ errorMessage }}</p>
+} @else if (hint) {
+  <p class="ui-field__hint">{{ hint }}</p>
+}

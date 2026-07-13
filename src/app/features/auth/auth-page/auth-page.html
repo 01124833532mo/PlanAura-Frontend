@@ -1,0 +1,161 @@
+<main class="auth-shell luxe-shadow">
+  <section class="auth-shell__image">
+    <div class="auth-shell__image-bg"></div>
+    <div class="auth-shell__image-overlay">
+      <div class="auth-shell__glass-panel">
+        <h2 class="auth-shell__glass-title">Moments that matter.</h2>
+        <p class="auth-shell__glass-text">
+          Join the world's most exclusive network of event professionals and discerning hosts.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="auth-shell__form-side">
+    <span class="auth-shell__brand">Planura</span>
+
+    <div class="auth-shell__content">
+      @if (signedInUser(); as user) {
+        <ui-alert-banner variant="success" [message]="'Welcome back, ' + user.fullName + '.'" />
+        <p class="text-body-md">
+          Signed in as {{ user.email }} ({{ user.roles.join(', ') }}). The vendor dashboard isn't part of
+          this build yet — this page only covers sign-in and vendor onboarding.
+        </p>
+        <ui-button variant="outline" (click)="logout()">Sign out</ui-button>
+      } @else {
+        <div class="auth-shell__header">
+          <h1 class="text-headline-md" id="form-title">{{ title() }}</h1>
+          <p class="text-body-md">{{ subtitle() }}</p>
+        </div>
+
+        <ui-segmented-toggle
+          class="auth-shell__toggle"
+          [options]="modeOptions"
+          [value]="mode()"
+          (valueChange)="setMode($event)"
+        />
+
+        <ui-alert-banner
+          [message]="error()?.message ?? null"
+          [details]="error()?.fieldErrors ?? []"
+        />
+        <ui-alert-banner variant="info" [message]="infoMessage()" />
+
+        @if (mode() === 'login') {
+          <form class="auth-shell__form" (ngSubmit)="submitLogin()" [formGroup]="loginForm">
+            <ui-text-field
+              label="Email Address"
+              type="email"
+              placeholder="e.g. julian@luxe.com"
+              formControlName="email"
+              [errorMessage]="
+                loginForm.get('email')!.touched && loginForm.get('email')!.invalid
+                  ? 'A valid email address is required.'
+                  : null
+              "
+            />
+            <ui-password-field
+              label="Password"
+              formControlName="password"
+              [errorMessage]="
+                loginForm.get('password')!.touched && loginForm.get('password')!.invalid
+                  ? 'Password is required.'
+                  : null
+              "
+            >
+              <a slot="action" class="auth-shell__link" href="javascript:void(0)">Forgot password?</a>
+            </ui-password-field>
+
+            <div class="auth-shell__cta">
+              <ui-button type="submit" [loading]="loading()">Sign In</ui-button>
+              <ui-button variant="outline" type="button" [disabled]="true" title="Not available yet">
+                <span class="auth-shell__google">
+                  <span class="material-symbols-outlined">account_circle</span>
+                  Continue with Google
+                </span>
+              </ui-button>
+            </div>
+          </form>
+        } @else {
+          <form class="auth-shell__form" (ngSubmit)="submitRegister()" [formGroup]="registerForm">
+            <div class="auth-shell__roles">
+              <ui-selectable-card
+                icon="person"
+                title="Customer"
+                subtitle="Plan your dream event"
+                [selected]="role() === 'customer'"
+                (select)="selectRole('customer')"
+              />
+              <ui-selectable-card
+                icon="storefront"
+                title="Vendor"
+                subtitle="Grow your luxury business"
+                [selected]="role() === 'vendor'"
+                (select)="selectRole('vendor')"
+              />
+            </div>
+
+            <ui-text-field
+              label="Full Name"
+              placeholder="e.g. Julian Hart"
+              formControlName="fullName"
+              [errorMessage]="
+                registerForm.get('fullName')!.touched && registerForm.get('fullName')!.invalid
+                  ? 'Full name must be between 2 and 150 characters.'
+                  : null
+              "
+            />
+            <ui-text-field
+              label="Email Address"
+              type="email"
+              placeholder="e.g. julian@luxe.com"
+              formControlName="email"
+              [errorMessage]="
+                registerForm.get('email')!.touched && registerForm.get('email')!.invalid
+                  ? 'A valid email address is required.'
+                  : null
+              "
+            />
+            <ui-text-field
+              label="Phone Number"
+              type="tel"
+              placeholder="e.g. 01012345678"
+              formControlName="phoneNumber"
+              [errorMessage]="
+                registerForm.get('phoneNumber')!.touched && registerForm.get('phoneNumber')!.invalid
+                  ? 'Phone number is required.'
+                  : null
+              "
+            />
+            <ui-password-field
+              label="Password"
+              formControlName="password"
+              [errorMessage]="
+                registerForm.get('password')!.touched && registerForm.get('password')!.invalid
+                  ? 'Password must be at least 8 characters, with an uppercase letter, a lowercase letter, and a digit.'
+                  : null
+              "
+            />
+            <ui-password-field
+              label="Confirm Password"
+              formControlName="confirmPassword"
+              [errorMessage]="passwordMismatch() ? 'Passwords do not match.' : null"
+            />
+
+            <div class="auth-shell__cta">
+              <ui-button type="submit" [loading]="loading()">{{ ctaLabel() }}</ui-button>
+            </div>
+          </form>
+        }
+      }
+    </div>
+
+    <div class="auth-shell__footer">
+      <p class="text-body-md">
+        By continuing, you agree to Planura's
+        <a href="javascript:void(0)">Terms of Service</a> and
+        <a href="javascript:void(0)">Privacy Policy</a>.
+      </p>
+    </div>
+  </section>
+</main>

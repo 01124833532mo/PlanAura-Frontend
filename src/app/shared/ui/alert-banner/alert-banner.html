@@ -1,0 +1,23 @@
+@if (message) {
+  <div
+    class="ui-alert"
+    [class.ui-alert--error]="variant === 'error'"
+    [class.ui-alert--success]="variant === 'success'"
+    [class.ui-alert--info]="variant === 'info'"
+    role="alert"
+  >
+    <span class="material-symbols-outlined ui-alert__icon">
+      {{ variant === 'error' ? 'error' : variant === 'success' ? 'check_circle' : 'info' }}
+    </span>
+    <div class="ui-alert__body">
+      <p class="ui-alert__message">{{ message }}</p>
+      @if (details.length) {
+        <ul class="ui-alert__details">
+          @for (detail of details; track detail) {
+            <li>{{ detail }}</li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+}

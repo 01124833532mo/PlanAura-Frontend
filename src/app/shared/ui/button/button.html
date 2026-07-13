@@ -1,0 +1,14 @@
+<button
+  class="ui-btn"
+  [class.ui-btn--primary]="variant === 'primary'"
+  [class.ui-btn--outline]="variant === 'outline'"
+  [class.ui-btn--ghost]="variant === 'ghost'"
+  [class.ui-btn--full]="fullWidth"
+  [type]="type"
+  [disabled]="disabled || loading"
+>
+  @if (loading) {
+    <span class="ui-btn__spinner" aria-hidden="true"></span>
+  }
+  <span class="ui-btn__label"><ng-content /></span>
+</button>

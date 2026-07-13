@@ -1,0 +1,70 @@
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-xl);
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: var(--font-label-md-weight);
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, opacity 0.2s ease, transform 0.05s ease;
+}
+
+.ui-btn--full {
+  width: 100%;
+}
+
+.ui-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.ui-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ui-btn--primary {
+  background: linear-gradient(to right, var(--color-primary), var(--color-primary-container));
+  color: var(--color-on-primary);
+  box-shadow: 0 10px 20px rgba(115, 92, 0, 0.18);
+}
+
+.ui-btn--primary:hover:not(:disabled) {
+  opacity: 0.92;
+  box-shadow: 0 14px 24px rgba(115, 92, 0, 0.24);
+}
+
+.ui-btn--outline {
+  background: var(--color-surface-container-lowest);
+  color: var(--color-charcoal);
+  border-color: var(--color-subtle-border);
+}
+
+.ui-btn--outline:hover:not(:disabled) {
+  background: var(--color-soft-beige);
+}
+
+.ui-btn--ghost {
+  background: transparent;
+  color: var(--color-primary);
+  padding: 0.5rem 0.75rem;
+}
+
+.ui-btn__spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: currentColor;
+  animation: ui-btn-spin 0.6s linear infinite;
+}
+
+@keyframes ui-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

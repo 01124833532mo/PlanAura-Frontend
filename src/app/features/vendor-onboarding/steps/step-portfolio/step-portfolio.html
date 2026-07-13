@@ -1,0 +1,17 @@
+<div class="wizard-step" [formGroup]="group">
+  <h2 class="text-headline-sm">Showcase your work</h2>
+  <p class="text-body-md">
+    Add at least one photo of your past events or work — this becomes your public portfolio.
+  </p>
+
+  <ui-alert-banner [message]="clientError" />
+
+  <ui-file-dropzone
+    label="Portfolio images"
+    hint="PNG or JPG, up to 2 MB each — add as many as you like"
+    [multiple]="true"
+    formControlName="images"
+    [errorMessage]="touchedInvalid ? 'At least one portfolio image is required.' : null"
+    (clientValidationError)="onClientValidationError($event)"
+  />
+</div>

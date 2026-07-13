@@ -1,0 +1,38 @@
+.ui-alert {
+  display: flex;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-label-sm-size);
+  margin-bottom: var(--space-md);
+}
+
+.ui-alert--error {
+  background: var(--color-error-container);
+  color: var(--color-error);
+}
+
+.ui-alert--success {
+  background: #e6f4ea;
+  color: #1e7e34;
+}
+
+.ui-alert--info {
+  background: var(--color-soft-beige);
+  color: var(--color-secondary);
+}
+
+.ui-alert__icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.ui-alert__message {
+  font-weight: 600;
+  margin: 0;
+}
+
+.ui-alert__details {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+}

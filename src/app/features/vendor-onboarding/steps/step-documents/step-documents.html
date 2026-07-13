@@ -1,0 +1,47 @@
+<div class="wizard-step" [formGroup]="group">
+  <h2 class="text-headline-sm">Verification documents</h2>
+  <p class="text-body-md">
+    Used to verify your identity before your listing goes live. Accepted formats: PNG or JPG, up to 2 MB
+    each.
+  </p>
+
+  <ui-alert-banner [message]="clientError" />
+
+  <ui-file-dropzone
+    label="National ID — front"
+    formControlName="nationalIdFront"
+    [errorMessage]="touchedInvalid('nationalIdFront') ? 'National ID (front) photo is required.' : null"
+    (clientValidationError)="onClientValidationError($event)"
+  />
+  <ui-file-dropzone
+    label="National ID — back"
+    formControlName="nationalIdBack"
+    [errorMessage]="touchedInvalid('nationalIdBack') ? 'National ID (back) photo is required.' : null"
+    (clientValidationError)="onClientValidationError($event)"
+  />
+  <ui-file-dropzone
+    label="Selfie holding your ID"
+    formControlName="selfieWithId"
+    [errorMessage]="touchedInvalid('selfieWithId') ? 'A selfie with your ID is required.' : null"
+    (clientValidationError)="onClientValidationError($event)"
+  />
+
+  @if (vendorType === VendorType.Business) {
+    <ui-file-dropzone
+      label="Commercial registration"
+      formControlName="commercialRegistration"
+      [errorMessage]="
+        touchedInvalid('commercialRegistration')
+          ? 'Commercial registration document is required for business vendors.'
+          : null
+      "
+      (clientValidationError)="onClientValidationError($event)"
+    />
+    <ui-file-dropzone
+      label="Tax card"
+      formControlName="taxCard"
+      [errorMessage]="touchedInvalid('taxCard') ? 'Tax card document is required for business vendors.' : null"
+      (clientValidationError)="onClientValidationError($event)"
+    />
+  }
+</div>

@@ -1,0 +1,14 @@
+<button
+  type="button"
+  class="ui-card"
+  [class.ui-card--selected]="selected"
+  [class.ui-card--disabled]="disabled"
+  [disabled]="disabled"
+  (click)="handleClick()"
+>
+  <span class="material-symbols-outlined ui-card__icon">{{ icon }}</span>
+  <span class="ui-card__title">{{ title }}</span>
+  @if (subtitle) {
+    <span class="ui-card__subtitle">{{ subtitle }}</span>
+  }
+</button>

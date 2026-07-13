@@ -1,0 +1,18 @@
+<ol class="ui-stepper">
+  @for (step of steps; track step; let i = $index) {
+    <li
+      class="ui-stepper__item"
+      [class.ui-stepper__item--active]="i === currentIndex"
+      [class.ui-stepper__item--done]="i < currentIndex"
+    >
+      <span class="ui-stepper__dot">
+        @if (i < currentIndex) {
+          <span class="material-symbols-outlined">check</span>
+        } @else {
+          {{ i + 1 }}
+        }
+      </span>
+      <span class="ui-stepper__label">{{ step }}</span>
+    </li>
+  }
+</ol>

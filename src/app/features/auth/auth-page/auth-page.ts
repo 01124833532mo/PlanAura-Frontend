@@ -102,6 +102,10 @@ export class AuthPage {
           next: (user) => {
             this.loading.set(false);
             this.signedInUser.set(user);
+
+            if (this.authService.isVendor()) {
+              this.router.navigateByUrl('/vendor/dashboard');
+            }
           },
           error: () => {
             // Login itself already succeeded; a failed follow-up /me call

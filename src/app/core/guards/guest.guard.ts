@@ -4,9 +4,9 @@ import { AuthService } from '../services/auth.service';
 
 /**
  * Keeps an already-authenticated user off the sign-in/register page.
- * Scope note: there is no dashboard route yet (out of scope for this
- * ticket), so it redirects back to the onboarding wizard entry point,
- * which is the only other route this build defines.
+ * Vendors land on their dashboard; any other authenticated role falls back
+ * to the onboarding wizard entry point (the only other route this build
+ * defines for non-vendor accounts).
  */
 export const guestGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -16,5 +16,5 @@ export const guestGuard: CanActivateFn = () => {
     return true;
   }
 
-  return router.parseUrl('/vendor/register');
+  return router.parseUrl(authService.isVendor() ? '/vendor/dashboard' : '/vendor/register');
 };

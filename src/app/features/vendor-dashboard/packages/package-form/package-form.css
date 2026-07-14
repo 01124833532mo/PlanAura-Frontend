@@ -1,0 +1,25 @@
+.package-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.package-form__row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--gutter);
+}
+
+.package-form__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.package-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+}

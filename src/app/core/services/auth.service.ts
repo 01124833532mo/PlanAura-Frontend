@@ -10,6 +10,7 @@ import {
 } from '../interfaces/auth.model';
 import { VendorRegistrationPayload } from '../interfaces/vendor.model';
 import { TokenStorageService } from './token-storage.service';
+import { VendorProfileStateService } from './vendor-profile-state.service';
 
 /**
  * Talks to Planura's AuthController exactly as implemented:
@@ -23,6 +24,7 @@ import { TokenStorageService } from './token-storage.service';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly tokenStorage = inject(TokenStorageService);
+  private readonly vendorProfileState = inject(VendorProfileStateService);
 
   private readonly currentUserSignal = signal<CurrentUser | null>(null);
   private readonly authResponseSignal = signal<AuthResponse | null>(null);
@@ -31,7 +33,10 @@ export class AuthService {
   readonly currentUser = this.currentUserSignal.asReadonly();
   readonly isAuthenticated = computed(() => !!this.tokenStorage.getToken());
   readonly isVendor = computed(
-    () => this.authResponseSignal()?.roles.includes(ROLE_VENDOR) ?? false,
+    () =>
+      (this.authResponseSignal()?.roles ?? this.currentUserSignal()?.roles ?? []).includes(
+        ROLE_VENDOR,
+      ),
   );
 
   login(request: LoginRequest): Observable<AuthResponse> {
@@ -102,6 +107,7 @@ export class AuthService {
     this.tokenStorage.clearToken();
     this.currentUserSignal.set(null);
     this.authResponseSignal.set(null);
+    this.vendorProfileState.clear();
   }
 
   private handleAuthResponse(response: AuthResponse): void {

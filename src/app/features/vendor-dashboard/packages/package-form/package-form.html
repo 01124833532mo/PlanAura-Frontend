@@ -1,0 +1,61 @@
+<form class="package-form" [formGroup]="form" (ngSubmit)="submit()">
+  <ui-alert-banner [message]="error?.message ?? null" [details]="error?.fieldErrors ?? []" />
+
+  <ui-text-field
+    label="Package title"
+    placeholder="e.g. Grand Ballroom Gala"
+    formControlName="title"
+    [errorMessage]="
+      form.get('title')!.touched && form.get('title')!.invalid
+        ? 'A title (up to 200 characters) is required.'
+        : null
+    "
+  />
+
+  <ui-text-field
+    label="Description"
+    placeholder="What's included in this package?"
+    formControlName="description"
+  />
+
+  <div class="package-form__row">
+    <ui-text-field
+      label="Base price"
+      placeholder="0.00"
+      formControlName="basePrice"
+      [errorMessage]="
+        form.get('basePrice')!.touched && form.get('basePrice')!.invalid
+          ? 'Enter a valid price.'
+          : null
+      "
+    />
+    <ui-select-field label="Currency" [options]="currencyOptions" formControlName="currency" />
+  </div>
+
+  <ui-text-field
+    label="Max guests (optional)"
+    placeholder="e.g. 150"
+    formControlName="maxGuests"
+    [errorMessage]="
+      form.get('maxGuests')!.touched && form.get('maxGuests')!.invalid
+        ? 'Enter a whole number.'
+        : null
+    "
+  />
+
+  <ui-text-field
+    label="What's included (optional)"
+    placeholder="Catering, decor, photography..."
+    formControlName="includes"
+  />
+
+  <label class="package-form__checkbox">
+    <input type="checkbox" formControlName="isActive" />
+    <span class="text-body-md">Active (visible to clients)</span>
+  </label>
+
+  <div class="package-form__actions">
+    <ui-button variant="outline" type="button" (click)="cancelled.emit()">Cancel</ui-button>
+    <ui-button type="submit" [loading]="saving">{{ package ? 'Save changes' : 'Create package' }}</ui-button>
+  </div>
+</form>

@@ -1,0 +1,48 @@
+.browser-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.browser-page__header p {
+  color: var(--color-secondary);
+  margin-top: 0.25rem;
+}
+
+.browser-page__empty {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--color-secondary);
+}
+
+.browser-filters {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr auto auto;
+  align-items: end;
+  gap: var(--gutter);
+  padding: var(--space-lg);
+}
+
+.browser-filters__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.browser-filters__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.browser-row {
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .browser-filters {
+    grid-template-columns: 1fr;
+  }
+}

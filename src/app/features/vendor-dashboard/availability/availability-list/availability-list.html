@@ -1,0 +1,81 @@
+<div class="availability-page">
+  <div class="availability-page__header">
+    <div>
+      <h3 class="text-headline-sm">Availability</h3>
+      <p class="text-body-md">Open up slots clients can request to book.</p>
+    </div>
+    <ui-button [fullWidth]="false" (click)="openCreate()">
+      <span class="material-symbols-outlined">add</span>
+      Add slot
+    </ui-button>
+  </div>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <div class="card-luxe luxe-shadow availability-list-wrap">
+    @if (loading()) {
+      <p class="text-body-md availability-page__empty">Loading your availability...</p>
+    } @else if (slots().length === 0) {
+      <p class="text-body-md availability-page__empty">
+        No slots yet. Add availability so clients know when they can book you.
+      </p>
+    } @else {
+      @for (slot of slots(); track slot.id) {
+        <div class="availability-row">
+          <div class="availability-row__time">
+            <span class="material-symbols-outlined">schedule</span>
+            <div>
+              <p class="text-body-md availability-row__range">
+                {{ slot.startAt | date: 'MMM d, y, h:mm a' }} —
+                {{ slot.endAt | date: 'h:mm a' }}
+              </p>
+            </div>
+          </div>
+
+          <span
+            class="availability-badge"
+            [class.availability-badge--available]="slot.status === AvailabilityStatus.Available"
+            [class.availability-badge--booked]="slot.status === AvailabilityStatus.Booked"
+            [class.availability-badge--blocked]="slot.status === AvailabilityStatus.Blocked"
+          >
+            {{ statusLabel(slot.status) }}
+          </span>
+
+          @if (slot.status === AvailabilityStatus.Available) {
+            <div class="availability-row__actions">
+              <button class="icon-btn" type="button" title="Edit" (click)="openEdit(slot)">
+                <span class="material-symbols-outlined">edit</span>
+              </button>
+              <button
+                class="icon-btn icon-btn--danger"
+                type="button"
+                title="Delete"
+                [disabled]="savingId() === slot.id"
+                (click)="deleteSlot(slot)"
+              >
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          } @else {
+            <div class="availability-row__actions"></div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>
+
+@if (formOpen()) {
+  <div class="modal-backdrop" (click)="closeForm()">
+    <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
+      <h4 class="text-headline-sm">{{ editingSlot() ? 'Edit slot' : 'New slot' }}</h4>
+      <app-availability-form
+        [availability]="editingSlot()"
+        [saving]="savingId() !== null"
+        [error]="error()"
+        (save)="handleSave($event)"
+        (cancelled)="closeForm()"
+      />
+    </div>
+  </div>
+}

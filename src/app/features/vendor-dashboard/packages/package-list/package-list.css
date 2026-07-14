@@ -1,0 +1,25 @@
+.package-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.package-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--gutter);
+}
+
+.package-page__header p {
+  color: var(--color-secondary);
+  margin-top: 0.25rem;
+}
+
+.package-page__empty {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--color-secondary);
+}
+
+

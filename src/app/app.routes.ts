@@ -1,15 +1,27 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './core/guards/admin.guard';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
 import { vendorGuard } from './core/guards/vendor.guard';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'auth' },
+  {
+    path: '',
+    pathMatch: 'full',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/home/home').then((m) => m.Home),
+  },
   {
     path: 'auth',
     canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/auth/auth-page/auth-page').then((m) => m.AuthPage),
+  },
+  {
+    path: 'admin/dashboard',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
   },
   {
     path: 'vendor/register',

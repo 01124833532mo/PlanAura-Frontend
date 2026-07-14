@@ -18,6 +18,12 @@
   width: 100%;
 }
 
+.ui-btn__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .ui-btn:active:not(:disabled) {
   transform: scale(0.98);
 }

@@ -10,7 +10,7 @@ import { AlertBanner } from '../../../shared/ui/alert-banner/alert-banner';
 import { AuthService } from '../../../core/services/auth.service';
 import { VendorOnboardingStateService } from '../../../core/services/vendor-onboarding-state.service';
 import { AppError } from '../../../core/interfaces/api-response.model';
-import { CurrentUser } from '../../../core/interfaces/auth.model';
+import { CurrentUser, RegisterClientRequest } from '../../../core/interfaces/auth.model';
 import { passwordsMatchValidator } from '../../../shared/validators/password-match.validator';
 
 type AuthMode = 'login' | 'register';
@@ -102,10 +102,7 @@ export class AuthPage {
           next: (user) => {
             this.loading.set(false);
             this.signedInUser.set(user);
-
-            if (this.authService.isVendor()) {
-              this.router.navigateByUrl('/vendor/dashboard');
-            }
+            this.navigateAfterAuth();
           },
           error: () => {
             // Login itself already succeeded; a failed follow-up /me call
@@ -122,13 +119,6 @@ export class AuthPage {
   }
 
   protected submitRegister(): void {
-    if (this.role() === 'customer') {
-      this.infoMessage.set(
-        'Client registration is not available yet — this build only covers vendor onboarding.',
-      );
-      return;
-    }
-
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
@@ -136,6 +126,11 @@ export class AuthPage {
 
     const { fullName, email, phoneNumber, password, confirmPassword } =
       this.registerForm.getRawValue();
+
+    if (this.role() === 'customer') {
+      this.submitClientRegistration({ fullName, email, phoneNumber, password, confirmPassword });
+      return;
+    }
 
     // The backend's RegisterVendorAsync is a single atomic call that also
     // needs business info + documents, so this page can only carry the
@@ -149,6 +144,51 @@ export class AuthPage {
     });
 
     this.router.navigateByUrl('/vendor/register');
+  }
+
+  private submitClientRegistration(request: RegisterClientRequest): void {
+    this.error.set(null);
+    this.loading.set(true);
+
+    this.authService.registerClient(request).subscribe({
+      next: () => {
+        this.authService.fetchCurrentUser().subscribe({
+          next: (user) => {
+            this.loading.set(false);
+            this.signedInUser.set(user);
+            this.navigateAfterAuth();
+          },
+          error: () => {
+            // Registration itself already succeeded; a failed follow-up /me
+            // call shouldn't be reported as a registration failure.
+            this.loading.set(false);
+          },
+        });
+      },
+      error: (err: AppError) => {
+        this.loading.set(false);
+        this.error.set(err);
+      },
+    });
+  }
+
+  /**
+   * Role-based landing page after a successful login or registration, in
+   * priority order: admin -> vendor -> client (home). Reuses AuthService's
+   * role signals rather than re-parsing roles here.
+   */
+  private navigateAfterAuth(): void {
+    if (this.authService.isAdmin()) {
+      this.router.navigateByUrl('/admin/dashboard');
+      return;
+    }
+
+    if (this.authService.isVendor()) {
+      this.router.navigateByUrl('/vendor/dashboard');
+      return;
+    }
+
+    this.router.navigateByUrl('/');
   }
 
   protected logout(): void {

@@ -211,6 +211,7 @@ a {
 .package-table th,
 .package-table td {
   padding: 1.1rem 1.5rem;
+  vertical-align: top;
 }
 
 .package-table tbody tr {
@@ -222,14 +223,18 @@ a {
 }
 
 .package-table__title {
+  display: block;
   font-weight: 600;
   color: var(--color-charcoal);
+  max-width: 320px;
+  overflow-wrap: break-word;
 }
 
 .package-table__desc {
   color: var(--color-secondary);
   margin-top: 0.15rem;
   max-width: 320px;
+  overflow-wrap: break-word;
 }
 
 .package-table__actions {

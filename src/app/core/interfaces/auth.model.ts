@@ -4,6 +4,15 @@ export interface LoginRequest {
   password: string;
 }
 
+/** Mirrors Planura.Core.Application.Models.RegisterClientDto exactly. */
+export interface RegisterClientRequest {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+}
+
 /** Mirrors Planura.Core.Application.Models.AuthResponseDto exactly. */
 export interface AuthResponse {
   accessToken: string;

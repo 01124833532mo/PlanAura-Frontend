@@ -1,0 +1,146 @@
+<div class="event-plan-detail-page">
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  @if (loading()) {
+    <p class="text-body-md event-plan-detail-page__empty">Loading event plan...</p>
+  } @else if (plan(); as p) {
+    <header class="card-luxe luxe-shadow event-plan-detail-header">
+      <h1 class="text-headline-md">{{ p.title }}</h1>
+      <p class="text-body-md event-plan-detail-header__meta">
+        {{ p.eventType }} · {{ p.eventDate | date: 'mediumDate' }} · {{ p.city }} ·
+        {{ p.guestCount }} guests · {{ p.budgetTotal | number: '1.0-2' }} budget
+      </p>
+      @if (p.styleNotes) {
+        <p class="text-body-md">{{ p.styleNotes }}</p>
+      }
+    </header>
+
+    <section class="event-plan-detail-section">
+      <h3 class="text-headline-sm">Bookings</h3>
+
+      @if (bookings().length === 0) {
+        <div class="card-luxe luxe-shadow event-plan-detail-page__empty-card">
+          <p class="text-body-md">No bookings yet for this event.</p>
+          <ui-button [fullWidth]="false" (click)="goToVendors()">
+            Browse vendors for this event
+          </ui-button>
+        </div>
+      } @else {
+        <div class="booking-list">
+          @for (booking of bookings(); track booking.id) {
+            <div class="card-luxe luxe-shadow booking-row">
+              <div class="booking-row__vendor">
+                @if (vendorLogo(booking); as logo) {
+                  <img [src]="logo" [alt]="vendorName(booking)" class="booking-row__logo" />
+                } @else {
+                  <div class="booking-row__logo-placeholder">
+                    <span class="material-symbols-outlined">storefront</span>
+                  </div>
+                }
+                <div>
+                  <h4 class="text-headline-sm">{{ vendorName(booking) }}</h4>
+                  @if (packageTitle(booking); as title) {
+                    <p class="text-body-md booking-row__package">{{ title }}</p>
+                  }
+                </div>
+              </div>
+
+              <div class="booking-row__meta">
+                <span>
+                  <span class="material-symbols-outlined">event</span>
+                  {{ booking.eventDate | date: 'mediumDate' }}
+                </span>
+                @if (booking.guestCount) {
+                  <span>
+                    <span class="material-symbols-outlined">groups</span>
+                    {{ booking.guestCount }} guests
+                  </span>
+                }
+                @if (booking.agreedPrice !== null) {
+                  <span class="booking-row__price">
+                    {{ priceCurrency(booking) }} {{ booking.agreedPrice | number: '1.0-2' }}
+                  </span>
+                }
+              </div>
+
+              <div class="booking-row__status">
+                <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
+              </div>
+
+              <div class="booking-row__actions">
+                @if (booking.status === BookingStatus.Pending) {
+                  <ui-button
+                    variant="outline"
+                    [fullWidth]="false"
+                    [loading]="actioningId() === booking.id"
+                    (click)="cancelBooking(booking)"
+                  >
+                    Cancel request
+                  </ui-button>
+                }
+                @if (
+                  booking.status === BookingStatus.Accepted &&
+                  booking.paymentStatus === BookingPaymentStatus.Unpaid
+                ) {
+                  <a
+                    class="btn-gold-gradient"
+                    [routerLink]="['/client/bookings', booking.id, 'pay']"
+                  >
+                    Pay now
+                  </a>
+                }
+                @if (booking.status === BookingStatus.Completed) {
+                  <ui-button
+                    variant="outline"
+                    [fullWidth]="false"
+                    [disabled]="true"
+                    title="Reviews are coming soon"
+                  >
+                    Leave a review
+                  </ui-button>
+                }
+                @if (
+                  (booking.status === BookingStatus.Accepted ||
+                    booking.status === BookingStatus.Completed) &&
+                  booking.disputeStatus !== DisputeStatus.Open
+                ) {
+                  <button class="booking-row__report" type="button" (click)="openDispute(booking)">
+                    Report a problem
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+</div>
+
+@if (disputeTargetId(); as id) {
+  <div class="modal-backdrop" (click)="closeDispute()">
+    <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
+      <h4 class="text-headline-sm">Report a problem</h4>
+      <form [formGroup]="disputeForm" (ngSubmit)="submitDispute()">
+        <ui-alert-banner
+          [message]="disputeError()?.message ?? null"
+          [details]="disputeError()?.fieldErrors ?? []"
+        />
+        <ui-text-field
+          label="What happened?"
+          formControlName="reason"
+          [multiline]="true"
+          [errorMessage]="
+            disputeForm.get('reason')!.touched && disputeForm.get('reason')!.invalid
+              ? 'Please describe the issue.'
+              : null
+          "
+        />
+        <div class="event-plan-detail-modal__actions">
+          <ui-button variant="outline" type="button" (click)="closeDispute()">Cancel</ui-button>
+          <ui-button type="submit" [loading]="disputeSubmitting()">Submit report</ui-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

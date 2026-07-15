@@ -1,0 +1,98 @@
+<div class="event-plan-form-page">
+  <div class="event-plan-form-page__header">
+    <h3 class="text-headline-sm">New event plan</h3>
+    <p class="text-body-md">Tell us about your event so vendors can help you plan it.</p>
+  </div>
+
+  @if (fromBooking) {
+    <ui-alert-banner
+      variant="info"
+      message="Create an event plan first, then we'll take you back to finish your booking."
+    />
+  }
+
+  <form class="event-plan-form card-luxe luxe-shadow" [formGroup]="form" (ngSubmit)="submit()">
+    <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+    <ui-text-field
+      label="Event title"
+      placeholder="e.g. Amina & Karim's Wedding"
+      formControlName="title"
+      [errorMessage]="
+        form.get('title')!.touched && form.get('title')!.invalid
+          ? 'A title (up to 200 characters) is required.'
+          : null
+      "
+    />
+
+    <div class="event-plan-form__row">
+      <ui-select-field
+        label="Event type"
+        [options]="eventTypeOptions"
+        formControlName="eventType"
+        [errorMessage]="
+          form.get('eventType')!.touched && form.get('eventType')!.invalid
+            ? 'Choose an event type.'
+            : null
+        "
+      />
+      <ui-text-field
+        label="Event date"
+        type="date"
+        [min]="todayIso"
+        formControlName="eventDate"
+        [errorMessage]="
+          form.get('eventDate')!.touched && form.get('eventDate')!.invalid
+            ? 'Choose today or a future date.'
+            : null
+        "
+      />
+    </div>
+
+    <ui-text-field
+      label="City"
+      placeholder="e.g. Cairo"
+      formControlName="city"
+      [errorMessage]="
+        form.get('city')!.touched && form.get('city')!.invalid ? 'City is required.' : null
+      "
+    />
+
+    <div class="event-plan-form__row">
+      <ui-text-field
+        label="Guest count"
+        type="number"
+        min="1"
+        formControlName="guestCount"
+        [errorMessage]="
+          form.get('guestCount')!.touched && form.get('guestCount')!.invalid
+            ? 'Enter at least 1 guest.'
+            : null
+        "
+      />
+      <ui-text-field
+        label="Total budget"
+        type="number"
+        min="0"
+        formControlName="budgetTotal"
+        [errorMessage]="
+          form.get('budgetTotal')!.touched && form.get('budgetTotal')!.invalid
+            ? 'Enter a valid budget.'
+            : null
+        "
+      />
+    </div>
+
+    <ui-text-field
+      label="Style notes (optional)"
+      placeholder="Colors, themes, must-haves..."
+      formControlName="styleNotes"
+      [multiline]="true"
+    />
+
+    <div class="event-plan-form__actions">
+      <ui-button variant="outline" type="button" (click)="cancel()">Cancel</ui-button>
+      <ui-button type="submit" [loading]="saving()">Create plan</ui-button>
+    </div>
+  </form>
+</div>

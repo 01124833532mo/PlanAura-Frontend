@@ -32,6 +32,11 @@
   box-shadow: 0 0 0 1px var(--color-error);
 }
 
+.ui-field__textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
 .ui-field__input:disabled {
   opacity: 0.6;
   cursor: not-allowed;

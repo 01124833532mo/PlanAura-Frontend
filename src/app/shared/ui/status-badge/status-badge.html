@@ -1,0 +1,8 @@
+<span
+  class="status-badge"
+  [class.status-badge--pending]="tone === 'pending'"
+  [class.status-badge--gold]="tone === 'gold'"
+  [class.status-badge--success]="tone === 'success'"
+  [class.status-badge--error]="tone === 'error'"
+  [class.status-badge--muted]="tone === 'muted'"
+>{{ label }}</span>

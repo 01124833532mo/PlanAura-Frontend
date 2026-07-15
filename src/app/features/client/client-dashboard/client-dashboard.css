@@ -1,0 +1,105 @@
+.client-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.client-dashboard__header p {
+  color: var(--color-secondary);
+  margin-top: 0.25rem;
+}
+
+.client-dashboard__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.client-dashboard__section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.client-dashboard__view-all {
+  border: none;
+  background: transparent;
+  color: var(--color-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: var(--font-label-md-weight);
+  cursor: pointer;
+}
+
+.client-dashboard__view-all:hover {
+  text-decoration: underline;
+}
+
+.client-dashboard__empty {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--color-secondary);
+}
+
+.client-dashboard__empty-card {
+  padding: var(--space-xl);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.client-dashboard__project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--gutter);
+}
+
+.client-dashboard__project-card {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family-base);
+}
+
+.client-dashboard__project-meta {
+  color: var(--color-secondary);
+}
+
+.client-dashboard__tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--gutter);
+}
+
+.client-dashboard__tile {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  color: var(--color-charcoal);
+}
+
+.client-dashboard__tile:hover:not(.client-dashboard__tile--disabled) {
+  box-shadow: var(--shadow-luxe);
+}
+
+.client-dashboard__tile--disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.client-dashboard__tile-badge {
+  color: var(--color-secondary);
+}

@@ -1,0 +1,39 @@
+.event-plan-form-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--margin-desktop) var(--margin-mobile);
+}
+
+.event-plan-form-page__header p {
+  color: var(--color-secondary);
+  margin-top: 0.25rem;
+}
+
+.event-plan-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+}
+
+.event-plan-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gutter);
+}
+
+.event-plan-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+}
+
+@media (max-width: 640px) {
+  .event-plan-form__row {
+    grid-template-columns: 1fr;
+  }
+}

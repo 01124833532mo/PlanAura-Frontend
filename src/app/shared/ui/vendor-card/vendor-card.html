@@ -1,0 +1,64 @@
+<div class="card-luxe luxe-shadow vendor-card">
+  <div class="vendor-card__media">
+    @if (vendor.logoUrl) {
+      <img [src]="vendor.logoUrl" [alt]="vendor.businessName" class="vendor-card__image" />
+    } @else {
+      <div class="vendor-card__image-placeholder">
+        <span class="material-symbols-outlined">storefront</span>
+      </div>
+    }
+    <div class="vendor-card__media-scrim"></div>
+    <span
+      class="vendor-card__verification"
+      [class.vendor-card__verification--trusted]="vendor.verificationStatus === 'Trusted'"
+    >
+      <span class="material-symbols-outlined">verified</span>
+      {{ vendor.verificationStatus }}
+    </span>
+  </div>
+
+  <div class="vendor-card__body">
+    @if (vendor.category) {
+      <span class="text-label-sm vendor-card__category">{{ vendor.category }}</span>
+    }
+    <h4 class="text-headline-sm">{{ vendor.businessName }}</h4>
+
+    <div class="vendor-card__meta">
+      @if (vendor.reviewCount > 0) {
+        <span class="vendor-card__rating">
+          <span class="material-symbols-outlined">star</span>
+          {{ vendor.avgRating | number: '1.1-1' }}
+          <span class="vendor-card__review-count">({{ vendor.reviewCount }})</span>
+        </span>
+      }
+      @if (vendor.city) {
+        <span class="text-body-md vendor-card__city">
+          <span class="material-symbols-outlined">location_on</span>
+          {{ vendor.city }}
+        </span>
+      }
+    </div>
+
+    @if (vendor.shortDescription) {
+      <p class="text-body-md vendor-card__description">{{ vendor.shortDescription }}</p>
+    }
+
+    <div class="vendor-card__footer">
+      @if (vendor.startingPrice !== null) {
+        <span class="vendor-card__price">
+          <span class="vendor-card__price-label">Starting at</span>
+          <span class="vendor-card__price-value">
+            {{ fallbackCurrency }} {{ vendor.startingPrice | number: '1.0-0' }}
+          </span>
+        </span>
+      }
+      <a
+        class="btn-gold-gradient vendor-card__cta"
+        [routerLink]="['/client/vendors', vendor.id]"
+        [queryParams]="eventPlanId ? { eventPlanId } : {}"
+      >
+        View Details
+      </a>
+    </div>
+  </div>
+</div>

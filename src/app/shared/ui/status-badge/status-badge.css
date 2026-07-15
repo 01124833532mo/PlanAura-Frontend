@@ -1,0 +1,35 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-label-sm-size);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-badge--pending {
+  background: var(--color-primary-fixed);
+  color: var(--color-primary);
+}
+
+.status-badge--gold {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary);
+}
+
+/* Matches the existing .package-badge--active green pair in styles.css. */
+.status-badge--success {
+  background: #dcf5e3;
+  color: #1f7a3f;
+}
+
+.status-badge--error {
+  background: var(--color-error-container);
+  color: var(--color-error);
+}
+
+.status-badge--muted {
+  background: var(--color-surface-container);
+  color: var(--color-secondary);
+}

@@ -1,0 +1,57 @@
+<aside class="client-nav">
+  <div class="client-nav__brand">
+    <span class="text-headline-sm client-nav__brand-name">Planura</span>
+    <p class="text-label-sm client-nav__brand-sub">Client Dashboard</p>
+  </div>
+
+  <nav class="client-nav__links">
+    <a
+      class="client-nav__link"
+      routerLink="/client/event-plans"
+      routerLinkActive="client-nav__link--active"
+    >
+      <span class="material-symbols-outlined">event_note</span>
+      <span class="text-label-md">My Event Plans</span>
+    </a>
+    <a
+      class="client-nav__link"
+      routerLink="/client/vendors"
+      routerLinkActive="client-nav__link--active"
+    >
+      <span class="material-symbols-outlined">storefront</span>
+      <span class="text-label-md">Browse Vendors</span>
+    </a>
+    <span class="client-nav__link client-nav__link--disabled" title="Coming in Slice 4">
+      <span class="material-symbols-outlined">event_available</span>
+      <span class="text-label-md">My Bookings</span>
+    </span>
+  </nav>
+
+  <div class="client-nav__footer">
+    <a class="btn-gold-gradient client-nav__new-event" routerLink="/client/event-plans/new">
+      <span class="material-symbols-outlined">add</span>
+      <span class="text-label-md">New Event</span>
+    </a>
+    <button class="client-nav__logout" type="button" (click)="logout()">
+      <span class="material-symbols-outlined">logout</span>
+      <span class="text-label-md">Log Out</span>
+    </button>
+  </div>
+</aside>
+
+<main class="client-main">
+  <header class="client-topbar">
+    <h2 class="text-headline-md client-topbar__title">Dashboard</h2>
+
+    @if (currentUser(); as user) {
+      <div class="client-topbar__profile">
+        <span class="text-body-md client-topbar__name">{{ user.fullName }}</span>
+        <span class="client-topbar__avatar">{{ user.fullName.charAt(0) }}</span>
+      </div>
+    }
+  </header>
+
+  <div class="client-content">
+    <router-outlet />
+  </div>
+</main>

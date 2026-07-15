@@ -1,17 +1,31 @@
 @if (label) {
   <label class="ui-field__label" [for]="fieldId">{{ label }}</label>
 }
-<input
-  class="ui-field__input"
-  [class.ui-field__input--invalid]="!!errorMessage"
-  [id]="fieldId"
-  [type]="type"
-  [placeholder]="placeholder"
-  [disabled]="disabled"
-  [value]="value"
-  (input)="handleInput($event)"
-  (blur)="handleBlur()"
-/>
+@if (multiline) {
+  <textarea
+    class="ui-field__input ui-field__textarea"
+    [class.ui-field__input--invalid]="!!errorMessage"
+    [id]="fieldId"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [value]="value"
+    (input)="handleInput($event)"
+    (blur)="handleBlur()"
+  ></textarea>
+} @else {
+  <input
+    class="ui-field__input"
+    [class.ui-field__input--invalid]="!!errorMessage"
+    [id]="fieldId"
+    [type]="type"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [value]="value"
+    [attr.min]="min"
+    (input)="handleInput($event)"
+    (blur)="handleBlur()"
+  />
+}
 @if (errorMessage) {
   <p class="ui-field__error">{{ errorMessage }}</p>
 } @else if (hint) {

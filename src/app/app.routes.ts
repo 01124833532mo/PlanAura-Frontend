@@ -31,6 +31,22 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'vendor/verification-pending',
+    canActivate: [authGuard, vendorGuard],
+    loadComponent: () =>
+      import(
+        './features/vendor-verification/verification-pending/verification-pending'
+      ).then((m) => m.VerificationPending),
+  },
+  {
+    path: 'vendor/verification-rejected',
+    canActivate: [authGuard, vendorGuard],
+    loadComponent: () =>
+      import(
+        './features/vendor-verification/verification-rejected/verification-rejected'
+      ).then((m) => m.VerificationRejected),
+  },
+  {
     path: 'vendor/dashboard',
     canActivate: [authGuard, vendorGuard],
     loadComponent: () =>
@@ -59,6 +75,11 @@ export const routes: Routes = [
           import('./features/vendor-dashboard/packages/package-browser/package-browser').then(
             (m) => m.PackageBrowser,
           ),
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/vendor-dashboard/profile/profile').then((m) => m.Profile),
       },
     ],
   },

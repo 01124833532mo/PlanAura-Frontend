@@ -1,20 +1,23 @@
 @if (label) {
   <label class="ui-field__label" [for]="fieldId">{{ label }}</label>
 }
-<select
-  class="ui-field__input ui-select"
-  [class.ui-field__input--invalid]="!!errorMessage"
-  [id]="fieldId"
-  [disabled]="disabled"
-  [value]="value ?? ''"
-  (change)="handleChange($event)"
-  (blur)="handleBlur()"
->
-  <option value="" disabled>{{ placeholder }}</option>
-  @for (option of options; track option.value) {
-    <option [value]="option.value">{{ option.label }}</option>
-  }
-</select>
+<div class="ui-select-wrapper">
+  <select
+    class="ui-field__input ui-select"
+    [class.ui-field__input--invalid]="!!errorMessage"
+    [id]="fieldId"
+    [disabled]="disabled"
+    [value]="value ?? ''"
+    (change)="handleChange($event)"
+    (blur)="handleBlur()"
+  >
+    <option value="" disabled>{{ placeholder }}</option>
+    @for (option of options; track option.value) {
+      <option [value]="option.value">{{ option.label }}</option>
+    }
+  </select>
+  <span class="material-symbols-outlined ui-select__chevron" aria-hidden="true">expand_more</span>
+</div>
 @if (errorMessage) {
   <p class="ui-field__error">{{ errorMessage }}</p>
 }

@@ -1,7 +1,56 @@
-<section class="home-placeholder">
-  <h1>Welcome to Planura</h1>
-  <button class="home-placeholder__logout" type="button" (click)="logout()">
-    <span class="material-symbols-outlined">logout</span>
-    <span class="text-label-md">Log Out</span>
-  </button>
-</section>
+<div class="home-page bg-mesh">
+  <span class="floating-blob home-page__blob home-page__blob--one" aria-hidden="true"></span>
+  <span class="floating-blob home-page__blob home-page__blob--two" aria-hidden="true"></span>
+  <span class="floating-blob home-page__blob home-page__blob--three" aria-hidden="true"></span>
+
+  <header class="home-nav glass-panel animate-fade-down">
+    <span class="home-nav__brand">Planura</span>
+
+    <button class="home-nav__logout" type="button" (click)="logout()">
+      <span class="material-symbols-outlined">logout</span>
+      <span class="text-label-md">Log Out</span>
+    </button>
+  </header>
+
+  <main class="home-hero">
+    <span class="home-hero__eyebrow animate-fade-down">You're signed in</span>
+
+    <h1 class="home-hero__title animate-fade-up stagger-1">Welcome to Planura</h1>
+
+    <p class="home-hero__subtitle animate-fade-up stagger-2">
+      One elegant home for every celebration you'll ever plan &mdash; weddings, birthdays, corporate events,
+      graduations, conferences, baby showers, engagements, and everything in between.
+    </p>
+
+    <ul class="home-hero__categories animate-fade-up stagger-3">
+      <li class="home-category-chip animate-scale-in stagger-1">
+        <span class="material-symbols-outlined">favorite</span>
+        <span>Weddings</span>
+      </li>
+      <li class="home-category-chip animate-scale-in stagger-2">
+        <span class="material-symbols-outlined">cake</span>
+        <span>Birthdays</span>
+      </li>
+      <li class="home-category-chip animate-scale-in stagger-3">
+        <span class="material-symbols-outlined">business_center</span>
+        <span>Corporate Events</span>
+      </li>
+      <li class="home-category-chip animate-scale-in stagger-4">
+        <span class="material-symbols-outlined">school</span>
+        <span>Graduations</span>
+      </li>
+      <li class="home-category-chip animate-scale-in stagger-5">
+        <span class="material-symbols-outlined">groups</span>
+        <span>Conferences</span>
+      </li>
+      <li class="home-category-chip animate-scale-in stagger-6">
+        <span class="material-symbols-outlined">stroller</span>
+        <span>Baby Showers</span>
+      </li>
+    </ul>
+
+    <p class="home-hero__footnote animate-fade-in stagger-6">
+      Your dashboard is warming up &mdash; more planning tools are on the way.
+    </p>
+  </main>
+</div>

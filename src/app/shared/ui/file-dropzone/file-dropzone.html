@@ -19,7 +19,9 @@
     (change)="handleFileInput($event)"
   />
   <label [for]="fieldId" class="ui-dropzone__prompt">
-    <span class="material-symbols-outlined">upload_file</span>
+    <span class="ui-dropzone__icon-wrap" aria-hidden="true">
+      <span class="material-symbols-outlined">upload_file</span>
+    </span>
     <span class="ui-dropzone__prompt-text">Drag & drop, or click to browse</span>
     <span class="ui-dropzone__hint">{{ hint }}</span>
   </label>

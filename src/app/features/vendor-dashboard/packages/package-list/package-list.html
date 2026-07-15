@@ -1,6 +1,10 @@
 <div class="package-page">
-  <div class="package-page__header">
+  <div class="package-page__header animate-fade-up">
     <div>
+      <p class="text-label-sm package-page__eyebrow">
+        <span class="material-symbols-outlined">inventory_2</span>
+        Catalog
+      </p>
       <h3 class="text-headline-sm">Package Management</h3>
       <p class="text-body-md">Create and manage the packages clients can book from you.</p>
     </div>
@@ -12,13 +16,19 @@
 
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
-  <div class="card-luxe luxe-shadow package-table-wrap">
+  <div class="card-luxe luxe-shadow package-table-wrap animate-fade-up stagger-1">
     @if (loading()) {
-      <p class="text-body-md package-page__empty">Loading your packages...</p>
+      <div class="package-page__state">
+        <span class="material-symbols-outlined package-page__state-icon skeleton-icon">hourglass_top</span>
+        <p class="text-body-md package-page__empty">Loading your packages...</p>
+      </div>
     } @else if (packages().length === 0) {
-      <p class="text-body-md package-page__empty">
-        You don't have any packages yet. Add your first one to start getting bookings.
-      </p>
+      <div class="package-page__state">
+        <span class="material-symbols-outlined package-page__state-icon">inventory_2</span>
+        <p class="text-body-md package-page__empty">
+          You don't have any packages yet. Add your first one to start getting bookings.
+        </p>
+      </div>
     } @else {
       <table class="package-table">
         <thead>
@@ -86,7 +96,10 @@
 @if (formOpen()) {
   <div class="modal-backdrop" (click)="closeForm()">
     <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
-      <h4 class="text-headline-sm">{{ editingPackage() ? 'Edit package' : 'New package' }}</h4>
+      <div class="package-form-modal__header">
+        <span class="material-symbols-outlined package-form-modal__icon" aria-hidden="true">inventory_2</span>
+        <h4 class="text-headline-sm">{{ editingPackage() ? 'Edit package' : 'New package' }}</h4>
+      </div>
       <app-package-form
         [package]="editingPackage()"
         [saving]="savingId() !== null"

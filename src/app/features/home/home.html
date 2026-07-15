@@ -61,7 +61,8 @@
             @if (category.iconUrl && !failedCategoryImages().has(category.id)) {
               <img
                 [src]="category.iconUrl"
-                [alt]="category.nameEn"
+                alt="{{ category.nameEn }}"
+                title="{{ category.nameEn }}"
                 class="category-tile__image"
                 (error)="onCategoryImageError(category.id)"
               />

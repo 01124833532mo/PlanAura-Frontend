@@ -1,0 +1,116 @@
+.booking-create-page {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--margin-desktop);
+}
+
+.booking-create-page__empty {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--color-secondary);
+}
+
+.booking-create-page__empty-card {
+  padding: var(--space-xl);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.booking-create-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--gutter);
+  align-items: start;
+}
+
+.booking-create-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  position: sticky;
+  top: var(--space-lg);
+}
+
+.booking-create-summary__vendor {
+  color: var(--color-secondary);
+}
+
+.booking-create-summary__price {
+  font-size: var(--font-headline-sm-size);
+  font-weight: 700;
+  color: var(--color-charcoal);
+  margin-top: var(--space-sm);
+}
+
+.booking-create-summary__hint {
+  color: var(--color-secondary);
+}
+
+.booking-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+}
+
+.booking-create-form__empty {
+  color: var(--color-secondary);
+}
+
+.booking-create-slots {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.booking-create-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-charcoal);
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  font-size: var(--font-body-md-size);
+  text-align: left;
+}
+
+.booking-create-slot:hover {
+  background: var(--color-soft-beige);
+}
+
+.booking-create-slot--active {
+  background: var(--color-primary-container);
+  border-color: var(--color-primary-container);
+  color: var(--color-on-primary);
+  font-weight: 700;
+}
+
+.booking-create-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-sm);
+}
+
+@media (max-width: 900px) {
+  .booking-create-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-create-summary {
+    position: static;
+  }
+
+  .booking-create-page {
+    padding: var(--margin-mobile);
+  }
+}

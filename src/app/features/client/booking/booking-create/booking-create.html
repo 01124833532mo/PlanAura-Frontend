@@ -1,0 +1,98 @@
+<div class="booking-create-page">
+  @if (setupError(); as msg) {
+    <div class="card-luxe luxe-shadow booking-create-page__empty-card">
+      <p class="text-body-md">{{ msg }}</p>
+      <ui-button [fullWidth]="false" (click)="goToVendors()">Back to vendors</ui-button>
+    </div>
+  } @else {
+    <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+    @if (loading()) {
+      <p class="text-body-md booking-create-page__empty">Loading booking details...</p>
+    } @else if (pkg(); as p) {
+      <div class="booking-create-layout">
+        <section class="booking-create-summary card-luxe luxe-shadow">
+          <h3 class="text-headline-sm">{{ p.title }}</h3>
+          @if (vendor(); as v) {
+            <p class="text-body-md booking-create-summary__vendor">{{ v.businessName }}</p>
+          }
+          @if (p.description) {
+            <p class="text-body-md">{{ p.description }}</p>
+          }
+          <p class="booking-create-summary__price">
+            {{ p.currency }} {{ p.basePrice | number: '1.0-2' }}
+          </p>
+          @if (p.maxGuests) {
+            <p class="text-label-sm booking-create-summary__hint">
+              This package covers up to {{ p.maxGuests }} guests.
+            </p>
+          }
+        </section>
+
+        <form class="booking-create-form card-luxe luxe-shadow" [formGroup]="form" (ngSubmit)="submit()">
+          <h4 class="text-headline-sm">Choose a date</h4>
+
+          @if (slotError(); as msg) {
+            <ui-alert-banner [message]="msg" />
+          }
+
+          @if (availableSlots().length === 0) {
+            <p class="text-body-md booking-create-form__empty">
+              This vendor has no available dates right now.
+            </p>
+          } @else {
+            <div class="booking-create-slots">
+              @for (slot of availableSlots(); track slot.id) {
+                <button
+                  class="booking-create-slot"
+                  type="button"
+                  [class.booking-create-slot--active]="selectedSlotId() === slot.id"
+                  (click)="selectSlot(slot.id)"
+                >
+                  <span class="material-symbols-outlined">event</span>
+                  <span>
+                    {{ slot.startAt | date: 'mediumDate' }}, {{ slot.startAt | date: 'shortTime' }}
+                    – {{ slot.endAt | date: 'shortTime' }}
+                  </span>
+                </button>
+              }
+            </div>
+          }
+
+          @if (needsEventPlanPicker()) {
+            <ui-select-field
+              label="Which event plan is this for?"
+              placeholder="Select an event plan"
+              [options]="eventPlanOptions()"
+              formControlName="eventPlanId"
+              [errorMessage]="
+                form.get('eventPlanId')!.touched && form.get('eventPlanId')!.invalid
+                  ? 'Choose the event plan this booking belongs to.'
+                  : null
+              "
+            />
+          }
+
+          <ui-text-field
+            label="Guest count (optional)"
+            type="number"
+            min="1"
+            formControlName="guestCount"
+            [errorMessage]="guestCountErrorMessage()"
+          />
+
+          <ui-text-field
+            label="Message to vendor (optional)"
+            placeholder="Anything the vendor should know..."
+            formControlName="clientMessage"
+            [multiline]="true"
+          />
+
+          <div class="booking-create-form__actions">
+            <ui-button type="submit" [loading]="submitting()">Request Booking</ui-button>
+          </div>
+        </form>
+      </div>
+    }
+  }
+</div>

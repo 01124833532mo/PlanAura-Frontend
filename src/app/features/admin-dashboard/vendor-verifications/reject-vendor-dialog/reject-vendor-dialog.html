@@ -1,0 +1,43 @@
+<div class="modal-backdrop" (click)="handleBackdropClick()">
+  <div
+    class="modal-card reject-dialog card-luxe luxe-shadow animate-scale-in"
+    role="dialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="reject-dialog__header">
+      <span class="reject-dialog__icon material-symbols-outlined" aria-hidden="true">block</span>
+      <div>
+        <h4 class="text-headline-sm">Reject verification</h4>
+        @if (vendorName) {
+          <p class="text-body-md reject-dialog__subtitle">{{ vendorName }}</p>
+        }
+      </div>
+    </div>
+
+    <ui-alert-banner [message]="error?.message ?? null" [details]="error?.fieldErrors ?? []" />
+
+    <div class="reject-dialog__field">
+      <label class="ui-field__label" for="rejection-reason">Rejection reason</label>
+      <textarea
+        id="rejection-reason"
+        class="reject-dialog__textarea"
+        rows="4"
+        maxlength="500"
+        placeholder="Explain why this vendor's verification is being rejected..."
+        [(ngModel)]="reason"
+        [disabled]="saving"
+      ></textarea>
+      <p class="text-label-sm reject-dialog__hint">This reason is visible to the vendor.</p>
+    </div>
+
+    <div class="reject-dialog__actions">
+      <ui-button variant="outline" type="button" [disabled]="saving" (click)="cancelled.emit()">
+        Cancel
+      </ui-button>
+      <ui-button type="button" [loading]="saving" [disabled]="!canSubmit" (click)="submit()">
+        Reject vendor
+      </ui-button>
+    </div>
+  </div>
+</div>

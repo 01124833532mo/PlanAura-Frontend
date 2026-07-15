@@ -1,0 +1,129 @@
+<div class="verif-page">
+  <div class="verif-page__header animate-fade-up">
+    <div>
+      <p class="text-label-sm verif-page__eyebrow">
+        <span class="material-symbols-outlined">shield_person</span>
+        Admin
+      </p>
+      <h3 class="text-headline-sm">Vendor Verification</h3>
+      <p class="text-body-md">Review pending vendor applications and approve or reject them.</p>
+    </div>
+    <ui-button [fullWidth]="false" variant="outline" (click)="fetchPending()" [disabled]="loading()">
+      <span class="material-symbols-outlined">refresh</span>
+      Refresh
+    </ui-button>
+  </div>
+
+  <ui-alert-banner variant="success" [message]="successMessage()" />
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <div class="card-luxe luxe-shadow verif-table-wrap animate-fade-up stagger-1">
+    @if (loading()) {
+      <div class="verif-page__state">
+        <span class="material-symbols-outlined verif-page__state-icon skeleton-icon">hourglass_top</span>
+        <p class="text-body-md verif-page__empty">Loading pending verification requests...</p>
+      </div>
+    } @else if (requests().length === 0) {
+      <div class="verif-page__state">
+        <span class="material-symbols-outlined verif-page__state-icon">task_alt</span>
+        <p class="text-body-md verif-page__empty">
+          No pending vendor verification requests right now. New submissions will appear here.
+        </p>
+      </div>
+    } @else {
+      <table class="verif-table">
+        <thead>
+          <tr>
+            <th>Vendor Name</th>
+            <th>Business Name</th>
+            <th>Category</th>
+            <th>Vendor Type</th>
+            <th>Submission Date</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (request of requests(); track request.vendorId) {
+            <tr>
+              <td>
+                <span class="text-body-md verif-table__title">{{ request.vendorName }}</span>
+              </td>
+              <td>{{ request.businessName }}</td>
+              <td>{{ request.categoryName ?? '—' }}</td>
+              <td>{{ request.vendorType === VendorType.Business ? 'Business' : 'Individual' }}</td>
+              <td>{{ request.submittedAt ? (request.submittedAt | date: 'MMM d, y') : '—' }}</td>
+              <td>
+                <span class="verif-badge verif-badge--pending">{{ request.status }}</span>
+              </td>
+              <td class="verif-table__actions">
+                <button
+                  class="icon-btn"
+                  type="button"
+                  title="View details"
+                  (click)="openDetails(request)"
+                >
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+                <button
+                  class="icon-btn icon-btn--success"
+                  type="button"
+                  title="Approve"
+                  (click)="openApprove(request)"
+                >
+                  <span class="material-symbols-outlined">check_circle</span>
+                </button>
+                <button
+                  class="icon-btn icon-btn--danger"
+                  type="button"
+                  title="Reject"
+                  (click)="openReject(request)"
+                >
+                  <span class="material-symbols-outlined">cancel</span>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+@if (selectedVendorId(); as vendorId) {
+  <div class="modal-backdrop" (click)="closeDetails()">
+    <div class="modal-card verif-details-modal card-luxe luxe-shadow" (click)="$event.stopPropagation()">
+      <app-vendor-verification-details
+        [details]="detailsData()"
+        [loading]="detailsLoading()"
+        [error]="detailsError()"
+        (closed)="closeDetails()"
+      />
+    </div>
+  </div>
+}
+
+@if (approveTarget(); as target) {
+  <ui-confirm-dialog
+    icon="check_circle"
+    title="Approve this vendor?"
+    [message]="target.vendorName + ' (' + target.businessName + ') will be verified and able to operate on Planura.'"
+    confirmLabel="Approve"
+    cancelLabel="Cancel"
+    variant="primary"
+    [loading]="approving()"
+    [errorMessage]="approveError()?.message ?? null"
+    (confirmed)="confirmApprove()"
+    (cancelled)="cancelApprove()"
+  />
+}
+
+@if (rejectTarget(); as target) {
+  <app-reject-vendor-dialog
+    [vendorName]="target.vendorName + ' (' + target.businessName + ')'"
+    [saving]="rejecting()"
+    [error]="rejectError()"
+    (submitted)="submitReject($event)"
+    (cancelled)="cancelReject()"
+  />
+}

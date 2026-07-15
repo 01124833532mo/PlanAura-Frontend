@@ -1,61 +1,85 @@
-<main class="onboarding-shell luxe-shadow">
-  <span class="onboarding-shell__brand">Planura</span>
+<main class="onboarding-shell bg-mesh">
+  <div class="onboarding-shell__blob onboarding-shell__blob--one floating-blob" aria-hidden="true"></div>
+  <div class="onboarding-shell__blob onboarding-shell__blob--two floating-blob" aria-hidden="true"></div>
 
-  <div class="onboarding-shell__content">
-    @if (submitted()) {
-      <div class="onboarding-shell__success">
-        <span class="material-symbols-outlined onboarding-shell__success-icon">check_circle</span>
-        <h1 class="text-headline-md">Application submitted</h1>
-        <p class="text-body-md">
-          Thanks for registering with Planura. Your documents have been sent for review — you'll be
-          notified once an admin approves or requests changes. You're already signed in.
-        </p>
-        <ui-button (click)="goToSignIn()">Back to sign in</ui-button>
-      </div>
-    } @else {
-      <h1 class="text-headline-md">Vendor onboarding</h1>
-      <p class="text-body-md onboarding-shell__intro">
-        A few steps to get your business verified and listed on Planura.
-      </p>
+  <div class="onboarding-shell__card glass-panel animate-fade-in">
+    <div class="onboarding-shell__header">
+      <span class="onboarding-shell__brand">
+        <span class="material-symbols-outlined onboarding-shell__brand-icon" aria-hidden="true">auto_awesome</span>
+        Planura
+      </span>
+    </div>
 
-      <ui-stepper-header [steps]="stepLabels" [currentIndex]="currentStep()" />
+    <div class="onboarding-shell__content">
+      @if (submitted()) {
+        <div class="onboarding-shell__success animate-blur-reveal">
+          <span class="material-symbols-outlined onboarding-shell__success-icon animate-pop">check_circle</span>
+          <h1 class="text-headline-md">Application submitted</h1>
+          <p class="text-body-md">
+            Thanks for registering with Planura. Your documents have been sent for review — you'll be
+            notified once an admin approves or requests changes. You're already signed in.
+          </p>
+          <ui-button (click)="goToSignIn()">Back to sign in</ui-button>
+        </div>
+      } @else {
+        <div class="onboarding-shell__intro-block animate-fade-up">
+          <h1 class="text-headline-md">Vendor onboarding</h1>
+          <p class="text-body-md onboarding-shell__intro">
+            A few steps to get your business verified and listed on Planura.
+          </p>
+        </div>
 
-      <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+        <ui-stepper-header [steps]="stepLabels" [currentIndex]="currentStep()" />
 
-      @switch (currentStep()) {
-        @case (0) {
-          <app-step-account [group]="accountGroup" />
-        }
-        @case (1) {
-          <app-step-business [group]="businessGroup" [categories]="categories()" />
-        }
-        @case (2) {
-          <app-step-documents [group]="documentsGroup" [vendorType]="businessGroup.controls.vendorType.value" />
-        }
-        @case (3) {
-          <app-step-portfolio [group]="portfolioGroup" />
-        }
-        @case (4) {
-          <app-step-review
-            [account]="accountGroup"
-            [business]="businessGroup"
-            [documents]="documentsGroup"
-            [portfolio]="portfolioGroup"
-            [categoryName]="categoryName()"
-          />
-        }
+        <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+        <div class="onboarding-shell__step-viewport">
+          @switch (currentStep()) {
+            @case (0) {
+              <div class="step-panel animate-fade-up">
+                <app-step-account [group]="accountGroup" />
+              </div>
+            }
+            @case (1) {
+              <div class="step-panel animate-fade-up">
+                <app-step-business [group]="businessGroup" [categories]="categories()" />
+              </div>
+            }
+            @case (2) {
+              <div class="step-panel animate-fade-up">
+                <app-step-documents [group]="documentsGroup" [vendorType]="businessGroup.controls.vendorType.value" />
+              </div>
+            }
+            @case (3) {
+              <div class="step-panel animate-fade-up">
+                <app-step-portfolio [group]="portfolioGroup" />
+              </div>
+            }
+            @case (4) {
+              <div class="step-panel animate-fade-up">
+                <app-step-review
+                  [account]="accountGroup"
+                  [business]="businessGroup"
+                  [documents]="documentsGroup"
+                  [portfolio]="portfolioGroup"
+                  [categoryName]="categoryName()"
+                />
+              </div>
+            }
+          }
+        </div>
+
+        <div class="onboarding-shell__nav">
+          @if (currentStep() > 0) {
+            <ui-button variant="outline" [fullWidth]="false" (click)="back()">Back</ui-button>
+          }
+          @if (currentStep() < stepLabels.length - 1) {
+            <ui-button [fullWidth]="false" (click)="next()">Next</ui-button>
+          } @else {
+            <ui-button [fullWidth]="false" [loading]="submitting()" (click)="submit()">Submit application</ui-button>
+          }
+        </div>
       }
-
-      <div class="onboarding-shell__nav">
-        @if (currentStep() > 0) {
-          <ui-button variant="outline" [fullWidth]="false" (click)="back()">Back</ui-button>
-        }
-        @if (currentStep() < stepLabels.length - 1) {
-          <ui-button [fullWidth]="false" (click)="next()">Next</ui-button>
-        } @else {
-          <ui-button [fullWidth]="false" [loading]="submitting()" (click)="submit()">Submit application</ui-button>
-        }
-      </div>
-    }
+    </div>
   </div>
 </main>

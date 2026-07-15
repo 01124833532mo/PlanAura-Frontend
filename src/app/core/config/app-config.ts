@@ -12,3 +12,13 @@
  * Planura.Apis/Properties/launchSettings.json ("https": https://localhost:7123).
  */
 export const API_BASE_URL = 'https://localhost:7123/api';
+
+/**
+ * Origin the API server also serves static files from (wwwroot), i.e.
+ * API_BASE_URL without the trailing "/api". Some endpoints (e.g. admin
+ * vendor-verification documents) return FileUrl values as paths relative to
+ * this origin ("images/...") rather than the fully-qualified URLs other
+ * endpoints return via IAttachmentService.ToAbsoluteUrl. Used to resolve
+ * those relative paths into <img> srcs.
+ */
+export const STATIC_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, '');

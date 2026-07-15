@@ -1,9 +1,34 @@
 <section class="admin-dashboard-placeholder">
-  <h1>Admin Dashboard</h1>
-   <div class="vendor-nav__footer">
-    <button class="vendor-nav__logout" type="button" (click)="logout()">
-      <span class="material-symbols-outlined">logout</span>
-      <span class="text-label-md">Log Out</span>
-    </button>
+  <div class="admin-dashboard-placeholder__blob admin-dashboard-placeholder__blob--one" aria-hidden="true"></div>
+  <div class="admin-dashboard-placeholder__blob admin-dashboard-placeholder__blob--two" aria-hidden="true"></div>
+
+  <div class="admin-dashboard-placeholder__card card-luxe animate-blur-reveal">
+    <span class="admin-dashboard-placeholder__eyebrow text-label-md animate-fade-up">Admin Panel</span>
+
+    <div class="admin-dashboard-placeholder__icon animate-scale-in stagger-1" aria-hidden="true">
+      <span class="material-symbols-outlined">admin_panel_settings</span>
+    </div>
+
+    <h1 class="admin-dashboard-placeholder__title animate-fade-up stagger-2">Admin Dashboard</h1>
+    <p class="admin-dashboard-placeholder__subtitle text-body-md animate-fade-up stagger-3">
+      Welcome back. Vendor approvals, user management and platform insights are being crafted
+      and will appear here soon.
+    </p>
+
+    <div class="admin-dashboard-placeholder__divider" aria-hidden="true"></div>
+
+    <div class="vendor-nav__footer animate-fade-up stagger-4">
+      <button class="vendor-nav__action" type="button" (click)="goToVendorVerifications()">
+        <span class="material-symbols-outlined">shield_person</span>
+        <span class="text-label-md">Review Vendor Verifications</span>
+      </button>
+    </div>
+
+    <div class="vendor-nav__footer animate-fade-up stagger-5">
+      <button class="vendor-nav__logout" type="button" (click)="logout()">
+        <span class="material-symbols-outlined">logout</span>
+        <span class="text-label-md">Log Out</span>
+      </button>
+    </div>
   </div>
 </section>

@@ -1,34 +1,81 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: var(--color-surface);
+  background: var(--gradient-warm-bg);
 }
 
 .onboarding-shell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-lg) var(--margin-mobile) var(--space-xl);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .onboarding-shell {
+    align-items: center;
+    padding: var(--space-2xl) var(--margin-desktop);
+  }
+}
+
+.onboarding-shell__blob {
+  width: 300px;
+  height: 300px;
+}
+
+.onboarding-shell__blob--one {
+  top: -70px;
+  left: -100px;
+  background: var(--color-primary-container);
+}
+
+.onboarding-shell__blob--two {
+  bottom: -90px;
+  right: -80px;
+  background: var(--color-lavender);
+  animation-delay: 3s;
+}
+
+.onboarding-shell__card {
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
-  min-height: 100vh;
-  background: var(--color-surface-container-lowest);
+  border-radius: var(--radius-xl);
   padding: var(--space-xl) var(--margin-mobile);
   position: relative;
 }
 
 @media (min-width: 768px) {
-  .onboarding-shell {
-    min-height: auto;
-    margin: var(--space-lg) auto;
-    border-radius: var(--radius-xl);
-    padding: var(--space-xl) var(--margin-desktop);
+  .onboarding-shell__card {
+    border-radius: var(--radius-2xl);
+    padding: var(--space-xl) var(--space-2xl);
   }
 }
 
-.onboarding-shell__brand {
-  display: block;
-  font-size: var(--font-headline-sm-size);
-  font-weight: 700;
-  color: var(--color-primary);
+.onboarding-shell__header {
+  display: flex;
+  justify-content: center;
   margin-bottom: var(--space-lg);
+}
+
+.onboarding-shell__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-family-display);
+  font-size: var(--font-headline-sm-size);
+  font-weight: 600;
+  color: var(--color-primary);
+  letter-spacing: -0.01em;
+}
+
+.onboarding-shell__brand-icon {
+  font-size: 22px;
+  color: var(--color-rose-gold);
 }
 
 .onboarding-shell__content {
@@ -36,15 +83,32 @@
   margin: 0 auto;
 }
 
-.onboarding-shell__intro {
+.onboarding-shell__intro-block {
+  text-align: center;
   margin-bottom: var(--space-lg);
+}
+
+.onboarding-shell__intro {
+  margin-top: var(--space-sm);
+}
+
+.onboarding-shell__step-viewport {
+  position: relative;
+  margin-top: var(--space-lg);
+}
+
+.step-panel {
+  display: block;
 }
 
 .onboarding-shell__nav {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: var(--space-sm);
-  margin-top: var(--space-lg);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-subtle-border);
 }
 
 .onboarding-shell__success {
@@ -58,7 +122,11 @@
 
 .onboarding-shell__success-icon {
   font-size: 56px;
-  color: var(--color-primary);
+  line-height: 1;
+  color: var(--color-success);
+  background: var(--color-success-container);
+  border-radius: var(--radius-full);
+  padding: var(--space-md);
 }
 
 ::ng-deep .wizard-step {
@@ -66,6 +134,33 @@
   flex-direction: column;
   gap: var(--space-md);
   margin-bottom: var(--space-md);
+}
+
+::ng-deep .step-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+::ng-deep .step-header__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary);
+  font-size: 22px;
+}
+
+::ng-deep .step-header__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-top: 0.35rem;
 }
 
 ::ng-deep .wizard-step__roles {
@@ -80,16 +175,24 @@
 }
 
 ::ng-deep .review-card__title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: var(--font-label-md-size);
   font-weight: 700;
   color: var(--color-primary);
   margin-bottom: var(--space-sm);
 }
 
+::ng-deep .review-card__icon {
+  font-size: 18px;
+  color: var(--color-rose-gold);
+}
+
 ::ng-deep .review-card__list {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.25rem 1rem;
+  gap: 0.35rem 1rem;
   margin: 0;
 }
 
@@ -109,4 +212,7 @@
   padding-left: 1.1rem;
   font-size: var(--font-body-md-size);
   color: var(--color-charcoal);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }

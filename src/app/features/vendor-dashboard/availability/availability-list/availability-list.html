@@ -1,8 +1,13 @@
 <div class="availability-page">
-  <div class="availability-page__header">
-    <div>
-      <h3 class="text-headline-sm">Availability</h3>
-      <p class="text-body-md">Open up slots clients can request to book.</p>
+  <div class="availability-page__header animate-fade-up">
+    <div class="availability-page__heading">
+      <span class="availability-page__icon" aria-hidden="true">
+        <span class="material-symbols-outlined">event_available</span>
+      </span>
+      <div>
+        <h3 class="text-headline-sm">Availability</h3>
+        <p class="text-body-md">Open up slots clients can request to book.</p>
+      </div>
     </div>
     <ui-button [fullWidth]="false" (click)="openCreate()">
       <span class="material-symbols-outlined">add</span>
@@ -12,18 +17,30 @@
 
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
-  <div class="card-luxe luxe-shadow availability-list-wrap">
+  <div class="card-luxe luxe-shadow availability-list-wrap animate-fade-up stagger-1">
     @if (loading()) {
-      <p class="text-body-md availability-page__empty">Loading your availability...</p>
-    } @else if (slots().length === 0) {
-      <p class="text-body-md availability-page__empty">
-        No slots yet. Add availability so clients know when they can book you.
+      <div class="availability-skeletons" aria-hidden="true">
+        <div class="availability-skeleton-row skeleton"></div>
+        <div class="availability-skeleton-row skeleton"></div>
+        <div class="availability-skeleton-row skeleton"></div>
+      </div>
+      <p class="text-body-md availability-page__empty availability-page__empty--sr-only">
+        Loading your availability...
       </p>
+    } @else if (slots().length === 0) {
+      <div class="availability-page__empty animate-fade-in">
+        <span class="material-symbols-outlined availability-page__empty-icon" aria-hidden="true">event_busy</span>
+        <p class="text-body-md">
+          No slots yet. Add availability so clients know when they can book you.
+        </p>
+      </div>
     } @else {
       @for (slot of slots(); track slot.id) {
-        <div class="availability-row">
+        <div class="availability-row animate-fade-up">
           <div class="availability-row__time">
-            <span class="material-symbols-outlined">schedule</span>
+            <span class="availability-row__icon" aria-hidden="true">
+              <span class="material-symbols-outlined">schedule</span>
+            </span>
             <div>
               <p class="text-body-md availability-row__range">
                 {{ slot.startAt | date: 'MMM d, y, h:mm a' }} —
@@ -38,6 +55,7 @@
             [class.availability-badge--booked]="slot.status === AvailabilityStatus.Booked"
             [class.availability-badge--blocked]="slot.status === AvailabilityStatus.Blocked"
           >
+            <span class="availability-badge__dot" aria-hidden="true"></span>
             {{ statusLabel(slot.status) }}
           </span>
 
@@ -67,8 +85,13 @@
 
 @if (formOpen()) {
   <div class="modal-backdrop" (click)="closeForm()">
-    <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
-      <h4 class="text-headline-sm">{{ editingSlot() ? 'Edit slot' : 'New slot' }}</h4>
+    <div class="modal-card card-luxe luxe-shadow availability-modal" (click)="$event.stopPropagation()">
+      <div class="availability-modal__header">
+        <span class="availability-modal__icon" aria-hidden="true">
+          <span class="material-symbols-outlined">{{ editingSlot() ? 'edit_calendar' : 'event_available' }}</span>
+        </span>
+        <h4 class="text-headline-sm">{{ editingSlot() ? 'Edit slot' : 'New slot' }}</h4>
+      </div>
       <app-availability-form
         [availability]="editingSlot()"
         [saving]="savingId() !== null"

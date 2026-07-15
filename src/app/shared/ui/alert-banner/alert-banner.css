@@ -1,38 +1,83 @@
 .ui-alert {
+  position: relative;
   display: flex;
-  gap: 0.65rem;
-  padding: 0.85rem 1rem;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.9rem 1.1rem 0.9rem 1.15rem;
   border-radius: var(--radius-lg);
   font-size: var(--font-label-sm-size);
   margin-bottom: var(--space-md);
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.ui-alert::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: var(--radius-full);
 }
 
 .ui-alert--error {
-  background: var(--color-error-container);
+  background: color-mix(in srgb, var(--color-error-container) 65%, var(--color-surface-container-lowest));
   color: var(--color-error);
+  border-color: color-mix(in srgb, var(--color-error) 18%, transparent);
+}
+
+.ui-alert--error::before {
+  background: var(--color-error);
 }
 
 .ui-alert--success {
-  background: #e6f4ea;
-  color: #1e7e34;
+  background: color-mix(in srgb, var(--color-success-container) 65%, var(--color-surface-container-lowest));
+  color: var(--color-success);
+  border-color: color-mix(in srgb, var(--color-success) 18%, transparent);
+}
+
+.ui-alert--success::before {
+  background: var(--color-success);
 }
 
 .ui-alert--info {
-  background: var(--color-soft-beige);
-  color: var(--color-secondary);
+  background: color-mix(in srgb, var(--color-primary-fixed) 45%, var(--color-surface-container-lowest));
+  color: var(--color-on-secondary-container);
+  border-color: color-mix(in srgb, var(--color-primary) 16%, transparent);
+}
+
+.ui-alert--info::before {
+  background: var(--color-rose-gold);
+}
+
+.ui-alert__icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  background: color-mix(in srgb, currentColor 16%, transparent);
 }
 
 .ui-alert__icon {
-  font-size: 20px;
-  flex-shrink: 0;
+  font-size: 18px;
+  color: currentColor;
+}
+
+.ui-alert__body {
+  padding-top: 0.1rem;
 }
 
 .ui-alert__message {
   font-weight: 600;
   margin: 0;
+  line-height: 1.4;
 }
 
 .ui-alert__details {
-  margin: 0.35rem 0 0;
+  margin: 0.4rem 0 0;
   padding-left: 1.1rem;
+  line-height: 1.5;
 }

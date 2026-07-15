@@ -25,6 +25,14 @@ export const routes: Routes = [
       import('./features/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
   },
   {
+    path: 'admin/vendor-verifications',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import(
+        './features/admin-dashboard/vendor-verifications/vendor-verification-list/vendor-verification-list'
+      ).then((m) => m.VendorVerificationList),
+  },
+  {
     path: 'vendor/register',
     loadComponent: () =>
       import('./features/vendor-onboarding/vendor-onboarding').then(

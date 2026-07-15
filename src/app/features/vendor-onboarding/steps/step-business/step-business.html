@@ -1,8 +1,13 @@
 <div class="wizard-step" [formGroup]="group">
-  <h2 class="text-headline-sm">Your business</h2>
-  <p class="text-body-md">Tell us about the business you'll be listing on Planura.</p>
+  <div class="step-header">
+    <span class="material-symbols-outlined step-header__icon" aria-hidden="true">storefront</span>
+    <div class="step-header__text">
+      <h2 class="text-headline-sm">Your business</h2>
+      <p class="text-body-md">Tell us about the business you'll be listing on Planura.</p>
+    </div>
+  </div>
 
-  <div class="wizard-step__roles">
+  <div class="wizard-step__roles animate-fade-up stagger-1">
     <ui-selectable-card
       icon="person"
       title="Individual"
@@ -20,22 +25,25 @@
   </div>
 
   <ui-text-field
+    class="animate-fade-up stagger-2"
     label="Business Name"
     placeholder="e.g. Luxe Events Co."
     formControlName="businessName"
     [errorMessage]="touchedInvalid('businessName') ? 'Business name is required.' : null"
   />
   <ui-text-field
+    class="animate-fade-up stagger-3"
     label="Business Description (optional)"
     placeholder="A short description of your services"
     formControlName="businessDescription"
   />
   <ui-select-field
+    class="animate-fade-up stagger-4"
     label="Category (optional)"
     placeholder="Select a category"
     [options]="categoryOptions"
     formControlName="categoryId"
   />
-  <ui-text-field label="City (optional)" placeholder="e.g. Cairo" formControlName="city" />
-  <ui-text-field label="Address (optional)" placeholder="Street address" formControlName="address" />
+  <ui-text-field class="animate-fade-up stagger-5" label="City (optional)" placeholder="e.g. Cairo" formControlName="city" />
+  <ui-text-field class="animate-fade-up stagger-6" label="Address (optional)" placeholder="Street address" formControlName="address" />
 </div>

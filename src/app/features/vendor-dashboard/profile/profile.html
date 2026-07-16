@@ -1,0 +1,117 @@
+<div class="profile-page">
+  <div class="profile-page__header">
+    <h3 class="text-headline-sm">My Profile</h3>
+    <p class="text-body-md">View and edit your business information and portfolio.</p>
+  </div>
+
+  <section class="card-luxe luxe-shadow profile-section">
+    <h4 class="text-headline-sm">Business information</h4>
+
+    <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+    <ui-alert-banner variant="success" [message]="saved() ? 'Profile updated.' : null" />
+
+    <form class="profile-form" [formGroup]="form" (ngSubmit)="save()">
+      <ui-text-field
+        label="Business name"
+        formControlName="businessName"
+        [errorMessage]="
+          form.controls.businessName.touched && form.controls.businessName.invalid
+            ? 'Business name is required.'
+            : null
+        "
+      />
+      <ui-text-field label="Description" formControlName="businessDescription" />
+      <ui-select-field
+        label="Category"
+        placeholder="Select a category"
+        [options]="categoryOptions"
+        formControlName="categoryId"
+      />
+      <ui-text-field label="City" formControlName="city" />
+      <ui-text-field label="Address" formControlName="address" />
+
+      <ui-file-dropzone label="Logo" formControlName="logoFile" />
+      <ui-file-dropzone label="Cover image" formControlName="coverImageFile" />
+
+      @if (vendorProfileState.profile(); as profile) {
+        <div class="profile-images">
+          @if (profile.logoUrl) {
+            <img class="profile-images__preview" [src]="profile.logoUrl" alt="Current logo" />
+          }
+          @if (profile.coverImageUrl) {
+            <img class="profile-images__preview" [src]="profile.coverImageUrl" alt="Current cover" />
+          }
+        </div>
+      }
+
+      <ui-button type="submit" [fullWidth]="false" [loading]="saving()">Save changes</ui-button>
+    </form>
+  </section>
+
+  <section class="card-luxe luxe-shadow profile-section">
+    <h4 class="text-headline-sm">Portfolio images</h4>
+
+    <ui-alert-banner
+      [message]="portfolioError()?.message ?? null"
+      [details]="portfolioError()?.fieldErrors ?? []"
+    />
+
+    @if (portfolioLoading()) {
+      <p class="text-body-md">Loading portfolio...</p>
+    } @else if (portfolio().length === 0) {
+      <p class="text-body-md profile-portfolio__empty">No portfolio images yet.</p>
+    } @else {
+      <div class="profile-portfolio-grid">
+        @for (item of portfolio(); track item.id; let i = $index) {
+          <div class="profile-portfolio-item">
+            <img class="profile-portfolio-item__image" [src]="item.fileUrl" [alt]="item.title ?? ''" />
+            <div class="profile-portfolio-item__actions">
+              <button
+                class="icon-btn"
+                type="button"
+                title="Move earlier"
+                [disabled]="i === 0 || reorderingId() !== null"
+                (click)="moveMedia(i, -1)"
+              >
+                <span class="material-symbols-outlined">arrow_upward</span>
+              </button>
+              <button
+                class="icon-btn"
+                type="button"
+                title="Move later"
+                [disabled]="i === portfolio().length - 1 || reorderingId() !== null"
+                (click)="moveMedia(i, 1)"
+              >
+                <span class="material-symbols-outlined">arrow_downward</span>
+              </button>
+              <button
+                class="icon-btn icon-btn--danger"
+                type="button"
+                title="Remove"
+                (click)="removeMedia(item.id)"
+              >
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="profile-portfolio-add">
+      <ui-file-dropzone
+        label="Add a portfolio image"
+        [formControl]="newMediaControl"
+        (clientValidationError)="portfolioError.set({ status: 0, message: $event, fieldErrors: [] })"
+      />
+      <ui-button
+        [fullWidth]="false"
+        [disabled]="!newMediaControl.value"
+        [loading]="addingMedia()"
+        (click)="addMedia()"
+      >
+        Add image
+      </ui-button>
+    </div>
+  </section>
+</div>

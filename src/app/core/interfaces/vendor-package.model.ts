@@ -15,7 +15,6 @@ export interface VendorPackage {
 
 /** Mirrors Planura.Core.Application.Models.CreateVendorPackageDto. */
 export interface CreateVendorPackagePayload {
-  vendorId: number;
   title: string;
   description?: string;
   basePrice: number;

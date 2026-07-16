@@ -5,13 +5,52 @@ import { API_BASE_URL, STATIC_BASE_URL } from '../config/app-config';
 import {
   PendingVendorVerification,
   RejectVendorPayload,
+  ResubmitVerificationRequest,
   VendorVerificationDetails,
+  VendorVerificationHistoryEntry,
+  VendorVerificationStatusResponse,
 } from '../interfaces/vendor-verification.model';
 
-/** Wraps Planura.Apis.Controllers.AdminVendorVerificationController (policy: AdminOnly). */
+/**
+ * Wraps the vendor-facing endpoints on VendorVerificationController
+ * (Policy: VendorOnly, api/vendor-verifications) and the admin-facing
+ * endpoints on AdminVendorVerificationController (Policy: AdminOnly).
+ */
 @Injectable({ providedIn: 'root' })
 export class VendorVerificationService {
   private readonly http = inject(HttpClient);
+
+  /** GET /api/vendor-verifications/me/history */
+  getMyHistory(): Observable<VendorVerificationHistoryEntry[]> {
+    return this.http.get<VendorVerificationHistoryEntry[]>(
+      `${API_BASE_URL}/vendor-verifications/me/history`,
+    );
+  }
+
+  /**
+   * POST /api/vendor-verifications/me/resubmit — only accepted by the
+   * backend when the vendor's current verification status is Rejected.
+   */
+  resubmitVerification(
+    request: ResubmitVerificationRequest,
+  ): Observable<VendorVerificationStatusResponse> {
+    const formData = new FormData();
+
+    formData.append('nationalIdFront', request.nationalIdFront);
+    formData.append('nationalIdBack', request.nationalIdBack);
+    formData.append('selfieWithId', request.selfieWithId);
+    if (request.commercialRegistration) {
+      formData.append('commercialRegistration', request.commercialRegistration);
+    }
+    if (request.taxCard) {
+      formData.append('taxCard', request.taxCard);
+    }
+
+    return this.http.post<VendorVerificationStatusResponse>(
+      `${API_BASE_URL}/vendor-verifications/me/resubmit`,
+      formData,
+    );
+  }
 
   /** GET /api/admin/vendor-verifications/pending */
   getPending(): Observable<PendingVendorVerification[]> {

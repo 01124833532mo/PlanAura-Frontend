@@ -94,11 +94,10 @@ export class AvailabilityList {
       return;
     }
 
-    const vendorId = this.vendorProfileState.vendorId();
-    if (vendorId === null) {
+    if (this.vendorProfileState.vendorId() === null) {
       return;
     }
-    this.saveCreate({ ...value, vendorId });
+    this.saveCreate(value);
   }
 
   private saveCreate(payload: CreateVendorAvailabilityPayload): void {

@@ -1,56 +1,103 @@
-<div class="home-page bg-mesh">
-  <span class="floating-blob home-page__blob home-page__blob--one" aria-hidden="true"></span>
-  <span class="floating-blob home-page__blob home-page__blob--two" aria-hidden="true"></span>
-  <span class="floating-blob home-page__blob home-page__blob--three" aria-hidden="true"></span>
-
-  <header class="home-nav glass-panel animate-fade-down">
-    <span class="home-nav__brand">Planura</span>
-
-    <button class="home-nav__logout" type="button" (click)="logout()">
-      <span class="material-symbols-outlined">logout</span>
-      <span class="text-label-md">Log Out</span>
-    </button>
+<div class="home-page">
+  <header class="home-topbar">
+    <span class="text-headline-sm home-topbar__brand">Planura</span>
+    <nav class="home-topbar__actions">
+      <button class="home-topbar__link" type="button" (click)="goToDashboard()">
+        <span class="material-symbols-outlined">dashboard</span>
+        Dashboard
+      </button>
+      <button class="home-topbar__link" type="button" (click)="logout()">
+        <span class="material-symbols-outlined">logout</span>
+        Log Out
+      </button>
+    </nav>
   </header>
 
-  <main class="home-hero">
-    <span class="home-hero__eyebrow animate-fade-down">You're signed in</span>
-
-    <h1 class="home-hero__title animate-fade-up stagger-1">Welcome to Planura</h1>
-
-    <p class="home-hero__subtitle animate-fade-up stagger-2">
-      One elegant home for every celebration you'll ever plan &mdash; weddings, birthdays, corporate events,
-      graduations, conferences, baby showers, engagements, and everything in between.
+  <section class="home-hero">
+    <h1 class="home-hero__headline">Plan Your Perfect Event</h1>
+    <p class="home-hero__subhead">
+      Discover trusted vendors and bring your vision to life, all in one place.
     </p>
 
-    <ul class="home-hero__categories animate-fade-up stagger-3">
-      <li class="home-category-chip animate-scale-in stagger-1">
-        <span class="material-symbols-outlined">favorite</span>
-        <span>Weddings</span>
-      </li>
-      <li class="home-category-chip animate-scale-in stagger-2">
-        <span class="material-symbols-outlined">cake</span>
-        <span>Birthdays</span>
-      </li>
-      <li class="home-category-chip animate-scale-in stagger-3">
-        <span class="material-symbols-outlined">business_center</span>
-        <span>Corporate Events</span>
-      </li>
-      <li class="home-category-chip animate-scale-in stagger-4">
-        <span class="material-symbols-outlined">school</span>
-        <span>Graduations</span>
-      </li>
-      <li class="home-category-chip animate-scale-in stagger-5">
-        <span class="material-symbols-outlined">groups</span>
-        <span>Conferences</span>
-      </li>
-      <li class="home-category-chip animate-scale-in stagger-6">
-        <span class="material-symbols-outlined">stroller</span>
-        <span>Baby Showers</span>
-      </li>
-    </ul>
+    <form class="home-hero__search luxe-shadow" (submit)="$event.preventDefault()">
+      <label class="home-hero__search-field">
+        <span class="material-symbols-outlined">search</span>
+        <input type="text" placeholder="What are you planning? (e.g. Wedding, Birthday)" />
+      </label>
+      <label class="home-hero__search-field">
+        <span class="material-symbols-outlined">location_on</span>
+        <input type="text" placeholder="City" />
+      </label>
+      <button
+        class="btn-gold-gradient home-hero__search-btn"
+        type="submit"
+        disabled
+        title="Vendor search launches in Slice 2"
+      >
+        Search
+      </button>
+    </form>
 
-    <p class="home-hero__footnote animate-fade-in stagger-6">
-      Your dashboard is warming up &mdash; more planning tools are on the way.
-    </p>
-  </main>
+    <button class="btn-gold-gradient home-hero__cta" type="button" (click)="goToNewPlan()">
+      <span class="material-symbols-outlined">add</span>
+      Start a New Event Plan
+    </button>
+  </section>
+
+  @if (categories().length > 0) {
+    <section class="home-section">
+      <h2 class="text-headline-md">Signature Occasions</h2>
+      <p class="text-body-md home-section__subhead">
+        Browse vendors by the type of event you're planning.
+      </p>
+
+      <div class="home-category-grid">
+        @for (category of categories(); track category.id) {
+          <a
+            class="category-tile"
+            [routerLink]="['/client/vendors']"
+            [queryParams]="{ category: category.slug }"
+          >
+            @if (category.iconUrl && !failedCategoryImages().has(category.id)) {
+              <img
+                [src]="category.iconUrl"
+                alt="{{ category.nameEn }}"
+                title="{{ category.nameEn }}"
+                class="category-tile__image"
+                (error)="onCategoryImageError(category.id)"
+              />
+            } @else {
+              <div class="category-tile__image category-tile__image--fallback">
+                <span class="material-symbols-outlined">{{ categoryIcon(category.slug) }}</span>
+              </div>
+            }
+            <div class="category-tile__overlay"></div>
+            <span class="category-tile__label">{{ category.nameEn }}</span>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (featuredVendors().length > 0) {
+    <section class="home-section">
+      <h2 class="text-headline-md">Featured Vendors</h2>
+      <p class="text-body-md home-section__subhead">A few of our top-rated partners.</p>
+
+      <div class="home-vendor-grid">
+        @for (vendor of featuredVendors(); track vendor.id) {
+          <ui-vendor-card [vendor]="vendor" />
+        }
+      </div>
+    </section>
+  }
+
+  <section class="home-cta card-luxe luxe-shadow">
+    <h2 class="text-headline-md">Ready to start planning?</h2>
+    <p class="text-body-md">Create your first event plan and start connecting with vendors.</p>
+    <button class="btn-gold-gradient" type="button" (click)="goToNewPlan()">
+      <span class="material-symbols-outlined">add</span>
+      New Event
+    </button>
+  </section>
 </div>

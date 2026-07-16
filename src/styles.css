@@ -567,3 +567,37 @@ a {
   background: var(--color-surface-container);
   color: var(--color-secondary);
 }
+
+/* ==========================================================================
+   Gold-gradient primary action button — shared across client-facing
+   features (Stitch design export's "primary-gradient-btn", translated to
+   the token system above instead of Tailwind).
+   ========================================================================== */
+
+.btn-gold-gradient {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.25rem;
+  border: none;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #d4af37 0%, #e9c349 100%);
+  color: #fff;
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: var(--font-label-md-weight);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(212, 175, 55, 0.25);
+  transition: box-shadow 0.2s ease, opacity 0.2s ease, transform 0.05s ease;
+}
+
+.btn-gold-gradient:hover {
+  opacity: 0.92;
+  box-shadow: 0 14px 24px rgba(212, 175, 55, 0.32);
+}
+
+.btn-gold-gradient:active {
+  transform: scale(0.98);
+}

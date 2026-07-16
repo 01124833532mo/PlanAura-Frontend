@@ -1,0 +1,104 @@
+<div class="vendor-details-page">
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  @if (loading()) {
+    <p class="text-body-md vendor-details-page__empty">Loading vendor...</p>
+  } @else if (vendor(); as v) {
+    <header class="vendor-details-header card-luxe luxe-shadow">
+      <div class="vendor-details-header__media">
+        @if (v.logoUrl) {
+          <img [src]="v.logoUrl" [alt]="v.businessName" class="vendor-details-header__logo" />
+        } @else {
+          <div class="vendor-details-header__logo-placeholder">
+            <span class="material-symbols-outlined">storefront</span>
+          </div>
+        }
+      </div>
+
+      <div class="vendor-details-header__body">
+        <div class="vendor-details-header__top">
+          @if (v.categoryName) {
+            <span class="text-label-sm vendor-details-header__category">{{ v.categoryName }}</span>
+          }
+          <span
+            class="vendor-details-header__verification"
+            [class.vendor-details-header__verification--trusted]="v.verificationStatus === 'trusted'"
+          >
+            <span class="material-symbols-outlined">verified</span>
+            {{ formatStatus(v.verificationStatus) }}
+          </span>
+        </div>
+
+        <h1 class="text-headline-md">{{ v.businessName }}</h1>
+
+        <div class="vendor-details-header__meta">
+          @if (v.totalReviews > 0) {
+            <span class="vendor-details-header__rating">
+              <span class="material-symbols-outlined">star</span>
+              {{ v.avgRating | number: '1.1-1' }}
+              <span class="vendor-details-header__review-count">
+                ({{ v.totalReviews }} reviews)
+              </span>
+            </span>
+          }
+          @if (v.city) {
+            <span class="text-body-md vendor-details-header__city">
+              <span class="material-symbols-outlined">location_on</span>
+              {{ v.city }}
+            </span>
+          }
+        </div>
+
+        @if (v.businessDescription) {
+          <p class="text-body-md vendor-details-header__description">{{ v.businessDescription }}</p>
+        }
+      </div>
+    </header>
+
+    <section class="vendor-details-section">
+      <h3 class="text-headline-sm">Packages</h3>
+
+      @if (packages().length === 0) {
+        <div class="card-luxe luxe-shadow vendor-details-page__empty-card">
+          <p class="text-body-md">This vendor hasn't published any packages yet.</p>
+        </div>
+      } @else {
+        <div class="card-luxe luxe-shadow package-table-wrap">
+          <table class="package-table">
+            <thead>
+              <tr>
+                <th>Package</th>
+                <th>Price</th>
+                <th>Max guests</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (pkg of packages(); track pkg.id) {
+                <tr>
+                  <td>
+                    <span class="text-body-md package-table__title">{{ pkg.title }}</span>
+                    @if (pkg.description) {
+                      <p class="text-label-sm package-table__desc">{{ pkg.description }}</p>
+                    }
+                  </td>
+                  <td>{{ pkg.currency }} {{ pkg.basePrice | number: '1.0-2' }}</td>
+                  <td>{{ pkg.maxGuests ?? '—' }}</td>
+                  <td class="package-table__actions">
+                    <button
+                      class="btn-gold-gradient"
+                      type="button"
+                      (click)="bookPackage(pkg)"
+                    >
+                      Book this package
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</div>

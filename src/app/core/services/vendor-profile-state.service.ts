@@ -39,4 +39,10 @@ export class VendorProfileStateService {
     this.profileSignal.set(null);
     this.loadingSignal.set(false);
   }
+
+  /** Forces a fresh fetch, discarding any cached profile — use after an edit or a verification resubmission. */
+  refresh(): void {
+    this.clear();
+    this.load();
+  }
 }

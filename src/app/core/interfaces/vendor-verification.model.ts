@@ -47,17 +47,12 @@ export interface VendorVerificationPortfolioMedia {
   displayOrder: number;
 }
 
-/**
- * Mirrors Planura.Core.Application.Models.VendorVerification.VendorDetailsDto.
- *
- * NOTE: the backend DTO does not currently expose the vendor's email or phone
- * number (only VendorName, which is the account holder's full name). The UI
- * renders those fields as "Not provided by API" rather than omitting them, so
- * the layout matches the spec and is ready the moment the backend adds them.
- */
+/** Mirrors Planura.Core.Application.Models.VendorVerification.VendorDetailsDto. */
 export interface VendorVerificationDetails {
   vendorId: number;
   vendorName: string;
+  email: string | null;
+  phoneNumber: string | null;
   businessName: string;
   businessDescription: string | null;
   vendorType: VendorType;

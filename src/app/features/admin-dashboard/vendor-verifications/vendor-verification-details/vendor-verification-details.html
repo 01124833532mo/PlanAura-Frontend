@@ -47,11 +47,11 @@
         </div>
         <div class="verif-details__field">
           <dt class="text-label-sm">Email</dt>
-          <dd class="text-body-md verif-details__muted">Not provided by API</dd>
+          <dd class="text-body-md">{{ details.email ?? 'Not specified' }}</dd>
         </div>
         <div class="verif-details__field">
           <dt class="text-label-sm">Phone Number</dt>
-          <dd class="text-body-md verif-details__muted">Not provided by API</dd>
+          <dd class="text-body-md">{{ details.phoneNumber ?? 'Not specified' }}</dd>
         </div>
         <div class="verif-details__field">
           <dt class="text-label-sm">Business Name</dt>

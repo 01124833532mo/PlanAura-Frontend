@@ -1,11 +1,23 @@
 <div class="checkout-page">
+  <div class="checkout-page__header animate-fade-up">
+    <p class="text-label-sm checkout-page__eyebrow">
+      <span class="material-symbols-outlined">lock</span>
+      Secure checkout
+    </p>
+    <h3 class="text-headline-sm">Confirm your payment</h3>
+    <p class="text-body-md">Review the booking summary and complete payment to lock in your vendor.</p>
+  </div>
+
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
   @if (loadingBooking()) {
-    <p class="text-body-md checkout-page__empty">Loading booking...</p>
+    <div class="checkout-page__state animate-fade-up">
+      <span class="material-symbols-outlined checkout-page__state-icon skeleton-icon">hourglass_top</span>
+      <p class="text-body-md checkout-page__empty">Loading booking...</p>
+    </div>
   } @else if (succeeded()) {
-    <div class="card-luxe luxe-shadow checkout-success">
-      <span class="material-symbols-outlined checkout-success__icon">check_circle</span>
+    <div class="card-luxe luxe-shadow checkout-success animate-scale-in">
+      <span class="material-symbols-outlined checkout-success__icon animate-pop">check_circle</span>
       <h2 class="text-headline-md">Payment successful</h2>
       <p class="text-body-md">Your payment has been confirmed. The vendor has been notified.</p>
       <ui-button variant="outline" [fullWidth]="false" (click)="goToPlan()">
@@ -13,8 +25,8 @@
       </ui-button>
     </div>
   } @else if (confirming()) {
-    <div class="card-luxe luxe-shadow checkout-success">
-      <span class="material-symbols-outlined checkout-success__icon checkout-success__icon--pending">
+    <div class="card-luxe luxe-shadow checkout-success animate-scale-in">
+      <span class="material-symbols-outlined checkout-success__icon checkout-success__icon--pending skeleton-icon">
         hourglass_top
       </span>
       <h2 class="text-headline-md">Payment received</h2>
@@ -24,7 +36,8 @@
       </ui-button>
     </div>
   } @else if (notPayableReason(); as reason) {
-    <div class="card-luxe luxe-shadow checkout-page__empty-card">
+    <div class="card-luxe luxe-shadow checkout-page__empty-card animate-fade-up">
+      <span class="material-symbols-outlined checkout-page__state-icon">error</span>
       <p class="text-body-md">{{ reason }}</p>
       <ui-button variant="outline" [fullWidth]="false" (click)="goToPlan()">
         Back to event plan
@@ -32,10 +45,16 @@
     </div>
   } @else if (booking(); as b) {
     <div class="checkout-layout">
-      <section class="checkout-summary card-luxe luxe-shadow">
-        <h3 class="text-headline-sm">Booking Summary</h3>
+      <section class="checkout-summary card-luxe luxe-shadow animate-fade-up">
+        <div class="checkout-summary__header">
+          <span class="checkout-summary__icon material-symbols-outlined" aria-hidden="true">receipt_long</span>
+          <h3 class="text-headline-sm">Booking Summary</h3>
+        </div>
         @if (vendor(); as v) {
-          <p class="text-body-md checkout-summary__vendor">{{ v.businessName }}</p>
+          <p class="text-body-md checkout-summary__vendor">
+            <span class="material-symbols-outlined">storefront</span>
+            {{ v.businessName }}
+          </p>
         }
         @if (pkg(); as p) {
           <p class="text-body-md">{{ p.title }}</p>
@@ -68,8 +87,11 @@
         </div>
       </section>
 
-      <section class="checkout-payment card-luxe luxe-shadow">
-        <h3 class="text-headline-sm">Payment details</h3>
+      <section class="checkout-payment card-luxe luxe-shadow animate-fade-up stagger-1">
+        <div class="checkout-payment__header">
+          <span class="checkout-payment__icon material-symbols-outlined" aria-hidden="true">credit_card</span>
+          <h3 class="text-headline-sm">Payment details</h3>
+        </div>
 
         @if (mountingPayment()) {
           <p class="text-body-md checkout-payment__loading">Loading payment form...</p>
@@ -86,8 +108,13 @@
           [disabled]="mountingPayment() || submitting()"
           (click)="submitPayment()"
         >
+          <span class="material-symbols-outlined">lock</span>
           {{ submitting() ? 'Processing...' : 'Confirm & Pay' }}
         </button>
+
+        <p class="text-label-sm checkout-payment__disclaimer">
+          Payments are processed securely by Stripe. Planura never stores your card details.
+        </p>
       </section>
     </div>
   }

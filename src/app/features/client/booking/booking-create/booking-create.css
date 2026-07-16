@@ -1,7 +1,27 @@
 .booking-create-page {
-  max-width: var(--container-max);
-  margin: 0 auto;
-  padding: var(--margin-desktop);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.booking-create-page__header p.text-body-md {
+  color: var(--color-secondary);
+  margin-top: 0.35rem;
+}
+
+.booking-create-page__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.booking-create-page__eyebrow .material-symbols-outlined {
+  font-size: 16px;
 }
 
 .booking-create-page__empty {
@@ -17,6 +37,41 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-md);
+}
+
+.booking-create-page__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xl) var(--space-xl);
+  text-align: center;
+}
+
+.booking-create-page__state-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary);
+  font-size: 28px;
+}
+
+.skeleton-icon {
+  animation: spin 1.4s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .booking-create-layout {
@@ -35,19 +90,47 @@
   top: var(--space-lg);
 }
 
+.booking-create-summary__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary);
+  margin-bottom: 0.2rem;
+}
+
 .booking-create-summary__vendor {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--color-secondary);
 }
 
+.booking-create-summary__vendor .material-symbols-outlined {
+  font-size: 1.1rem;
+}
+
 .booking-create-summary__price {
+  font-family: var(--font-family-display);
   font-size: var(--font-headline-sm-size);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-charcoal);
   margin-top: var(--space-sm);
 }
 
 .booking-create-summary__hint {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--color-secondary);
+}
+
+.booking-create-summary__hint .material-symbols-outlined {
+  font-size: 1rem;
 }
 
 .booking-create-form {
@@ -55,6 +138,26 @@
   flex-direction: column;
   gap: var(--space-md);
   padding: var(--space-lg);
+}
+
+.booking-create-form__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 0.1rem;
+}
+
+.booking-create-form__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary);
+  font-size: 20px;
 }
 
 .booking-create-form__empty {
@@ -82,23 +185,29 @@
   font-family: var(--font-family-base);
   font-size: var(--font-body-md-size);
   text-align: left;
+  transition: background var(--dur-fast) var(--ease-smooth), border-color var(--dur-fast) var(--ease-smooth),
+    transform var(--dur-fast) var(--ease-out-expo), box-shadow var(--dur-fast) var(--ease-out-expo);
 }
 
 .booking-create-slot:hover {
   background: var(--color-soft-beige);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .booking-create-slot--active {
-  background: var(--color-primary-container);
-  border-color: var(--color-primary-container);
+  background: var(--gradient-primary);
+  border-color: transparent;
   color: var(--color-on-primary);
   font-weight: 700;
+  box-shadow: var(--shadow-glow);
 }
 
 .booking-create-form__actions {
   display: flex;
   justify-content: flex-end;
   padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-subtle-border);
 }
 
 @media (max-width: 900px) {
@@ -108,9 +217,5 @@
 
   .booking-create-summary {
     position: static;
-  }
-
-  .booking-create-page {
-    padding: var(--margin-mobile);
   }
 }

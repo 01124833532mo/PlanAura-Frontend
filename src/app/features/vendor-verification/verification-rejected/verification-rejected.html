@@ -1,22 +1,25 @@
-<section class="verification-page">
-  <div class="verification-card card-luxe luxe-shadow">
-    <span class="material-symbols-outlined verification-card__icon verification-card__icon--rejected">
+<main class="verification-page bg-mesh">
+  <div class="verification-page__blob verification-page__blob--one floating-blob" aria-hidden="true"></div>
+  <div class="verification-page__blob verification-page__blob--two floating-blob" aria-hidden="true"></div>
+
+  <div class="verification-card glass-panel animate-fade-in">
+    <span class="material-symbols-outlined verification-card__icon verification-card__icon--rejected animate-pop">
       cancel
     </span>
 
-    <h1 class="text-headline-md">Verification not approved</h1>
+    <h1 class="text-headline-md animate-fade-up stagger-1">Verification not approved</h1>
 
-    <p class="text-body-md verification-card__message">
+    <p class="text-body-md verification-card__message animate-fade-up stagger-2">
       Unfortunately, your verification request was not approved.
     </p>
 
     @if (rejectionReason(); as reason) {
-      <div class="verification-card__reason">
+      <div class="verification-card__reason animate-fade-up stagger-3">
         <span class="text-label-sm verification-card__reason-label">Reason provided</span>
         <p class="text-body-md">{{ reason }}</p>
       </div>
     } @else if (!historyLoading()) {
-      <p class="text-body-md verification-card__hint">
+      <p class="text-body-md verification-card__hint animate-fade-up stagger-3">
         No specific reason was recorded for this decision.
       </p>
     }
@@ -38,4 +41,4 @@
       <span class="text-label-md">Log Out</span>
     </button>
   </div>
-</section>
+</main>

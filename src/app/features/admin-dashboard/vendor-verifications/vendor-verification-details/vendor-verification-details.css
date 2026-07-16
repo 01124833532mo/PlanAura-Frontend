@@ -105,9 +105,17 @@
 }
 
 .verif-details__field dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.verif-details__field dt .material-symbols-outlined {
+  font-size: 15px;
+  color: var(--color-primary);
 }
 
 .verif-details__field dd {

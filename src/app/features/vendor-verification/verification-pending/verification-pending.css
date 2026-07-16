@@ -1,9 +1,43 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: var(--gradient-warm-bg);
+}
+
 .verification-page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  padding: 2rem;
+  padding: var(--space-lg) var(--margin-mobile) var(--space-xl);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .verification-page {
+    padding: var(--space-2xl) var(--margin-desktop);
+  }
+}
+
+.verification-page__blob {
+  width: 300px;
+  height: 300px;
+}
+
+.verification-page__blob--one {
+  top: -70px;
+  left: -100px;
+  background: var(--color-primary-container);
+}
+
+.verification-page__blob--two {
+  bottom: -90px;
+  right: -80px;
+  background: var(--color-lavender);
+  animation-delay: 3s;
 }
 
 .verification-card {
@@ -11,9 +45,19 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-md);
+  width: 100%;
   max-width: 480px;
-  padding: var(--space-xl);
+  padding: var(--space-xl) var(--margin-mobile);
   text-align: center;
+  border-radius: var(--radius-xl);
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .verification-card {
+    border-radius: var(--radius-2xl);
+    padding: var(--space-2xl) var(--space-xl);
+  }
 }
 
 .verification-card__icon {

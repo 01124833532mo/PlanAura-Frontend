@@ -11,6 +11,7 @@ import { DocumentsFormGroup } from '../../vendor-onboarding/vendor-onboarding.ty
 import { StepDocuments } from '../../vendor-onboarding/steps/step-documents/step-documents';
 import { AlertBanner } from '../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../shared/ui/button/button';
+import { confirmLogout } from '../../../shared/utils/confirm-logout';
 
 /**
  * Full-page state (no vendor sidebar) shown to a vendor whose verification
@@ -105,7 +106,11 @@ export class VerificationRejected implements OnInit {
     });
   }
 
-  protected logout(): void {
+  protected async logout(): Promise<void> {
+    const confirmed = await confirmLogout();
+    if (!confirmed) {
+      return;
+    }
     this.authService.logout();
     this.router.navigateByUrl('/auth');
   }

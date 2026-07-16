@@ -1,76 +1,152 @@
 <div class="client-dashboard">
-  <div class="client-dashboard__header">
-    <h1 class="text-headline-md">Welcome back</h1>
-    <p class="text-body-md">Here's what's happening with your events.</p>
+  <div class="client-dashboard__header animate-fade-up">
+    <div>
+      <h1 class="text-headline-md">Welcome back</h1>
+      <p class="text-body-md">Here's what's happening with your events.</p>
+    </div>
+    <ui-button [fullWidth]="false" (click)="goToNewPlan()">
+      <span class="material-symbols-outlined">add</span>
+      New Event Plan
+    </ui-button>
   </div>
 
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
-  <section class="client-dashboard__section">
-    <div class="client-dashboard__section-header">
-      <h3 class="text-headline-sm">Current Projects</h3>
-      @if (plans().length > 0) {
-        <button class="client-dashboard__view-all" type="button" (click)="goToPlans()">
-          View all
-        </button>
-      }
+  <div class="client-dashboard__stats animate-fade-up stagger-1">
+    <button class="client-dashboard__stat hover-lift" type="button" (click)="goToPlans()">
+      <span class="client-dashboard__stat-icon material-symbols-outlined" aria-hidden="true">event_note</span>
+      <span class="client-dashboard__stat-body">
+        <span class="client-dashboard__stat-value">{{ totalPlans() }}</span>
+        <span class="client-dashboard__stat-label">Event Plans</span>
+      </span>
+    </button>
+    <div class="client-dashboard__stat">
+      <span class="client-dashboard__stat-icon client-dashboard__stat-icon--alt material-symbols-outlined" aria-hidden="true">
+        event_upcoming
+      </span>
+      <span class="client-dashboard__stat-body">
+        <span class="client-dashboard__stat-value">{{ upcomingCount() }}</span>
+        <span class="client-dashboard__stat-label">Upcoming</span>
+      </span>
     </div>
+    <div class="client-dashboard__stat">
+      <span class="client-dashboard__stat-icon client-dashboard__stat-icon--alt material-symbols-outlined" aria-hidden="true">
+        groups
+      </span>
+      <span class="client-dashboard__stat-body">
+        <span class="client-dashboard__stat-value">{{ totalGuests() }}</span>
+        <span class="client-dashboard__stat-label">Total Guests</span>
+      </span>
+    </div>
+  </div>
 
-    @if (loading()) {
-      <p class="text-body-md client-dashboard__empty">Loading your event plans...</p>
-    } @else if (plans().length === 0) {
-      <div class="card-luxe luxe-shadow client-dashboard__empty-card">
-        <p class="text-body-md">
-          No event plans yet — create your first event plan to get started.
-        </p>
-        <ui-button [fullWidth]="false" (click)="goToNewPlan()">Create your first event plan</ui-button>
-      </div>
-    } @else {
-      <div class="client-dashboard__project-grid">
-        @for (plan of plans(); track plan.id) {
-          <button
-            class="card-luxe luxe-shadow client-dashboard__project-card"
-            type="button"
-            (click)="viewPlan(plan)"
-          >
-            <h4 class="text-headline-sm">{{ plan.title }}</h4>
-            <p class="text-body-md client-dashboard__project-meta">
-              {{ plan.eventDate | date: 'mediumDate' }} · {{ plan.city }} ·
-              {{ plan.guestCount }} guests
-            </p>
+  <div class="client-dashboard__layout">
+    <section class="client-dashboard__panel client-dashboard__main animate-fade-up stagger-2">
+      <div class="client-dashboard__panel-header">
+        <span class="client-dashboard__panel-icon material-symbols-outlined" aria-hidden="true">event</span>
+        <div class="client-dashboard__panel-heading">
+          <h3 class="text-headline-sm">Your Event Plans</h3>
+          <p class="text-label-sm client-dashboard__panel-sub">Everything you're currently planning</p>
+        </div>
+        @if (plans().length > 0) {
+          <button class="client-dashboard__view-all" type="button" (click)="goToPlans()">
+            View all
+            <span class="material-symbols-outlined">arrow_forward</span>
           </button>
         }
       </div>
-    }
-  </section>
 
-  <section class="client-dashboard__section">
-    <h3 class="text-headline-sm">Quick Actions</h3>
-    <div class="client-dashboard__tiles">
-      <button
-        class="card-luxe luxe-shadow client-dashboard__tile"
-        type="button"
-        (click)="goToNewPlan()"
-      >
-        <span class="material-symbols-outlined">event</span>
-        <span class="text-label-md">Plan an event</span>
-      </button>
-      <div
-        class="card-luxe client-dashboard__tile client-dashboard__tile--disabled"
-        title="Coming in Slice 2"
-      >
-        <span class="material-symbols-outlined">storefront</span>
-        <span class="text-label-md">Browse vendors</span>
-        <span class="text-label-sm client-dashboard__tile-badge">Coming soon</span>
-      </div>
-      <div
-        class="card-luxe client-dashboard__tile client-dashboard__tile--disabled"
-        title="Coming in Slice 4"
-      >
-        <span class="material-symbols-outlined">event_available</span>
-        <span class="text-label-md">My bookings</span>
-        <span class="text-label-sm client-dashboard__tile-badge">Coming soon</span>
-      </div>
-    </div>
-  </section>
+      @if (loading()) {
+        <div class="client-dashboard__project-list">
+          <div class="skeleton client-dashboard__project-skeleton"></div>
+          <div class="skeleton client-dashboard__project-skeleton"></div>
+          <div class="skeleton client-dashboard__project-skeleton"></div>
+        </div>
+      } @else if (plans().length === 0) {
+        <div class="client-dashboard__empty animate-scale-in">
+          <div class="client-dashboard__empty-art" aria-hidden="true">
+            <span class="client-dashboard__empty-art-ring"></span>
+            <span class="client-dashboard__empty-art-core material-symbols-outlined">calendar_month</span>
+            <span class="client-dashboard__empty-art-spark client-dashboard__empty-art-spark--one material-symbols-outlined animate-pop stagger-2">
+              auto_awesome
+            </span>
+            <span class="client-dashboard__empty-art-spark client-dashboard__empty-art-spark--two material-symbols-outlined animate-pop stagger-4">
+              celebration
+            </span>
+          </div>
+          <h4 class="text-headline-sm">No event plans yet</h4>
+          <p class="text-body-md">Create your first event plan to start bringing your vision to life.</p>
+          <ui-button [fullWidth]="false" (click)="goToNewPlan()">Create your first event plan</ui-button>
+        </div>
+      } @else {
+        <div class="client-dashboard__project-list">
+          @for (plan of plans(); track plan.id) {
+            <button
+              class="client-dashboard__project-row hover-lift animate-fade-up"
+              type="button"
+              (click)="viewPlan(plan)"
+            >
+              <span class="client-dashboard__project-icon material-symbols-outlined" aria-hidden="true">event</span>
+              <span class="client-dashboard__project-info">
+                <span class="text-label-md client-dashboard__project-title">{{ plan.title }}</span>
+                <span class="text-label-sm client-dashboard__project-meta">
+                  {{ plan.eventDate | date: 'mediumDate' }} · {{ plan.city }} · {{ plan.guestCount }} guests
+                </span>
+              </span>
+              <span class="material-symbols-outlined client-dashboard__project-chevron" aria-hidden="true">
+                chevron_right
+              </span>
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <aside class="client-dashboard__aside animate-fade-up stagger-3">
+      <section class="client-dashboard__panel">
+        <div class="client-dashboard__panel-header client-dashboard__panel-header--compact">
+          <span class="client-dashboard__panel-icon material-symbols-outlined" aria-hidden="true">bolt</span>
+          <h3 class="text-headline-sm">Quick Actions</h3>
+        </div>
+        <div class="client-dashboard__actions">
+          <button class="client-dashboard__action" type="button" (click)="goToNewPlan()">
+            <span class="client-dashboard__action-icon material-symbols-outlined" aria-hidden="true">event</span>
+            <span class="client-dashboard__action-body">
+              <span class="text-label-md">Plan an event</span>
+              <span class="text-label-sm client-dashboard__action-sub">Start a new event plan</span>
+            </span>
+            <span class="material-symbols-outlined client-dashboard__action-chevron" aria-hidden="true">
+              chevron_right
+            </span>
+          </button>
+          <div class="client-dashboard__action client-dashboard__action--disabled" title="Coming in Slice 2">
+            <span class="client-dashboard__action-icon material-symbols-outlined" aria-hidden="true">storefront</span>
+            <span class="client-dashboard__action-body">
+              <span class="text-label-md">Browse vendors</span>
+              <span class="text-label-sm client-dashboard__action-sub">Find the right team</span>
+            </span>
+            <span class="text-label-sm client-dashboard__action-badge">Coming soon</span>
+          </div>
+          <div class="client-dashboard__action client-dashboard__action--disabled" title="Coming in Slice 4">
+            <span class="client-dashboard__action-icon material-symbols-outlined" aria-hidden="true">
+              event_available
+            </span>
+            <span class="client-dashboard__action-body">
+              <span class="text-label-md">My bookings</span>
+              <span class="text-label-sm client-dashboard__action-sub">Track confirmations</span>
+            </span>
+            <span class="text-label-sm client-dashboard__action-badge">Coming soon</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="client-dashboard__panel client-dashboard__tip">
+        <span class="client-dashboard__tip-icon material-symbols-outlined" aria-hidden="true">tips_and_updates</span>
+        <p class="text-body-md">
+          <strong>Tip —</strong>
+          add style notes to your event plan to help vendors tailor their proposals to you.
+        </p>
+      </section>
+    </aside>
+  </div>
 </div>

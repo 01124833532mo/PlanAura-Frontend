@@ -40,23 +40,11 @@
   box-shadow: var(--shadow-glow);
 }
 
-.vendor-nav__brand-text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.vendor-nav__brand-text .text-headline-sm {
+.vendor-nav__brand-name {
   font-family: var(--font-family-display);
+  color: var(--color-primary);
   line-height: 1.1;
-}
-
-.vendor-nav__brand-sub {
-  color: var(--color-secondary);
-  opacity: 0.75;
-  margin-top: 0.2rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  min-width: 0;
 }
 
 .vendor-nav__links {
@@ -208,7 +196,7 @@
     width: 76px;
   }
 
-  .vendor-nav__brand-text,
+  .vendor-nav__brand-name,
   .vendor-nav__link span:last-child,
   .vendor-nav__logout span:last-child {
     display: none;

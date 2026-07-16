@@ -1,8 +1,55 @@
 .verif-page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 100vh;
+  padding: var(--margin-desktop);
+  background: var(--gradient-warm-bg);
+}
+
+/* ---- Decorative floating blobs (purely visual), mirrors the pattern used
+   on the admin-dashboard placeholder — this route has no wrapping shell. ---- */
+.verif-page__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: -1;
+  animation: float-y 10s var(--ease-smooth) infinite;
+}
+
+.verif-page__blob--one {
+  top: -8%;
+  left: -6%;
+  width: 22rem;
+  height: 22rem;
+  background: var(--color-primary-container);
+}
+
+.verif-page__blob--two {
+  bottom: -12%;
+  right: -8%;
+  width: 26rem;
+  height: 26rem;
+  background: var(--color-lavender, var(--color-rose-gold));
+  animation-delay: 2.5s;
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-24px) translateX(10px);
+  }
+}
+
+.verif-page__inner {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  padding: var(--space-lg);
   max-width: var(--container-max);
   margin: 0 auto;
 }
@@ -33,11 +80,6 @@
 
 .verif-page__eyebrow .material-symbols-outlined {
   font-size: 16px;
-}
-
-.verif-table-wrap {
-  overflow-x: auto;
-  border-radius: var(--radius-lg);
 }
 
 .verif-page__state {
@@ -80,45 +122,11 @@
   max-width: 420px;
 }
 
-.verif-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.verif-table thead {
-  background: var(--color-soft-beige);
-  color: var(--color-secondary);
-  font-size: var(--font-label-sm-size);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
+/* ---- Table is the shared global .package-table (see styles.css) — only
+   the column-specific overrides below are added on top of it. ---- */
 .verif-table th,
 .verif-table td {
-  padding: 1.1rem 1.5rem;
-  vertical-align: top;
   white-space: nowrap;
-}
-
-.verif-table tbody tr {
-  border-top: 1px solid var(--color-subtle-border);
-  transition: background var(--dur-fast) var(--ease-smooth);
-}
-
-.verif-table tbody tr:hover {
-  background: var(--color-soft-beige);
-}
-
-.verif-table__title {
-  font-weight: 600;
-  color: var(--color-charcoal);
-}
-
-.verif-table__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.35rem;
 }
 
 .icon-btn--success:hover:not(:disabled) {
@@ -126,19 +134,13 @@
   background: var(--color-success-container);
 }
 
-.verif-badge {
-  display: inline-block;
-  padding: 0.3rem 0.85rem;
-  border-radius: var(--radius-full);
-  font-size: var(--font-label-sm-size);
-  font-weight: 700;
-  text-transform: capitalize;
-  white-space: nowrap;
-}
-
-.verif-badge--pending {
+/* Pending-only status badge, layered on top of the shared .package-badge
+   (styles.css only ships --active/--inactive, so this list adds its own
+   modifier the same way icon-btn--success extends the shared .icon-btn). */
+.package-badge--pending {
   background: var(--color-primary-container);
   color: var(--color-primary-hover);
+  text-transform: capitalize;
 }
 
 .verif-details-modal {
@@ -147,6 +149,6 @@
 
 @media (max-width: 768px) {
   .verif-page {
-    padding: var(--space-md);
+    padding: var(--margin-mobile);
   }
 }

@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Button } from '../../../shared/ui/button/button';
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { PasswordField } from '../../../shared/ui/password-field/password-field';
@@ -14,6 +14,7 @@ import { AppError } from '../../../core/interfaces/api-response.model';
 import { CurrentUser, RegisterClientRequest } from '../../../core/interfaces/auth.model';
 import { resolveVendorLandingPath } from '../../../core/interfaces/vendor-verification.model';
 import { passwordsMatchValidator } from '../../../shared/validators/password-match.validator';
+import { confirmLogout } from '../../../shared/utils/confirm-logout';
 
 type AuthMode = 'login' | 'register';
 type RegisterRole = 'customer' | 'vendor';
@@ -23,6 +24,7 @@ type RegisterRole = 'customer' | 'vendor';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     Button,
     TextField,
     PasswordField,
@@ -207,7 +209,11 @@ export class AuthPage {
     this.router.navigateByUrl('/');
   }
 
-  protected logout(): void {
+  protected async logout(): Promise<void> {
+    const confirmed = await confirmLogout();
+    if (!confirmed) {
+      return;
+    }
     this.authService.logout();
     this.signedInUser.set(null);
   }

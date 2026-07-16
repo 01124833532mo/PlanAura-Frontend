@@ -1,6 +1,10 @@
 <div class="event-plan-page">
-  <div class="event-plan-page__header">
+  <div class="event-plan-page__header animate-fade-up">
     <div>
+      <p class="text-label-sm event-plan-page__eyebrow">
+        <span class="material-symbols-outlined">event_note</span>
+        My Events
+      </p>
       <h3 class="text-headline-sm">My Event Plans</h3>
       <p class="text-body-md">Keep track of the events you're planning on Planura.</p>
     </div>
@@ -20,21 +24,43 @@
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
   @if (loading()) {
-    <p class="text-body-md event-plan-page__empty">Loading your event plans...</p>
+    <div class="event-plan-page__state animate-fade-up">
+      <span class="material-symbols-outlined event-plan-page__state-icon skeleton-icon">hourglass_top</span>
+      <p class="text-body-md event-plan-page__empty">Loading your event plans...</p>
+    </div>
   } @else if (plans().length === 0) {
-    <div class="card-luxe luxe-shadow event-plan-page__empty-card">
+    <div class="card-luxe luxe-shadow event-plan-page__empty-card animate-fade-up stagger-1">
+      <span class="material-symbols-outlined event-plan-page__state-icon">event_note</span>
       <p class="text-body-md">No event plans yet — create your first.</p>
       <ui-button [fullWidth]="false" (click)="createPlan()">Create plan</ui-button>
     </div>
   } @else {
     <div class="event-plan-grid">
       @for (plan of plans(); track plan.id) {
-        <div class="card-luxe luxe-shadow event-plan-card">
+        <div class="card-luxe luxe-shadow hover-lift event-plan-card animate-fade-up">
+          <div class="event-plan-card__header">
+            <span class="event-plan-card__icon material-symbols-outlined" aria-hidden="true">celebration</span>
+            <span class="event-plan-card__type-badge">{{ plan.eventType }}</span>
+          </div>
           <h4 class="text-headline-sm">{{ plan.title }}</h4>
-          <p class="text-body-md event-plan-card__meta">
-            {{ plan.eventDate | date: 'mediumDate' }} · {{ plan.city }} · {{ plan.guestCount }}
-            guests · {{ plan.budgetTotal | number: '1.0-2' }}
-          </p>
+          <div class="event-plan-card__meta">
+            <span>
+              <span class="material-symbols-outlined">event</span>
+              {{ plan.eventDate | date: 'mediumDate' }}
+            </span>
+            <span>
+              <span class="material-symbols-outlined">location_on</span>
+              {{ plan.city }}
+            </span>
+            <span>
+              <span class="material-symbols-outlined">groups</span>
+              {{ plan.guestCount }} guests
+            </span>
+            <span>
+              <span class="material-symbols-outlined">payments</span>
+              {{ plan.budgetTotal | number: '1.0-2' }}
+            </span>
+          </div>
           <div class="event-plan-card__actions">
             <ui-button variant="outline" [fullWidth]="false" (click)="viewPlan(plan)">
               View

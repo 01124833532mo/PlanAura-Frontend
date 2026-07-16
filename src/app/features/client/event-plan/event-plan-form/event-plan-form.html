@@ -1,5 +1,9 @@
 <div class="event-plan-form-page">
-  <div class="event-plan-form-page__header">
+  <div class="event-plan-form-page__header animate-fade-up">
+    <p class="text-label-sm event-plan-form-page__eyebrow">
+      <span class="material-symbols-outlined">edit_calendar</span>
+      Event plan
+    </p>
     <h3 class="text-headline-sm">New event plan</h3>
     <p class="text-body-md">Tell us about your event so vendors can help you plan it.</p>
   </div>
@@ -11,10 +15,19 @@
     />
   }
 
-  <form class="event-plan-form card-luxe luxe-shadow" [formGroup]="form" (ngSubmit)="submit()">
+  <form class="event-plan-form card-luxe luxe-shadow animate-fade-up stagger-1" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="event-plan-form__header">
+      <span class="event-plan-form__header-icon material-symbols-outlined" aria-hidden="true">celebration</span>
+      <div class="event-plan-form__header-text">
+        <h4 class="text-headline-sm">Event details</h4>
+        <p class="text-body-md">The basics vendors will see when you request a booking.</p>
+      </div>
+    </div>
+
     <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
     <ui-text-field
+      class="animate-fade-up stagger-1"
       label="Event title"
       placeholder="e.g. Amina & Karim's Wedding"
       formControlName="title"
@@ -25,7 +38,7 @@
       "
     />
 
-    <div class="event-plan-form__row">
+    <div class="event-plan-form__row animate-fade-up stagger-2">
       <ui-select-field
         label="Event type"
         [options]="eventTypeOptions"
@@ -50,6 +63,7 @@
     </div>
 
     <ui-text-field
+      class="animate-fade-up stagger-3"
       label="City"
       placeholder="e.g. Cairo"
       formControlName="city"
@@ -58,7 +72,7 @@
       "
     />
 
-    <div class="event-plan-form__row">
+    <div class="event-plan-form__row animate-fade-up stagger-4">
       <ui-text-field
         label="Guest count"
         type="number"
@@ -84,6 +98,7 @@
     </div>
 
     <ui-text-field
+      class="animate-fade-up stagger-5"
       label="Style notes (optional)"
       placeholder="Colors, themes, must-haves..."
       formControlName="styleNotes"
@@ -92,7 +107,10 @@
 
     <div class="event-plan-form__actions">
       <ui-button variant="outline" type="button" (click)="cancel()">Cancel</ui-button>
-      <ui-button type="submit" [loading]="saving()">Create plan</ui-button>
+      <ui-button type="submit" [loading]="saving()">
+        <span class="material-symbols-outlined">celebration</span>
+        Create plan
+      </ui-button>
     </div>
   </form>
 </div>

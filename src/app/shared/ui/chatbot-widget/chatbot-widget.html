@@ -1,0 +1,84 @@
+<div class="chatbot-widget">
+  @if (open()) {
+    <section
+      class="chatbot-panel glass-panel animate-scale-in"
+      [class.chatbot-panel--minimized]="minimized()"
+      role="dialog"
+      aria-label="Planura AI Assistant"
+    >
+      <header class="chatbot-panel__header">
+        <span class="chatbot-panel__avatar material-symbols-outlined" aria-hidden="true">smart_toy</span>
+        <div class="chatbot-panel__identity">
+          <span class="chatbot-panel__title">Planura AI Assistant</span>
+          <span class="chatbot-panel__subtitle">How can I help you plan your event today?</span>
+        </div>
+        <div class="chatbot-panel__actions">
+          <button
+            class="icon-btn"
+            type="button"
+            [title]="minimized() ? 'Expand' : 'Minimize'"
+            (click)="toggleMinimize()"
+          >
+            <span class="material-symbols-outlined">{{ minimized() ? 'expand_less' : 'remove' }}</span>
+          </button>
+          <button class="icon-btn" type="button" title="Close" (click)="close()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+      </header>
+
+      @if (!minimized()) {
+        <div class="chatbot-panel__body animate-fade-in">
+          <div class="chatbot-panel__messages">
+            @for (message of messages(); track $index) {
+              <div class="chatbot-message animate-fade-up" [class.chatbot-message--user]="message.sender === 'user'">
+                @if (message.sender === 'bot') {
+                  <span class="chatbot-message__avatar material-symbols-outlined" aria-hidden="true">smart_toy</span>
+                }
+                <div class="chatbot-message__bubble">{{ message.text }}</div>
+              </div>
+            }
+            <div #scrollAnchor class="chatbot-panel__scroll-anchor"></div>
+          </div>
+
+          <div class="chatbot-panel__composer">
+            <input
+              #msgInput
+              class="chatbot-panel__input"
+              type="text"
+              placeholder="Type your message..."
+              autocomplete="off"
+              (keydown.enter)="sendMessage(msgInput)"
+            />
+            <button
+              class="chatbot-panel__send"
+              type="button"
+              aria-label="Send message"
+              (click)="sendMessage(msgInput)"
+            >
+              <span class="material-symbols-outlined">send</span>
+            </button>
+          </div>
+
+          <p class="chatbot-panel__disclaimer">
+            <span class="material-symbols-outlined">info</span>
+            Preview only — Planura AI Assistant isn't connected yet.
+          </p>
+        </div>
+      }
+    </section>
+  }
+
+  <button
+    class="chatbot-fab hover-lift"
+    [class.chatbot-fab--open]="open()"
+    type="button"
+    [attr.aria-expanded]="open()"
+    aria-label="Planura AI Assistant"
+    (click)="toggle()"
+  >
+    <span class="chatbot-fab__ping" aria-hidden="true"></span>
+    <span class="material-symbols-outlined chatbot-fab__icon chatbot-fab__icon--chat">smart_toy</span>
+    <span class="material-symbols-outlined chatbot-fab__icon chatbot-fab__icon--close">close</span>
+  </button>
+</div>

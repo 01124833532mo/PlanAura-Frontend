@@ -20,8 +20,8 @@
 
 /* Matches the existing .package-badge--active green pair in styles.css. */
 .status-badge--success {
-  background: #dcf5e3;
-  color: #1f7a3f;
+  background: var(--color-success-container);
+  color: var(--color-success);
 }
 
 .status-badge--error {

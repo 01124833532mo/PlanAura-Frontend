@@ -1,16 +1,24 @@
 <aside class="client-nav">
   <div class="client-nav__brand">
+    <span class="client-nav__logo material-symbols-outlined" aria-hidden="true">celebration</span>
     <span class="text-headline-sm client-nav__brand-name">Planura</span>
-    <p class="text-label-sm client-nav__brand-sub">Client Dashboard</p>
   </div>
 
   <nav class="client-nav__links">
     <a
       class="client-nav__link"
+      routerLink="/client/dashboard"
+      routerLinkActive="client-nav__link--active"
+    >
+      <span class="material-symbols-outlined client-nav__link-icon">space_dashboard</span>
+      <span class="text-label-md">Overview</span>
+    </a>
+    <a
+      class="client-nav__link"
       routerLink="/client/event-plans"
       routerLinkActive="client-nav__link--active"
     >
-      <span class="material-symbols-outlined">event_note</span>
+      <span class="material-symbols-outlined client-nav__link-icon">event_note</span>
       <span class="text-label-md">My Event Plans</span>
     </a>
     <a
@@ -18,13 +26,21 @@
       routerLink="/client/vendors"
       routerLinkActive="client-nav__link--active"
     >
-      <span class="material-symbols-outlined">storefront</span>
+      <span class="material-symbols-outlined client-nav__link-icon">storefront</span>
       <span class="text-label-md">Browse Vendors</span>
     </a>
     <span class="client-nav__link client-nav__link--disabled" title="Coming in Slice 4">
-      <span class="material-symbols-outlined">event_available</span>
+      <span class="material-symbols-outlined client-nav__link-icon">event_available</span>
       <span class="text-label-md">My Bookings</span>
     </span>
+    <a
+      class="client-nav__link"
+      routerLink="/client/profile"
+      routerLinkActive="client-nav__link--active"
+    >
+      <span class="material-symbols-outlined client-nav__link-icon">account_circle</span>
+      <span class="text-label-md">My Profile</span>
+    </a>
   </nav>
 
   <div class="client-nav__footer">
@@ -41,7 +57,7 @@
 
 <main class="client-main">
   <header class="client-topbar">
-    <h2 class="text-headline-md client-topbar__title">Dashboard</h2>
+    <h2 class="text-headline-md client-topbar__title">{{ pageTitle() }}</h2>
 
     @if (currentUser(); as user) {
       <div class="client-topbar__profile">
@@ -51,7 +67,7 @@
     }
   </header>
 
-  <div class="client-content">
+  <div class="client-content animate-fade-in">
     <router-outlet />
   </div>
 </main>

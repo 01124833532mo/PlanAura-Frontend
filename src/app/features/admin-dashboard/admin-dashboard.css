@@ -200,7 +200,7 @@
 }
 
 .logout-btn:hover {
-  background: rgba(212, 175, 55, 0.12);
+  background: var(--color-soft-beige);
 }
 
 @media (max-width: 480px) {

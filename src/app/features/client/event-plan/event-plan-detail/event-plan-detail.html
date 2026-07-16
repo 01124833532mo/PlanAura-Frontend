@@ -4,19 +4,57 @@
   @if (loading()) {
     <p class="text-body-md event-plan-detail-page__empty">Loading event plan...</p>
   } @else if (plan(); as p) {
-    <header class="card-luxe luxe-shadow event-plan-detail-header">
-      <h1 class="text-headline-md">{{ p.title }}</h1>
-      <p class="text-body-md event-plan-detail-header__meta">
-        {{ p.eventType }} · {{ p.eventDate | date: 'mediumDate' }} · {{ p.city }} ·
-        {{ p.guestCount }} guests · {{ p.budgetTotal | number: '1.0-2' }} budget
-      </p>
+    <header class="card-luxe luxe-shadow event-plan-detail-header animate-fade-up">
+      <div class="event-plan-detail-header__top">
+        <span class="event-plan-detail-header__icon material-symbols-outlined" aria-hidden="true">celebration</span>
+        <div class="event-plan-detail-header__titles">
+          <p class="text-label-sm event-plan-detail-header__eyebrow">{{ p.eventType }}</p>
+          <h1 class="text-headline-md">{{ p.title }}</h1>
+        </div>
+      </div>
+
+      <div class="event-plan-detail-header__grid">
+        <div class="event-plan-detail-header__field">
+          <span class="text-label-sm event-plan-detail-header__label">
+            <span class="material-symbols-outlined">event</span>
+            Date
+          </span>
+          <span class="text-body-md event-plan-detail-header__value">{{ p.eventDate | date: 'mediumDate' }}</span>
+        </div>
+        <div class="event-plan-detail-header__field">
+          <span class="text-label-sm event-plan-detail-header__label">
+            <span class="material-symbols-outlined">location_on</span>
+            City
+          </span>
+          <span class="text-body-md event-plan-detail-header__value">{{ p.city }}</span>
+        </div>
+        <div class="event-plan-detail-header__field">
+          <span class="text-label-sm event-plan-detail-header__label">
+            <span class="material-symbols-outlined">groups</span>
+            Guests
+          </span>
+          <span class="text-body-md event-plan-detail-header__value">{{ p.guestCount }}</span>
+        </div>
+        <div class="event-plan-detail-header__field">
+          <span class="text-label-sm event-plan-detail-header__label">
+            <span class="material-symbols-outlined">payments</span>
+            Budget
+          </span>
+          <span class="text-body-md event-plan-detail-header__value">{{ p.budgetTotal | number: '1.0-2' }}</span>
+        </div>
+      </div>
+
       @if (p.styleNotes) {
-        <p class="text-body-md">{{ p.styleNotes }}</p>
+        <p class="text-body-md event-plan-detail-header__notes">{{ p.styleNotes }}</p>
       }
     </header>
 
-    <section class="event-plan-detail-section">
-      <h3 class="text-headline-sm">Bookings</h3>
+    <section class="event-plan-detail-section animate-fade-up stagger-1">
+      <p class="text-label-sm event-plan-detail-section__eyebrow">
+        <span class="material-symbols-outlined">calendar_month</span>
+        Bookings
+      </p>
+      <h3 class="text-headline-sm">Vendors booked for this event</h3>
 
       @if (bookings().length === 0) {
         <div class="card-luxe luxe-shadow event-plan-detail-page__empty-card">
@@ -28,7 +66,7 @@
       } @else {
         <div class="booking-list">
           @for (booking of bookings(); track booking.id) {
-            <div class="card-luxe luxe-shadow booking-row">
+            <div class="card-luxe luxe-shadow hover-lift booking-row">
               <div class="booking-row__vendor">
                 @if (vendorLogo(booking); as logo) {
                   <img [src]="logo" [alt]="vendorName(booking)" class="booking-row__logo" />
@@ -86,6 +124,7 @@
                     class="btn-gold-gradient"
                     [routerLink]="['/client/bookings', booking.id, 'pay']"
                   >
+                    <span class="material-symbols-outlined">payments</span>
                     Pay now
                   </a>
                 }
@@ -120,7 +159,10 @@
 @if (disputeTargetId(); as id) {
   <div class="modal-backdrop" (click)="closeDispute()">
     <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
-      <h4 class="text-headline-sm">Report a problem</h4>
+      <div class="event-plan-detail-modal__header">
+        <span class="material-symbols-outlined event-plan-detail-modal__icon" aria-hidden="true">flag</span>
+        <h4 class="text-headline-sm">Report a problem</h4>
+      </div>
       <form [formGroup]="disputeForm" (ngSubmit)="submitDispute()">
         <ui-alert-banner
           [message]="disputeError()?.message ?? null"

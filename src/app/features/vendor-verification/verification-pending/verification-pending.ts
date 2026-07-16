@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { VendorProfileStateService } from '../../../core/services/vendor-profile-state.service';
+import { confirmLogout } from '../../../shared/utils/confirm-logout';
 
 /**
  * Full-page state (no vendor sidebar) shown to a vendor whose verification
@@ -24,7 +25,11 @@ export class VerificationPending implements OnInit {
     this.vendorProfileState.load();
   }
 
-  protected logout(): void {
+  protected async logout(): Promise<void> {
+    const confirmed = await confirmLogout();
+    if (!confirmed) {
+      return;
+    }
     this.authService.logout();
     this.router.navigateByUrl('/auth');
   }

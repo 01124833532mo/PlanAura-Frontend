@@ -1,6 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { createActiveRouteTitle } from '../../../shared/utils/active-route-title';
+import { confirmLogout } from '../../../shared/utils/confirm-logout';
 
 @Component({
   selector: 'app-client-shell',
@@ -14,6 +16,7 @@ export class ClientShell implements OnInit {
   private readonly router = inject(Router);
 
   protected readonly currentUser = this.authService.currentUser;
+  protected readonly pageTitle = createActiveRouteTitle('Overview');
 
   ngOnInit(): void {
     // clientGuard only fetches /me on a cold load when role signals are
@@ -24,7 +27,11 @@ export class ClientShell implements OnInit {
     }
   }
 
-  protected logout(): void {
+  protected async logout(): Promise<void> {
+    const confirmed = await confirmLogout();
+    if (!confirmed) {
+      return;
+    }
     this.authService.logout();
     this.router.navigateByUrl('/auth');
   }

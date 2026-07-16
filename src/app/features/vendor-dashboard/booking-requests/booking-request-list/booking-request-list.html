@@ -1,0 +1,157 @@
+<div class="requests-page">
+  <div class="requests-page__header animate-fade-up">
+    <div>
+      <p class="text-label-sm requests-page__eyebrow">
+        <span class="material-symbols-outlined">mail</span>
+        Bookings
+      </p>
+      <h3 class="text-headline-sm">Booking Requests</h3>
+      <p class="text-body-md">Review requests from clients and accept or decline them.</p>
+    </div>
+  </div>
+
+  <app-dashboard-stats />
+
+  <div class="requests-filters animate-fade-up" role="tablist">
+    @for (filter of filters; track filter.value) {
+      <button
+        class="requests-filter"
+        type="button"
+        role="tab"
+        [class.requests-filter--active]="activeFilter() === filter.value"
+        [attr.aria-selected]="activeFilter() === filter.value"
+        (click)="selectFilter(filter.value)"
+      >
+        {{ filter.label }}
+      </button>
+    }
+  </div>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <div class="card-luxe luxe-shadow requests-list-wrap animate-fade-up stagger-1">
+    @if (loading()) {
+      <div class="requests-skeletons" aria-hidden="true">
+        <div class="requests-skeleton-row skeleton"></div>
+        <div class="requests-skeleton-row skeleton"></div>
+        <div class="requests-skeleton-row skeleton"></div>
+      </div>
+    } @else if (requests().length === 0) {
+      <div class="requests-page__empty animate-fade-in">
+        <span class="material-symbols-outlined requests-page__empty-icon" aria-hidden="true">inbox</span>
+        <p class="text-body-md">No booking requests here yet.</p>
+      </div>
+    } @else {
+      @for (req of requests(); track req.id) {
+        <div
+          class="request-row request-row--clickable animate-fade-up"
+          role="button"
+          tabindex="0"
+          (click)="openDetails(req)"
+          (keydown.enter)="openDetails(req)"
+        >
+          <div class="request-row__main">
+            <span class="request-row__icon" aria-hidden="true">
+              <span class="material-symbols-outlined">event</span>
+            </span>
+            <div class="request-row__info">
+              <p class="text-body-md request-row__date">{{ req.eventDate | date: 'EEE, MMM d, y' }}</p>
+              <div class="request-row__meta">
+                @if (packageTitle(req); as title) {
+                  <span class="request-row__chip">
+                    <span class="material-symbols-outlined">inventory_2</span>{{ title }}
+                  </span>
+                }
+                @if (req.guestCount != null) {
+                  <span class="request-row__chip">
+                    <span class="material-symbols-outlined">group</span>{{ req.guestCount }} guests
+                  </span>
+                }
+                <span class="request-row__chip">
+                  <span class="material-symbols-outlined">person</span>Client #{{ req.clientId }}
+                </span>
+              </div>
+              @if (req.clientMessage) {
+                <p class="text-body-sm request-row__message">"{{ req.clientMessage }}"</p>
+              }
+              @if (req.vendorResponse) {
+                <p class="text-label-sm request-row__response">Your reply: {{ req.vendorResponse }}</p>
+              }
+            </div>
+          </div>
+
+          <div class="request-row__side">
+            @if (req.agreedPrice != null) {
+              <span class="request-row__price">
+                {{ req.agreedPrice | number: '1.0-2' }} {{ priceCurrency(req) }}
+              </span>
+            }
+            <ui-status-badge [status]="req.status" [paymentStatus]="req.paymentStatus" />
+
+            @if (req.status === BookingStatus.Pending) {
+              <div class="request-row__actions" (click)="$event.stopPropagation()">
+                <ui-button
+                  [fullWidth]="false"
+                  [loading]="actioningId() === req.id"
+                  [disabled]="actioningId() !== null"
+                  (click)="accept(req)"
+                >
+                  <span class="material-symbols-outlined">check</span>
+                  Accept
+                </ui-button>
+                <ui-button
+                  variant="outline"
+                  [fullWidth]="false"
+                  [disabled]="actioningId() !== null"
+                  (click)="openReject(req)"
+                >
+                  Decline
+                </ui-button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  @if (!loading() && totalPages() > 1) {
+    <div class="requests-pagination animate-fade-in">
+      <button class="icon-btn" type="button" title="Previous" [disabled]="page() <= 1" (click)="prevPage()">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+      <span class="text-label-md">Page {{ page() }} of {{ totalPages() }}</span>
+      <button
+        class="icon-btn"
+        type="button"
+        title="Next"
+        [disabled]="page() >= totalPages()"
+        (click)="nextPage()"
+      >
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+    </div>
+  }
+</div>
+
+@if (detailsTarget(); as target) {
+  <app-booking-request-details
+    [booking]="target"
+    [packageTitle]="packageTitle(target)"
+    [currency]="priceCurrency(target)"
+    [actioning]="actioningId() === target.id"
+    (accept)="accept(target)"
+    (reject)="openReject(target)"
+    (closed)="closeDetails()"
+  />
+}
+
+@if (rejectTarget(); as target) {
+  <app-reject-booking-dialog
+    [eventDate]="(target.eventDate | date: 'EEE, MMM d, y') ?? ''"
+    [saving]="rejectSaving()"
+    [error]="rejectError()"
+    (submitted)="submitReject($event)"
+    (cancelled)="closeReject()"
+  />
+}

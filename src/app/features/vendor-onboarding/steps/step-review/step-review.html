@@ -1,9 +1,17 @@
 <div class="wizard-step">
-  <h2 class="text-headline-sm">Review & submit</h2>
-  <p class="text-body-md">Double-check everything before we send it off for verification.</p>
+  <div class="step-header">
+    <span class="material-symbols-outlined step-header__icon" aria-hidden="true">fact_check</span>
+    <div class="step-header__text">
+      <h2 class="text-headline-sm">Review & submit</h2>
+      <p class="text-body-md">Double-check everything before we send it off for verification.</p>
+    </div>
+  </div>
 
-  <div class="review-card card-luxe">
-    <h3 class="review-card__title">Account</h3>
+  <div class="review-card card-luxe animate-fade-up stagger-1">
+    <h3 class="review-card__title">
+      <span class="material-symbols-outlined review-card__icon" aria-hidden="true">person</span>
+      Account
+    </h3>
     <dl class="review-card__list">
       <dt>Full name</dt>
       <dd>{{ account.controls.fullName.value }}</dd>
@@ -14,8 +22,11 @@
     </dl>
   </div>
 
-  <div class="review-card card-luxe">
-    <h3 class="review-card__title">Business</h3>
+  <div class="review-card card-luxe animate-fade-up stagger-2">
+    <h3 class="review-card__title">
+      <span class="material-symbols-outlined review-card__icon" aria-hidden="true">storefront</span>
+      Business
+    </h3>
     <dl class="review-card__list">
       <dt>Name</dt>
       <dd>{{ business.controls.businessName.value }}</dd>
@@ -32,8 +43,11 @@
     </dl>
   </div>
 
-  <div class="review-card card-luxe">
-    <h3 class="review-card__title">Documents</h3>
+  <div class="review-card card-luxe animate-fade-up stagger-3">
+    <h3 class="review-card__title">
+      <span class="material-symbols-outlined review-card__icon" aria-hidden="true">verified_user</span>
+      Documents
+    </h3>
     <ul class="review-card__files">
       <li>National ID (front): {{ documents.controls.nationalIdFront.value?.name ?? '—' }}</li>
       <li>National ID (back): {{ documents.controls.nationalIdBack.value?.name ?? '—' }}</li>
@@ -45,8 +59,11 @@
     </ul>
   </div>
 
-  <div class="review-card card-luxe">
-    <h3 class="review-card__title">Portfolio</h3>
+  <div class="review-card card-luxe animate-fade-up stagger-4">
+    <h3 class="review-card__title">
+      <span class="material-symbols-outlined review-card__icon" aria-hidden="true">photo_library</span>
+      Portfolio
+    </h3>
     <p class="text-body-md">{{ portfolio.controls.images.value.length }} image(s) attached.</p>
   </div>
 </div>

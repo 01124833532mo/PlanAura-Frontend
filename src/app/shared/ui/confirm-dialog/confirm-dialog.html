@@ -1,0 +1,35 @@
+<div class="modal-backdrop" (click)="handleBackdropClick()">
+  <div
+    class="modal-card confirm-dialog card-luxe luxe-shadow animate-scale-in"
+    role="alertdialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="confirm-dialog__icon-wrap"
+      [class.confirm-dialog__icon-wrap--danger]="variant === 'danger'"
+      aria-hidden="true"
+    >
+      <span class="material-symbols-outlined">{{ icon }}</span>
+    </div>
+
+    <h4 class="text-headline-sm confirm-dialog__title">{{ title }}</h4>
+
+    @if (message) {
+      <p class="text-body-md confirm-dialog__message">{{ message }}</p>
+    }
+
+    @if (errorMessage) {
+      <p class="text-label-sm confirm-dialog__error">{{ errorMessage }}</p>
+    }
+
+    <div class="confirm-dialog__actions">
+      <ui-button variant="outline" type="button" [disabled]="loading" (click)="cancelled.emit()">
+        {{ cancelLabel }}
+      </ui-button>
+      <ui-button type="button" [loading]="loading" (click)="confirmed.emit()">
+        {{ confirmLabel }}
+      </ui-button>
+    </div>
+  </div>
+</div>

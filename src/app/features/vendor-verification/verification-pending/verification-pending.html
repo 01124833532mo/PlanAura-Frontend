@@ -1,0 +1,31 @@
+<main class="verification-page bg-mesh">
+  <div class="verification-page__blob verification-page__blob--one floating-blob" aria-hidden="true"></div>
+  <div class="verification-page__blob verification-page__blob--two floating-blob" aria-hidden="true"></div>
+
+  <div class="verification-card glass-panel animate-fade-in">
+    <span class="material-symbols-outlined verification-card__icon verification-card__icon--pending animate-pop">
+      hourglass_top
+    </span>
+
+    <h1 class="text-headline-md animate-fade-up stagger-1">Verification in progress</h1>
+
+    <p class="text-body-md verification-card__message animate-fade-up stagger-2">
+      @if (vendorProfileState.profile(); as profile) {
+        Thanks, {{ profile.businessName }} — your documents were submitted successfully and are
+        currently under review by our team.
+      } @else {
+        Your documents were submitted successfully and are currently under review by our team.
+      }
+    </p>
+
+    <p class="text-body-md verification-card__hint animate-fade-up stagger-3">
+      This usually takes 1–2 business days. You'll be able to access your vendor dashboard as
+      soon as your account is approved — no action is needed from you in the meantime.
+    </p>
+
+    <button class="verification-card__logout animate-fade-up stagger-4" type="button" (click)="logout()">
+      <span class="material-symbols-outlined">logout</span>
+      <span class="text-label-md">Log Out</span>
+    </button>
+  </div>
+</main>

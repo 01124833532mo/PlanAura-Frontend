@@ -18,7 +18,6 @@ export interface VendorAvailability {
 
 /** Mirrors Planura.Core.Application.Models.CreateVendorAvailabilityDto. */
 export interface CreateVendorAvailabilityPayload {
-  vendorId: number;
   startAt: string;
   endAt: string;
 }

@@ -1,6 +1,9 @@
-<div class="browse-page">
-  <aside class="browse-sidebar card-luxe luxe-shadow">
-    <h4 class="text-headline-sm">Filters</h4>
+<div class="browse-page bg-mesh">
+  <aside class="browse-sidebar card-luxe luxe-shadow animate-fade-up">
+    <h4 class="text-headline-sm browse-sidebar__heading">
+      <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+      Filters
+    </h4>
 
     <ui-select-field
       label="Category"
@@ -50,7 +53,7 @@
   </aside>
 
   <div class="browse-main">
-    <div class="browse-header">
+    <div class="browse-header animate-fade-up">
       <p class="text-body-md">
         @if (loading()) {
           Searching...
@@ -68,16 +71,22 @@
     <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
     @if (loading()) {
-      <p class="text-body-md browse-main__empty">Loading vendors...</p>
+      <div class="browse-grid">
+        <div class="skeleton browse-grid__skeleton"></div>
+        <div class="skeleton browse-grid__skeleton"></div>
+        <div class="skeleton browse-grid__skeleton"></div>
+        <div class="skeleton browse-grid__skeleton"></div>
+      </div>
     } @else if (vendors().length === 0) {
-      <div class="card-luxe luxe-shadow browse-main__empty-card">
+      <div class="card-luxe luxe-shadow browse-main__empty-card animate-scale-in">
+        <span class="material-symbols-outlined browse-main__empty-icon" aria-hidden="true">search_off</span>
         <p class="text-body-md">No vendors match your filters.</p>
         <ui-button [fullWidth]="false" (click)="resetFilters()">Reset filters</ui-button>
       </div>
     } @else {
       <div class="browse-grid">
         @for (vendor of vendors(); track vendor.id) {
-          <ui-vendor-card [vendor]="vendor" [eventPlanId]="eventPlanId()" />
+          <ui-vendor-card class="animate-fade-up" [vendor]="vendor" [eventPlanId]="eventPlanId()" />
         }
       </div>
 

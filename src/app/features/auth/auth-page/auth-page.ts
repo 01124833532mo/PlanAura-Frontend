@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Button } from '../../../shared/ui/button/button';
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { PasswordField } from '../../../shared/ui/password-field/password-field';
@@ -9,9 +9,12 @@ import { SelectableCard } from '../../../shared/ui/selectable-card/selectable-ca
 import { AlertBanner } from '../../../shared/ui/alert-banner/alert-banner';
 import { AuthService } from '../../../core/services/auth.service';
 import { VendorOnboardingStateService } from '../../../core/services/vendor-onboarding-state.service';
+import { VendorService } from '../../../core/services/vendor.service';
 import { AppError } from '../../../core/interfaces/api-response.model';
 import { CurrentUser, RegisterClientRequest } from '../../../core/interfaces/auth.model';
+import { resolveVendorLandingPath } from '../../../core/interfaces/vendor-verification.model';
 import { passwordsMatchValidator } from '../../../shared/validators/password-match.validator';
+import { confirmLogout } from '../../../shared/utils/confirm-logout';
 
 type AuthMode = 'login' | 'register';
 type RegisterRole = 'customer' | 'vendor';
@@ -21,6 +24,7 @@ type RegisterRole = 'customer' | 'vendor';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     Button,
     TextField,
     PasswordField,
@@ -35,6 +39,7 @@ export class AuthPage {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly onboardingState = inject(VendorOnboardingStateService);
+  private readonly vendorService = inject(VendorService);
   private readonly router = inject(Router);
 
   protected readonly modeOptions: SegmentedOption[] = [
@@ -176,6 +181,11 @@ export class AuthPage {
    * Role-based landing page after a successful login or registration, in
    * priority order: admin -> vendor -> client (home). Reuses AuthService's
    * role signals rather than re-parsing roles here.
+   *
+   * For vendors, the destination also depends on their verification status
+   * (Pending/Rejected/Approved), so their own profile is loaded here and
+   * resolved via the same resolveVendorLandingPath() the (session-restore)
+   * vendorGuard uses — one mapping, two callers, no duplicated logic.
    */
   private navigateAfterAuth(): void {
     if (this.authService.isAdmin()) {
@@ -184,14 +194,26 @@ export class AuthPage {
     }
 
     if (this.authService.isVendor()) {
-      this.router.navigateByUrl('/vendor/dashboard');
+      this.vendorService.getMyProfile().subscribe({
+        next: (profile) => {
+          this.router.navigateByUrl(resolveVendorLandingPath(profile.verificationStatus));
+        },
+        error: () => {
+          // vendorGuard re-derives status on its own if this lookup fails.
+          this.router.navigateByUrl('/vendor/dashboard');
+        },
+      });
       return;
     }
 
     this.router.navigateByUrl('/');
   }
 
-  protected logout(): void {
+  protected async logout(): Promise<void> {
+    const confirmed = await confirmLogout();
+    if (!confirmed) {
+      return;
+    }
     this.authService.logout();
     this.signedInUser.set(null);
   }

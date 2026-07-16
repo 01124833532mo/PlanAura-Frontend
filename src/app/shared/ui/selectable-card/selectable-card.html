@@ -6,6 +6,9 @@
   [disabled]="disabled"
   (click)="handleClick()"
 >
+  <span class="ui-card__check" aria-hidden="true">
+    <span class="material-symbols-outlined">check</span>
+  </span>
   <span class="material-symbols-outlined ui-card__icon">{{ icon }}</span>
   <span class="ui-card__title">{{ title }}</span>
   @if (subtitle) {

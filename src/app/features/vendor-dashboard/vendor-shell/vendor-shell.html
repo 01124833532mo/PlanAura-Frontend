@@ -1,16 +1,24 @@
 <aside class="vendor-nav">
   <div class="vendor-nav__brand">
-    <span class="text-headline-sm">Planura Pro</span>
-    <p class="text-label-sm vendor-nav__brand-sub">Vendor Dashboard</p>
+    <span class="vendor-nav__logo material-symbols-outlined" aria-hidden="true">celebration</span>
+    <span class="text-headline-sm vendor-nav__brand-name">Planura</span>
   </div>
 
   <nav class="vendor-nav__links">
     <a
       class="vendor-nav__link"
+      routerLink="/vendor/dashboard/requests"
+      routerLinkActive="vendor-nav__link--active"
+    >
+      <span class="material-symbols-outlined vendor-nav__link-icon">mail</span>
+      <span class="text-label-md">Booking Requests</span>
+    </a>
+    <a
+      class="vendor-nav__link"
       routerLink="/vendor/dashboard/packages"
       routerLinkActive="vendor-nav__link--active"
     >
-      <span class="material-symbols-outlined">inventory_2</span>
+      <span class="material-symbols-outlined vendor-nav__link-icon">inventory_2</span>
       <span class="text-label-md">My Packages</span>
     </a>
     <a
@@ -18,7 +26,7 @@
       routerLink="/vendor/dashboard/availability"
       routerLinkActive="vendor-nav__link--active"
     >
-      <span class="material-symbols-outlined">event_available</span>
+      <span class="material-symbols-outlined vendor-nav__link-icon">event_available</span>
       <span class="text-label-md">Availability</span>
     </a>
     <a
@@ -26,8 +34,16 @@
       routerLink="/vendor/dashboard/browse-packages"
       routerLinkActive="vendor-nav__link--active"
     >
-      <span class="material-symbols-outlined">search</span>
+      <span class="material-symbols-outlined vendor-nav__link-icon">search</span>
       <span class="text-label-md">Browse Packages</span>
+    </a>
+    <a
+      class="vendor-nav__link"
+      routerLink="/vendor/dashboard/profile"
+      routerLinkActive="vendor-nav__link--active"
+    >
+      <span class="material-symbols-outlined">storefront</span>
+      <span class="text-label-md">My Profile</span>
     </a>
   </nav>
 
@@ -41,7 +57,7 @@
 
 <main class="vendor-main">
   <header class="vendor-topbar">
-    <h2 class="text-headline-md vendor-topbar__title">Overview</h2>
+    <h2 class="text-headline-md vendor-topbar__title">{{ pageTitle() }}</h2>
 
     @if (vendorProfileState.profile(); as profile) {
       <div class="vendor-topbar__profile">
@@ -51,7 +67,7 @@
     }
   </header>
 
-  <div class="vendor-content">
+  <div class="vendor-content animate-fade-in">
     <router-outlet />
   </div>
 </main>

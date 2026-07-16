@@ -20,3 +20,16 @@ export interface VendorProfile {
   totalCompletedBookings: number;
   createdAt: string;
 }
+
+/** Mirrors Planura.Core.Application.Models.Vendor.UpdateVendorProfileDto exactly. */
+export interface UpdateVendorProfilePayload {
+  businessName: string;
+  businessDescription?: string;
+  categoryId?: number;
+  city?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  logoFile?: File;
+  coverImageFile?: File;
+}

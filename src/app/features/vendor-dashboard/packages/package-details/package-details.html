@@ -1,6 +1,9 @@
 <div class="package-details" [class.package-details--loading]="loading">
   <div class="package-details__header">
-    <h4 class="text-headline-sm">{{ package.title }}</h4>
+    <div class="package-details__heading">
+      <span class="package-details__icon material-symbols-outlined" aria-hidden="true">inventory_2</span>
+      <h4 class="text-headline-sm">{{ package.title }}</h4>
+    </div>
     <span
       class="details-badge"
       [class.details-badge--active]="package.isActive"
@@ -16,27 +19,42 @@
 
   <div class="package-details__grid">
     <div class="package-details__field">
-      <span class="text-label-sm package-details__label">Price</span>
-      <span class="text-body-md">{{ package.basePrice | number: '1.0-2' }} {{ package.currency }}</span>
+      <span class="text-label-sm package-details__label">
+        <span class="material-symbols-outlined">payments</span>
+        Price
+      </span>
+      <span class="text-body-md package-details__value">{{ package.basePrice | number: '1.0-2' }} {{ package.currency }}</span>
     </div>
     <div class="package-details__field">
-      <span class="text-label-sm package-details__label">Max guests</span>
-      <span class="text-body-md">{{ package.maxGuests ?? 'Not specified' }}</span>
+      <span class="text-label-sm package-details__label">
+        <span class="material-symbols-outlined">groups</span>
+        Max guests
+      </span>
+      <span class="text-body-md package-details__value">{{ package.maxGuests ?? 'Not specified' }}</span>
     </div>
     <div class="package-details__field">
-      <span class="text-label-sm package-details__label">Vendor</span>
-      <span class="text-body-md">#{{ package.vendorId }}</span>
+      <span class="text-label-sm package-details__label">
+        <span class="material-symbols-outlined">storefront</span>
+        Vendor
+      </span>
+      <span class="text-body-md package-details__value">#{{ package.vendorId }}</span>
     </div>
     <div class="package-details__field">
-      <span class="text-label-sm package-details__label">Added on</span>
-      <span class="text-body-md">{{ package.createdAt | date: 'MMM d, y' }}</span>
+      <span class="text-label-sm package-details__label">
+        <span class="material-symbols-outlined">calendar_month</span>
+        Added on
+      </span>
+      <span class="text-body-md package-details__value">{{ package.createdAt | date: 'MMM d, y' }}</span>
     </div>
   </div>
 
   @if (package.includes) {
-    <div class="package-details__field">
-      <span class="text-label-sm package-details__label">What's included</span>
-      <p class="text-body-md">{{ package.includes }}</p>
+    <div class="package-details__field package-details__field--full">
+      <span class="text-label-sm package-details__label">
+        <span class="material-symbols-outlined">checklist</span>
+        What's included
+      </span>
+      <p class="text-body-md package-details__value">{{ package.includes }}</p>
     </div>
   }
 

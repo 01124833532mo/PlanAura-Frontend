@@ -1,0 +1,24 @@
+@if (loading()) {
+  <div class="stats-grid" aria-hidden="true">
+    @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+      <div class="stat-card stat-card--skeleton skeleton"></div>
+    }
+  </div>
+} @else if (stats(); as s) {
+  <div class="stats-grid animate-fade-up">
+    @for (tile of tiles(s); track tile.label) {
+      <div class="stat-card" [class]="'stat-card--' + tile.tone">
+        <span class="stat-card__icon" aria-hidden="true">
+          <span class="material-symbols-outlined">{{ tile.icon }}</span>
+        </span>
+        <div class="stat-card__body">
+          <p class="stat-card__value text-headline-sm">{{ tile.value }}</p>
+          <p class="stat-card__label text-label-md">{{ tile.label }}</p>
+          @if (tile.hint) {
+            <p class="stat-card__hint text-label-sm">{{ tile.hint }}</p>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,595 @@
+<div class="vp-page">
+  @if (vendorProfileState.loading()) {
+    <div class="vp-hero card-luxe vp-hero--loading">
+      <div class="skeleton vp-skeleton__cover"></div>
+      <div class="vp-hero__body">
+        <div class="skeleton vp-skeleton__avatar"></div>
+        <div class="vp-skeleton__lines">
+          <div class="skeleton vp-skeleton__line vp-skeleton__line--wide"></div>
+          <div class="skeleton vp-skeleton__line"></div>
+        </div>
+      </div>
+    </div>
+  } @else if (vendorProfileState.profile(); as profile) {
+    <!-- ============ Hero: cover + avatar + identity ============ -->
+    <section class="vp-hero card-luxe animate-blur-reveal">
+      <div class="vp-cover">
+        @if (profile.coverImageUrl) {
+          <img class="vp-cover__img" [src]="profile.coverImageUrl" alt="{{ profile.businessName }} cover" />
+        } @else {
+          <div class="vp-cover__fallback bg-mesh" aria-hidden="true"></div>
+        }
+        <div class="vp-cover__scrim" aria-hidden="true"></div>
+      </div>
+
+      <div class="vp-hero__body">
+        <div class="vp-hero__avatar-wrap">
+          <div class="vp-hero__avatar">
+            @if (profile.logoUrl) {
+              <img [src]="profile.logoUrl" alt="{{ profile.businessName }}" />
+            } @else {
+              <span>{{ profile.businessName.charAt(0) }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="vp-hero__info">
+          <div class="vp-hero__title-row">
+            <h1 class="vp-hero__name">
+              {{ profile.businessName }}
+              @if (isVerified()) {
+                <span class="vp-verified-badge" title="Verified vendor">
+                  <span class="material-symbols-outlined">verified</span>
+                </span>
+              }
+            </h1>
+            @if (profile.categoryName) {
+              <span class="vp-hero__category">{{ profile.categoryName }}</span>
+            }
+          </div>
+
+          <div class="vp-hero__stats">
+            <span class="vp-hero__stat">
+              <span class="material-symbols-outlined vp-hero__stat-icon">star</span>
+              {{ profile.avgRating | number: '1.1-1' }}
+              <small>({{ profile.totalReviews }} reviews)</small>
+            </span>
+            <span class="vp-hero__stat">
+              <span class="material-symbols-outlined vp-hero__stat-icon">celebration</span>
+              {{ profile.totalCompletedBookings }} events completed
+            </span>
+            @if (profile.city) {
+              <span class="vp-hero__stat">
+                <span class="material-symbols-outlined vp-hero__stat-icon">location_on</span>
+                {{ profile.city }}
+              </span>
+            }
+          </div>
+
+          @if (profile.businessDescription) {
+            <p class="vp-hero__bio">{{ profile.businessDescription }}</p>
+          } @else {
+            <p class="vp-hero__bio vp-hero__bio--empty">
+              Add a short bio to tell clients what makes your business great.
+            </p>
+          }
+        </div>
+
+        <div class="vp-hero__actions">
+          <button class="vp-hero__action vp-hero__action--outline" type="button" (click)="shareProfile()">
+            <span class="material-symbols-outlined">ios_share</span>
+            Share Profile
+          </button>
+          <button class="vp-hero__action vp-hero__action--primary" type="button" (click)="openEditModal()">
+            <span class="material-symbols-outlined">edit</span>
+            Edit Profile
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Tab strip ============ -->
+    <nav class="vp-tabs animate-fade-up stagger-1" aria-label="Profile sections">
+      @for (tab of tabs; track tab.id) {
+        <button
+          type="button"
+          class="vp-tabs__tab"
+          [class.vp-tabs__tab--active]="activeTab() === tab.id"
+          (click)="setTab(tab.id)"
+        >
+          <span class="material-symbols-outlined">{{ tab.icon }}</span>
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+
+    <!-- ============ Panels ============ -->
+    <div class="vp-panels animate-fade-up stagger-2">
+      @switch (activeTab()) {
+        @case ('about') {
+          <section class="vp-panel card-luxe">
+            <div class="vp-panel__header">
+              <span class="vp-panel__icon material-symbols-outlined" aria-hidden="true">info</span>
+              <h3 class="text-headline-sm">About {{ profile.businessName }}</h3>
+            </div>
+
+            @if (profile.businessDescription) {
+              <p class="vp-about__bio">{{ profile.businessDescription }}</p>
+            } @else {
+              <p class="vp-empty-inline">
+                No bio yet.
+                <button type="button" class="vp-empty-inline__link" (click)="openEditModal()">Add one</button>
+              </p>
+            }
+
+            <div class="vp-about__facts">
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">category</span>
+                <div>
+                  <span class="vp-fact__label">Category</span>
+                  <span class="vp-fact__value">{{ profile.categoryName ?? 'Not set' }}</span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+                <div>
+                  <span class="vp-fact__label">Location</span>
+                  <span class="vp-fact__value">{{ profile.city ?? 'Not set' }}</span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+                <div>
+                  <span class="vp-fact__label">Member Since</span>
+                  <span class="vp-fact__value">{{ profile.createdAt | date: 'mediumDate' }}</span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">verified</span>
+                <div>
+                  <span class="vp-fact__label">Status</span>
+                  <span class="vp-fact__value">{{ formatStatus(profile.verificationStatus) }}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('services') {
+          <section class="vp-panel card-luxe">
+            <div class="vp-panel__header">
+              <span class="vp-panel__icon material-symbols-outlined" aria-hidden="true">design_services</span>
+              <h3 class="text-headline-sm">Services</h3>
+            </div>
+
+            @if (activePackages().length === 0) {
+              <div class="vp-empty">
+                <span class="material-symbols-outlined vp-empty__icon" aria-hidden="true">design_services</span>
+                <p class="text-body-md">No services listed yet. Add a package to showcase what you offer.</p>
+                <a class="vp-empty__cta" routerLink="/vendor/dashboard/packages">
+                  <span class="material-symbols-outlined">add</span>
+                  Add a package
+                </a>
+              </div>
+            } @else {
+              <ul class="vp-services-list">
+                @for (pkg of activePackages(); track pkg.id) {
+                  <li class="vp-services-list__item">
+                    <span class="vp-services-list__icon material-symbols-outlined" aria-hidden="true">
+                      task_alt
+                    </span>
+                    <div>
+                      <span class="vp-services-list__title">{{ pkg.title }}</span>
+                      @if (pkg.description) {
+                        <span class="vp-services-list__desc">{{ pkg.description }}</span>
+                      }
+                    </div>
+                  </li>
+                }
+              </ul>
+            }
+          </section>
+        }
+
+        @case ('portfolio') {
+          <section class="vp-panel card-luxe">
+            <div class="vp-panel__header">
+              <span class="vp-panel__icon material-symbols-outlined" aria-hidden="true">photo_library</span>
+              <h3 class="text-headline-sm">Portfolio & Media</h3>
+              <span class="vp-panel__soon-badge">Videos coming soon</span>
+            </div>
+
+            <ui-alert-banner
+              [message]="portfolioError()?.message ?? null"
+              [details]="portfolioError()?.fieldErrors ?? []"
+            />
+
+            @if (portfolioLoading()) {
+              <p class="text-body-md">Loading portfolio...</p>
+            } @else if (portfolio().length === 0) {
+              <div class="vp-empty">
+                <span class="material-symbols-outlined vp-empty__icon" aria-hidden="true">add_photo_alternate</span>
+                <p class="text-body-md">No portfolio images yet. Add photos of your best work.</p>
+              </div>
+            } @else {
+              <div class="vp-gallery">
+                @for (item of portfolio(); track item.id; let i = $index) {
+                  <div class="vp-gallery__item hover-lift">
+                    <img
+                      class="vp-gallery__image"
+                      [src]="item.fileUrl"
+                      [alt]="item.title ?? ''"
+                      (click)="openLightbox(i)"
+                    />
+                    <div class="vp-gallery__overlay" (click)="openLightbox(i)">
+                      <span class="material-symbols-outlined">zoom_in</span>
+                    </div>
+                    <div class="vp-gallery__actions">
+                      <button
+                        class="icon-btn"
+                        type="button"
+                        title="Move earlier"
+                        [disabled]="i === 0 || reorderingId() !== null"
+                        (click)="moveMedia(i, -1)"
+                      >
+                        <span class="material-symbols-outlined">arrow_upward</span>
+                      </button>
+                      <button
+                        class="icon-btn"
+                        type="button"
+                        title="Move later"
+                        [disabled]="i === portfolio().length - 1 || reorderingId() !== null"
+                        (click)="moveMedia(i, 1)"
+                      >
+                        <span class="material-symbols-outlined">arrow_downward</span>
+                      </button>
+                      <button class="icon-btn icon-btn--danger" type="button" title="Remove" (click)="removeMedia(item.id)">
+                        <span class="material-symbols-outlined">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            <div class="vp-gallery-add">
+              <ui-file-dropzone
+                label="Add a portfolio image"
+                [formControl]="newMediaControl"
+                (clientValidationError)="portfolioError.set({ status: 0, message: $event, fieldErrors: [] })"
+              />
+              <ui-button [fullWidth]="false" [disabled]="!newMediaControl.value" [loading]="addingMedia()" (click)="addMedia()">
+                Add image
+              </ui-button>
+            </div>
+          </section>
+        }
+
+        @case ('packages') {
+          <section class="vp-panel card-luxe">
+            <div class="vp-panel__header">
+              <span class="vp-panel__icon material-symbols-outlined" aria-hidden="true">inventory_2</span>
+              <h3 class="text-headline-sm">Packages</h3>
+              <a class="vp-panel__link" routerLink="/vendor/dashboard/packages">
+                Manage packages
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </a>
+            </div>
+
+            @if (packagesLoading()) {
+              <p class="text-body-md">Loading packages...</p>
+            } @else if (activePackages().length === 0) {
+              <div class="vp-empty">
+                <span class="material-symbols-outlined vp-empty__icon" aria-hidden="true">inventory_2</span>
+                <p class="text-body-md">No active packages yet.</p>
+                <a class="vp-empty__cta" routerLink="/vendor/dashboard/packages">
+                  <span class="material-symbols-outlined">add</span>
+                  Create a package
+                </a>
+              </div>
+            } @else {
+              <div class="vp-packages-grid">
+                @for (pkg of activePackages(); track pkg.id) {
+                  <div class="vp-package-card hover-lift">
+                    <div class="vp-package-card__top">
+                      <h4>{{ pkg.title }}</h4>
+                      <span class="vp-package-card__price">{{ pkg.basePrice | number: '1.0-0' }} {{ pkg.currency }}</span>
+                    </div>
+                    @if (pkg.description) {
+                      <p class="vp-package-card__desc">{{ pkg.description }}</p>
+                    }
+                    <div class="vp-package-card__meta">
+                      @if (pkg.maxGuests) {
+                        <span><span class="material-symbols-outlined">group</span>Up to {{ pkg.maxGuests }} guests</span>
+                      }
+                    </div>
+                    @if (pkg.includes) {
+                      <p class="vp-package-card__includes">{{ pkg.includes }}</p>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </section>
+        }
+
+        @case ('availability') {
+          <section class="vp-panel card-luxe">
+            <div class="vp-panel__header">
+              <span class="vp-panel__icon material-symbols-outlined" aria-hidden="true">event_available</span>
+              <h3 class="text-headline-sm">Availability</h3>
+              <a class="vp-panel__link" routerLink="/vendor/dashboard/availability">
+                Manage availability
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </a>
+            </div>
+
+            @if (availabilityLoading()) {
+              <p class="text-body-md">Loading availability...</p>
+            } @else if (upcomingAvailability().length === 0) {
+              <div class="vp-empty">
+                <span class="material-symbols-outlined vp-empty__icon" aria-hidden="true">event_available</span>
+                <p class="text-body-md">No upcoming availability windows set.</p>
+                <a class="vp-empty__cta" routerLink="/vendor/dashboard/availability">
+                  <span class="material-symbols-outlined">add</span>
+                  Add availability
+                </a>
+              </div>
+            } @else {
+              <ul class="vp-availability-list">
+                @for (slot of upcomingAvailability(); track slot.id) {
+                  <li class="vp-availability-item">
+                    <span class="material-symbols-outlined vp-availability-item__icon" aria-hidden="true">event</span>
+                    <div class="vp-availability-item__range">
+                      <span>{{ slot.startAt | date: 'MMM d, y, h:mm a' }}</span>
+                      <span class="vp-availability-item__arrow">&rarr;</span>
+                      <span>{{ slot.endAt | date: 'MMM d, y, h:mm a' }}</span>
+                    </div>
+                    <span
+                      class="vp-availability-badge"
+                      [class.vp-availability-badge--available]="slot.status === AvailabilityStatus.Available"
+                      [class.vp-availability-badge--booked]="slot.status === AvailabilityStatus.Booked"
+                      [class.vp-availability-badge--blocked]="slot.status === AvailabilityStatus.Blocked"
+                    >
+                      {{ availabilityStatusLabel(slot.status) }}
+                    </span>
+                  </li>
+                }
+              </ul>
+            }
+          </section>
+        }
+
+        @case ('reviews') {
+          <section class="vp-panel card-luxe">
+            <div class="vp-panel__header">
+              <span class="vp-panel__icon material-symbols-outlined" aria-hidden="true">star</span>
+              <h3 class="text-headline-sm">Reviews & Ratings</h3>
+            </div>
+
+            <div class="vp-rating-summary">
+              <div class="vp-rating-summary__score">
+                <span class="vp-rating-summary__number">{{ profile.avgRating | number: '1.1-1' }}</span>
+                <div class="vp-rating-summary__stars" aria-hidden="true">
+                  @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="material-symbols-outlined" [class.vp-star--filled]="star <= ratingRounded(profile.avgRating)">
+                      star
+                    </span>
+                  }
+                </div>
+                <span class="vp-rating-summary__count">{{ profile.totalReviews }} reviews</span>
+              </div>
+              <p class="vp-rating-summary__note">
+                <span class="material-symbols-outlined">info</span>
+                Individual review details are coming soon — sample reviews shown below for preview.
+              </p>
+            </div>
+
+            <div class="vp-reviews-list">
+              @for (review of placeholderReviews; track review.author) {
+                <div class="vp-review-card">
+                  <div class="vp-review-card__top">
+                    <span class="vp-review-card__avatar">{{ review.author.charAt(0) }}</span>
+                    <div class="vp-review-card__identity">
+                      <span class="vp-review-card__author">{{ review.author }}</span>
+                      <div class="vp-review-card__stars" aria-hidden="true">
+                        @for (star of [1, 2, 3, 4, 5]; track star) {
+                          <span class="material-symbols-outlined" [class.vp-star--filled]="star <= review.rating">star</span>
+                        }
+                      </div>
+                    </div>
+                    <span class="vp-review-card__date">{{ review.date }}</span>
+                  </div>
+                  <p class="vp-review-card__comment">{{ review.comment }}</p>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        @case ('contact') {
+          <section class="vp-panel card-luxe">
+            <div class="vp-panel__header">
+              <span class="vp-panel__icon material-symbols-outlined" aria-hidden="true">call</span>
+              <h3 class="text-headline-sm">Contact Information</h3>
+            </div>
+
+            <div class="vp-about__facts">
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+                <div>
+                  <span class="vp-fact__label">Email</span>
+                  <span class="vp-fact__value">{{ authService.currentUser()?.email ?? 'Not provided' }}</span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">call</span>
+                <div>
+                  <span class="vp-fact__label">Phone Number</span>
+                  <span class="vp-fact__value">{{ authService.currentUser()?.phoneNumber ?? 'Not provided' }}</span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+                <div>
+                  <span class="vp-fact__label">City</span>
+                  <span class="vp-fact__value">{{ profile.city ?? 'Not provided' }}</span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">home_pin</span>
+                <div>
+                  <span class="vp-fact__label">Address</span>
+                  <span class="vp-fact__value">{{ profile.address ?? 'Not provided' }}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('business') {
+          <section class="vp-panel card-luxe">
+            <div class="vp-panel__header">
+              <span class="vp-panel__icon material-symbols-outlined" aria-hidden="true">domain</span>
+              <h3 class="text-headline-sm">Business Details</h3>
+            </div>
+
+            <div class="vp-about__facts">
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">storefront</span>
+                <div>
+                  <span class="vp-fact__label">Business Name</span>
+                  <span class="vp-fact__value">{{ profile.businessName }}</span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">badge</span>
+                <div>
+                  <span class="vp-fact__label">Vendor Type</span>
+                  <span class="vp-fact__value">
+                    {{ profile.vendorType === VendorType.Business ? 'Business' : 'Individual' }}
+                  </span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">category</span>
+                <div>
+                  <span class="vp-fact__label">Category</span>
+                  <span class="vp-fact__value">{{ profile.categoryName ?? 'Not set' }}</span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
+                <div>
+                  <span class="vp-fact__label">Verification Status</span>
+                  <span class="vp-fact__value">{{ formatStatus(profile.verificationStatus) }}</span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">celebration</span>
+                <div>
+                  <span class="vp-fact__label">Completed Events</span>
+                  <span class="vp-fact__value">{{ profile.totalCompletedBookings }}</span>
+                </div>
+              </div>
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+                <div>
+                  <span class="vp-fact__label">Member Since</span>
+                  <span class="vp-fact__value">{{ profile.createdAt | date: 'mediumDate' }}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+      }
+    </div>
+  }
+
+  <!-- ============ Edit modal ============ -->
+  @if (editModalOpen()) {
+    <div class="modal-backdrop" (click)="closeEditModal()">
+      <div class="modal-card card-luxe vp-edit-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <div class="vp-edit-modal__header">
+          <span class="vp-edit-modal__icon material-symbols-outlined" aria-hidden="true">edit</span>
+          <div class="vp-edit-modal__heading">
+            <h3 class="text-headline-sm">Edit Profile</h3>
+            <p class="text-body-md">Update your business information</p>
+          </div>
+          <button class="icon-btn" type="button" title="Close" (click)="closeEditModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+        <form class="vp-edit-form" [formGroup]="form" (ngSubmit)="save()">
+          <ui-text-field
+            label="Business name"
+            formControlName="businessName"
+            [errorMessage]="
+              form.controls.businessName.touched && form.controls.businessName.invalid
+                ? 'Business name is required.'
+                : null
+            "
+          />
+          <ui-text-field label="Description" formControlName="businessDescription" />
+          <ui-select-field
+            label="Category"
+            placeholder="Select a category"
+            [options]="categoryOptions"
+            formControlName="categoryId"
+          />
+          <div class="vp-edit-form__grid">
+            <ui-text-field label="City" formControlName="city" />
+            <ui-text-field label="Address" formControlName="address" />
+          </div>
+
+          <ui-file-dropzone label="Logo" formControlName="logoFile" />
+          <ui-file-dropzone label="Cover image" formControlName="coverImageFile" />
+
+          @if (vendorProfileState.profile(); as currentProfile) {
+            <div class="vp-edit-form__previews">
+              @if (currentProfile.logoUrl) {
+                <img class="vp-edit-form__preview" [src]="currentProfile.logoUrl" alt="Current logo" />
+              }
+              @if (currentProfile.coverImageUrl) {
+                <img class="vp-edit-form__preview" [src]="currentProfile.coverImageUrl" alt="Current cover" />
+              }
+            </div>
+          }
+
+          <div class="vp-edit-form__actions">
+            <ui-button variant="outline" type="button" [disabled]="saving()" (click)="closeEditModal()">Cancel</ui-button>
+            <ui-button type="submit" [loading]="saving()">Save Changes</ui-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- ============ Lightbox ============ -->
+  @if (lightboxIndex() !== null) {
+    <div class="modal-backdrop vp-lightbox-backdrop" (click)="closeLightbox()">
+      <button class="vp-lightbox__close icon-btn" type="button" title="Close" (click)="closeLightbox()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      @if (portfolio().length > 1) {
+        <button class="vp-lightbox__nav vp-lightbox__nav--prev" type="button" title="Previous" (click)="prevLightboxItem(); $event.stopPropagation()">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+      }
+
+      @if (portfolio()[lightboxIndex()!]; as media) {
+        <img class="vp-lightbox__image" [src]="media.fileUrl" [alt]="media.title ?? ''" (click)="$event.stopPropagation()" />
+      }
+
+      @if (portfolio().length > 1) {
+        <button class="vp-lightbox__nav vp-lightbox__nav--next" type="button" title="Next" (click)="nextLightboxItem(); $event.stopPropagation()">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      }
+    </div>
+  }
+</div>

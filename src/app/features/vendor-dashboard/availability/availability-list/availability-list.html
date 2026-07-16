@@ -17,68 +17,77 @@
 
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
-  <div class="card-luxe luxe-shadow availability-list-wrap animate-fade-up stagger-1">
-    @if (loading()) {
-      <div class="availability-skeletons" aria-hidden="true">
-        <div class="availability-skeleton-row skeleton"></div>
-        <div class="availability-skeleton-row skeleton"></div>
-        <div class="availability-skeleton-row skeleton"></div>
+  <div class="card-luxe luxe-shadow calendar animate-fade-up stagger-1">
+    <div class="calendar__toolbar">
+      <div class="calendar__nav">
+        <button class="icon-btn" type="button" title="Previous month" (click)="prevMonth()">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <h4 class="text-title-md calendar__month">{{ monthLabel() }}</h4>
+        <button class="icon-btn" type="button" title="Next month" (click)="nextMonth()">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
       </div>
-      <p class="text-body-md availability-page__empty availability-page__empty--sr-only">
-        Loading your availability...
-      </p>
-    } @else if (slots().length === 0) {
-      <div class="availability-page__empty animate-fade-in">
-        <span class="material-symbols-outlined availability-page__empty-icon" aria-hidden="true">event_busy</span>
-        <p class="text-body-md">
-          No slots yet. Add availability so clients know when they can book you.
-        </p>
-      </div>
-    } @else {
-      @for (slot of slots(); track slot.id) {
-        <div class="availability-row animate-fade-up">
-          <div class="availability-row__time">
-            <span class="availability-row__icon" aria-hidden="true">
-              <span class="material-symbols-outlined">schedule</span>
-            </span>
-            <div>
-              <p class="text-body-md availability-row__range">
-                {{ slot.startAt | date: 'MMM d, y, h:mm a' }} —
-                {{ slot.endAt | date: 'h:mm a' }}
-              </p>
-            </div>
-          </div>
-
-          <span
-            class="availability-badge"
-            [class.availability-badge--available]="slot.status === AvailabilityStatus.Available"
-            [class.availability-badge--booked]="slot.status === AvailabilityStatus.Booked"
-            [class.availability-badge--blocked]="slot.status === AvailabilityStatus.Blocked"
-          >
-            <span class="availability-badge__dot" aria-hidden="true"></span>
-            {{ statusLabel(slot.status) }}
-          </span>
-
-          @if (slot.status === AvailabilityStatus.Available) {
-            <div class="availability-row__actions">
-              <button class="icon-btn" type="button" title="Edit" (click)="openEdit(slot)">
-                <span class="material-symbols-outlined">edit</span>
-              </button>
-              <button
-                class="icon-btn icon-btn--danger"
-                type="button"
-                title="Delete"
-                [disabled]="savingId() === slot.id"
-                (click)="deleteSlot(slot)"
-              >
-                <span class="material-symbols-outlined">delete</span>
-              </button>
-            </div>
-          } @else {
-            <div class="availability-row__actions"></div>
-          }
+      <div class="calendar__toolbar-right">
+        <button class="calendar__today-btn" type="button" (click)="goToday()">Today</button>
+        <div class="calendar__legend">
+          <span class="calendar__legend-item"><span class="calendar__legend-dot calendar__legend-dot--available"></span>Available</span>
+          <span class="calendar__legend-item"><span class="calendar__legend-dot calendar__legend-dot--booked"></span>Booked</span>
+          <span class="calendar__legend-item"><span class="calendar__legend-dot calendar__legend-dot--blocked"></span>Blocked</span>
         </div>
-      }
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="calendar__loading skeleton"></div>
+    } @else {
+      <div class="calendar__weekdays">
+        @for (label of weekdayLabels; track label) {
+          <div class="calendar__weekday text-label-sm">{{ label }}</div>
+        }
+      </div>
+
+      <div class="calendar__grid">
+        @for (week of weeks(); track $index) {
+          @for (day of week; track day.key) {
+            <div
+              class="calendar__day"
+              [class.calendar__day--outside]="!day.inMonth"
+              [class.calendar__day--today]="day.isToday"
+              [class.calendar__day--past]="day.isPast"
+              [class.calendar__day--clickable]="!day.isPast"
+              (click)="openCreateOnDay(day)"
+            >
+              <div class="calendar__day-head">
+                <span class="calendar__day-num" [class.calendar__day-num--today]="day.isToday">
+                  {{ day.dayNum }}
+                </span>
+                @if (!day.isPast) {
+                  <span class="calendar__day-add material-symbols-outlined" aria-hidden="true">add</span>
+                }
+              </div>
+
+              <div class="calendar__slots">
+                @for (ds of day.slots; track ds.slot.id + '-' + ds.segment) {
+                  <button
+                    class="calendar__slot"
+                    type="button"
+                    [class.calendar__slot--available]="ds.slot.status === AvailabilityStatus.Available"
+                    [class.calendar__slot--booked]="ds.slot.status === AvailabilityStatus.Booked"
+                    [class.calendar__slot--blocked]="ds.slot.status === AvailabilityStatus.Blocked"
+                    [class.calendar__slot--continuation]="ds.segment !== 'single'"
+                    [title]="statusLabel(ds.slot.status) + ' · ' + ds.rangeTitle"
+                    (click)="$event.stopPropagation(); openEdit(ds.slot)"
+                  >
+                    <span class="calendar__slot-dot" aria-hidden="true"></span>
+                    <span class="calendar__slot-label">{{ ds.label }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        }
+      </div>
     }
   </div>
 </div>
@@ -94,11 +103,26 @@
       </div>
       <app-availability-form
         [availability]="editingSlot()"
+        [initialDate]="initialDate()"
         [saving]="savingId() !== null"
         [error]="error()"
         (save)="handleSave($event)"
         (cancelled)="closeForm()"
       />
+
+      @if (editingSlot(); as slot) {
+        <div class="availability-modal__danger">
+          <button
+            class="availability-modal__delete"
+            type="button"
+            [disabled]="savingId() !== null"
+            (click)="deleteSlot(slot); closeForm()"
+          >
+            <span class="material-symbols-outlined">delete</span>
+            Delete this slot
+          </button>
+        </div>
+      }
     </div>
   </div>
 }

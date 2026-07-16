@@ -1,0 +1,93 @@
+<div class="modal-backdrop" (click)="handleBackdropClick()">
+  <div
+    class="modal-card details-dialog card-luxe luxe-shadow animate-scale-in"
+    role="dialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="details-dialog__header">
+      <div class="details-dialog__title">
+        <span class="details-dialog__icon material-symbols-outlined" aria-hidden="true">event</span>
+        <div>
+          <h4 class="text-headline-sm">Booking request #{{ booking.id }}</h4>
+          <p class="text-body-md details-dialog__subtitle">{{ booking.eventDate | date: 'EEEE, MMMM d, y' }}</p>
+        </div>
+      </div>
+      <button class="icon-btn" type="button" title="Close" (click)="closed.emit()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="details-dialog__status">
+      <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
+    </div>
+
+    <dl class="details-grid">
+      @if (packageTitle) {
+        <div class="details-grid__row">
+          <dt><span class="material-symbols-outlined">inventory_2</span>Package</dt>
+          <dd>{{ packageTitle }}</dd>
+        </div>
+      }
+      @if (booking.agreedPrice != null) {
+        <div class="details-grid__row">
+          <dt><span class="material-symbols-outlined">payments</span>Agreed price</dt>
+          <dd class="details-grid__price">{{ booking.agreedPrice | number: '1.0-2' }} {{ currency }}</dd>
+        </div>
+      }
+      <div class="details-grid__row">
+        <dt><span class="material-symbols-outlined">group</span>Guests</dt>
+        <dd>{{ booking.guestCount ?? '—' }}</dd>
+      </div>
+      <div class="details-grid__row">
+        <dt><span class="material-symbols-outlined">person</span>Client</dt>
+        <dd>Client #{{ booking.clientId }}</dd>
+      </div>
+      <div class="details-grid__row">
+        <dt><span class="material-symbols-outlined">description</span>Event plan</dt>
+        <dd>#{{ booking.eventPlanId }}</dd>
+      </div>
+      <div class="details-grid__row">
+        <dt><span class="material-symbols-outlined">schedule</span>Requested</dt>
+        <dd>{{ booking.createdAt | date: 'MMM d, y, h:mm a' }}</dd>
+      </div>
+      @if (booking.respondedAt) {
+        <div class="details-grid__row">
+          <dt><span class="material-symbols-outlined">reply</span>Responded</dt>
+          <dd>{{ booking.respondedAt | date: 'MMM d, y, h:mm a' }}</dd>
+        </div>
+      }
+    </dl>
+
+    @if (booking.clientMessage) {
+      <div class="details-dialog__message">
+        <p class="text-label-sm details-dialog__message-label">Message from client</p>
+        <p class="text-body-md">"{{ booking.clientMessage }}"</p>
+      </div>
+    }
+
+    @if (booking.vendorResponse) {
+      <div class="details-dialog__message details-dialog__message--response">
+        <p class="text-label-sm details-dialog__message-label">Your reply</p>
+        <p class="text-body-md">{{ booking.vendorResponse }}</p>
+      </div>
+    }
+
+    @if (booking.status === BookingStatus.Pending) {
+      <div class="details-dialog__actions">
+        <ui-button
+          variant="outline"
+          [fullWidth]="false"
+          [disabled]="actioning"
+          (click)="reject.emit()"
+        >
+          Decline
+        </ui-button>
+        <ui-button [fullWidth]="false" [loading]="actioning" (click)="accept.emit()">
+          <span class="material-symbols-outlined">check</span>
+          Accept request
+        </ui-button>
+      </div>
+    }
+  </div>
+</div>

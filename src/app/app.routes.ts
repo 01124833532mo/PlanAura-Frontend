@@ -79,7 +79,15 @@ export const routes: Routes = [
         (m) => m.VendorShell,
       ),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'packages' },
+      { path: '', pathMatch: 'full', redirectTo: 'requests' },
+      {
+        path: 'requests',
+        data: { title: 'Booking Requests' },
+        loadComponent: () =>
+          import(
+            './features/vendor-dashboard/booking-requests/booking-request-list/booking-request-list'
+          ).then((m) => m.BookingRequestList),
+      },
       {
         path: 'packages',
         data: { title: 'My Packages' },

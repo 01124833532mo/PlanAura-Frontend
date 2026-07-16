@@ -26,6 +26,8 @@ export class AvailabilityForm implements OnChanges {
   private readonly fb = inject(FormBuilder);
 
   @Input() availability: VendorAvailability | null = null;
+  /** yyyy-MM-dd of a day clicked in the calendar; pre-fills the create form. */
+  @Input() initialDate: string | null = null;
   @Input() saving = false;
   @Input() error: AppError | null = null;
 
@@ -39,9 +41,18 @@ export class AvailabilityForm implements OnChanges {
 
   ngOnChanges(): void {
     const slot = this.availability;
+    if (slot) {
+      this.form.reset({
+        startAt: toDateTimeLocalValue(slot.startAt),
+        endAt: toDateTimeLocalValue(slot.endAt),
+      });
+      return;
+    }
+
+    // Creating: pre-fill a sensible default time on the clicked day, if any.
     this.form.reset({
-      startAt: slot ? toDateTimeLocalValue(slot.startAt) : '',
-      endAt: slot ? toDateTimeLocalValue(slot.endAt) : '',
+      startAt: this.initialDate ? `${this.initialDate}T12:00` : '',
+      endAt: this.initialDate ? `${this.initialDate}T13:00` : '',
     });
   }
 

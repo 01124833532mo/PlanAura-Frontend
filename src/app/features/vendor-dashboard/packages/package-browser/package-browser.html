@@ -1,10 +1,14 @@
 <div class="browser-page">
-  <div class="browser-page__header">
+  <div class="browser-page__header animate-fade-up">
+    <p class="text-label-sm browser-page__eyebrow">
+      <span class="material-symbols-outlined">travel_explore</span>
+      Marketplace
+    </p>
     <h3 class="text-headline-sm">Browse Packages</h3>
     <p class="text-body-md">Search and view details of every package on Planura — read only.</p>
   </div>
 
-  <form class="browser-filters card-luxe luxe-shadow" [formGroup]="filterForm" (ngSubmit)="runSearch()">
+  <form class="browser-filters card-luxe luxe-shadow animate-fade-up stagger-1" [formGroup]="filterForm" (ngSubmit)="runSearch()">
     <ui-text-field label="Search by title" placeholder="e.g. Wedding" formControlName="title" />
     <ui-select-field
       label="Category"
@@ -26,11 +30,17 @@
 
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
-  <div class="card-luxe luxe-shadow browser-table-wrap">
+  <div class="card-luxe luxe-shadow browser-table-wrap animate-fade-up stagger-2">
     @if (loading()) {
-      <p class="text-body-md browser-page__empty">Searching packages...</p>
+      <div class="browser-page__state">
+        <span class="material-symbols-outlined browser-page__state-icon skeleton-icon">hourglass_top</span>
+        <p class="text-body-md browser-page__empty">Searching packages...</p>
+      </div>
     } @else if (packages().length === 0) {
-      <p class="text-body-md browser-page__empty">No packages match your search.</p>
+      <div class="browser-page__state">
+        <span class="material-symbols-outlined browser-page__state-icon">search_off</span>
+        <p class="text-body-md browser-page__empty">No packages match your search.</p>
+      </div>
     } @else {
       <table class="package-table">
         <thead>

@@ -1,25 +1,33 @@
 <div class="wizard-step" [formGroup]="group">
-  <h2 class="text-headline-sm">Verification documents</h2>
-  <p class="text-body-md">
-    Used to verify your identity before your listing goes live. Accepted formats: PNG or JPG, up to 2 MB
-    each.
-  </p>
+  <div class="step-header">
+    <span class="material-symbols-outlined step-header__icon" aria-hidden="true">verified_user</span>
+    <div class="step-header__text">
+      <h2 class="text-headline-sm">Verification documents</h2>
+      <p class="text-body-md">
+        Used to verify your identity before your listing goes live. Accepted formats: PNG or JPG, up to 2 MB
+        each.
+      </p>
+    </div>
+  </div>
 
   <ui-alert-banner [message]="clientError" />
 
   <ui-file-dropzone
+    class="animate-fade-up stagger-1"
     label="National ID — front"
     formControlName="nationalIdFront"
     [errorMessage]="touchedInvalid('nationalIdFront') ? 'National ID (front) photo is required.' : null"
     (clientValidationError)="onClientValidationError($event)"
   />
   <ui-file-dropzone
+    class="animate-fade-up stagger-2"
     label="National ID — back"
     formControlName="nationalIdBack"
     [errorMessage]="touchedInvalid('nationalIdBack') ? 'National ID (back) photo is required.' : null"
     (clientValidationError)="onClientValidationError($event)"
   />
   <ui-file-dropzone
+    class="animate-fade-up stagger-3"
     label="Selfie holding your ID"
     formControlName="selfieWithId"
     [errorMessage]="touchedInvalid('selfieWithId') ? 'A selfie with your ID is required.' : null"
@@ -28,6 +36,7 @@
 
   @if (vendorType === VendorType.Business) {
     <ui-file-dropzone
+      class="animate-fade-up stagger-4"
       label="Commercial registration"
       formControlName="commercialRegistration"
       [errorMessage]="
@@ -38,6 +47,7 @@
       (clientValidationError)="onClientValidationError($event)"
     />
     <ui-file-dropzone
+      class="animate-fade-up stagger-5"
       label="Tax card"
       formControlName="taxCard"
       [errorMessage]="touchedInvalid('taxCard') ? 'Tax card document is required for business vendors.' : null"

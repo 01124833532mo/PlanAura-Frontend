@@ -1,0 +1,158 @@
+.event-plan-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--margin-desktop);
+}
+
+.event-plan-detail-page__empty {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--color-secondary);
+}
+
+.event-plan-detail-page__empty-card {
+  padding: var(--space-xl);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.event-plan-detail-header {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.event-plan-detail-header__meta {
+  color: var(--color-secondary);
+}
+
+.event-plan-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.booking-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.booking-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gutter);
+  padding: var(--space-lg);
+}
+
+.booking-row__vendor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
+  min-width: 200px;
+}
+
+.booking-row__logo,
+.booking-row__logo-placeholder {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+.booking-row__logo {
+  object-fit: cover;
+}
+
+.booking-row__logo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-soft-beige) 0%, var(--color-primary-fixed) 100%);
+  color: var(--color-primary);
+  font-size: 1.5rem;
+}
+
+.booking-row__package {
+  color: var(--color-secondary);
+}
+
+.booking-row__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 140px;
+  color: var(--color-secondary);
+}
+
+.booking-row__meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.booking-row__meta .material-symbols-outlined {
+  font-size: 1.1rem;
+}
+
+.booking-row__price {
+  font-weight: 700;
+  color: var(--color-charcoal);
+}
+
+.booking-row__status {
+  flex-shrink: 0;
+}
+
+.booking-row__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.booking-row__report {
+  border: none;
+  background: transparent;
+  color: var(--color-secondary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-sm-size);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.4rem;
+}
+
+.booking-row__report:hover {
+  color: var(--color-error);
+}
+
+.event-plan-detail-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+@media (max-width: 900px) {
+  .event-plan-detail-page {
+    padding: var(--margin-mobile);
+  }
+
+  .booking-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .booking-row__actions {
+    justify-content: flex-end;
+  }
+}

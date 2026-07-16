@@ -1,56 +1,81 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* ==========================================================================
-   Planura design tokens
-   Derived from the Stitch design export (auth page + vendor profile
-   reference). Recreated as CSS custom properties rather than copying the
-   Tailwind config directly, so the rest of the app (Bootstrap included)
-   can layer on top of a single source of truth for color/type/space.
+   Planura design system
+   Premium warm palette (coral / rose / peach / rose-gold) with a soft,
+   gender-neutral, glassmorphic aesthetic. Token NAMES are preserved from the
+   previous iteration so every component that already consumes
+   var(--color-*) / var(--space-*) / var(--radius-*) keeps working — only the
+   values (and a set of new tokens for motion, glass and gradients) changed.
    ========================================================================== */
 
-  :root {
-  /* Color: gold/charcoal "luxe" palette */
-  --color-primary: #735c00;
-  --color-primary-container: #d4af37;
+:root {
+  /* ---- Color: warm coral / rose / peach "premium" palette ---- */
+  --color-primary: #e8654a; /* soft coral — primary actions */
+  --color-primary-container: #f6a26f; /* warm peach — gradient partner */
   --color-on-primary: #ffffff;
-  --color-primary-fixed: #ffe088;
+  --color-primary-fixed: #ffd9c2; /* pale peach tint */
+  --color-primary-hover: #d6543a;
 
-  --color-charcoal: #1a1a1a;
-  --color-on-background: #1a1c1c;
-  --color-secondary: #5d5f5b;
-  --color-on-secondary-container: #62635f;
+  --color-rose: #e0828c; /* rose */
+  --color-rose-gold: #c48b72; /* rose gold accent */
+  --color-pink-soft: #f3c1cb; /* soft pink — sparing accent */
+  --color-lavender: #cabdea; /* light lavender — optional accent */
 
-  --color-surface: #f9f9f9;
-  --color-surface-bright: #f9f9f9;
+  --color-charcoal: #241f1c;
+  --color-on-background: #241f1c;
+  --color-secondary: #8a8074; /* warm gray */
+  --color-on-secondary-container: #6b6357;
+  --color-dark-gray: #4a433d;
+
+  --color-surface: #fdfaf7; /* off white */
+  --color-surface-bright: #ffffff;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f3f4;
-  --color-surface-container: #eeeeee;
-  --color-soft-beige: #f5f5f0;
-  --color-subtle-border: #e5e5e0;
-  --color-outline-variant: #d0c5af;
+  --color-surface-container-low: #fbf6f0;
+  --color-surface-container: #f5ede3;
+  --color-soft-beige: #f6efe6;
+  --color-subtle-border: #ece1d3;
+  --color-outline-variant: #e2d2bf;
 
-  --color-error: #ba1a1a;
-  --color-error-container: #ffdad6;
+  --color-error: #c4453a;
+  --color-error-container: #ffe0dc;
   --color-on-error: #ffffff;
 
-  /* Spacing scale */
+  --color-success: #2f8a5b;
+  --color-success-container: #dcf5e3;
+
+  /* ---- Gradients ---- */
+  --gradient-primary: linear-gradient(135deg, #e8654a 0%, #ef8b62 55%, #f6b085 100%);
+  --gradient-primary-soft: linear-gradient(135deg, rgba(232, 101, 74, 0.12) 0%, rgba(246, 176, 133, 0.12) 100%);
+  --gradient-warm-bg: linear-gradient(160deg, #fff6f1 0%, #fdf3ee 35%, #f4ecf7 100%);
+  --gradient-rose-gold: linear-gradient(135deg, #e0828c 0%, #c48b72 100%);
+  --gradient-mesh: radial-gradient(circle at 15% 20%, rgba(246, 176, 133, 0.35) 0%, transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(202, 189, 234, 0.28) 0%, transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(224, 130, 140, 0.22) 0%, transparent 50%);
+
+  /* ---- Spacing scale ---- */
+  --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 32px;
   --space-xl: 64px;
+  --space-2xl: 96px;
   --gutter: 24px;
   --margin-mobile: 16px;
   --margin-desktop: 64px;
   --container-max: 1280px;
 
-  /* Radius scale */
-  --radius-md: 0.5rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
+  /* ---- Radius scale (large, soft corners) ---- */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.85rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+  --radius-2xl: 2.25rem;
   --radius-full: 9999px;
 
-  /* Typography scale (Inter) */
+  /* ---- Typography ---- */
   --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-display: 'Fraunces', 'Inter', serif;
 
   --font-label-sm-size: 12px;
   --font-label-sm-weight: 500;
@@ -61,9 +86,30 @@
   --font-headline-sm-size: 24px;
   --font-headline-md-size: 30px;
   --font-display-lg-size: 48px;
+  --font-display-xl-size: 64px;
 
-  /* Elevation */
-  --shadow-luxe: 0 20px 30px rgba(26, 26, 26, 0.04);
+  /* ---- Elevation ---- */
+  --shadow-xs: 0 2px 6px rgba(36, 31, 28, 0.05);
+  --shadow-sm: 0 6px 16px rgba(36, 31, 28, 0.06);
+  --shadow-md: 0 12px 28px rgba(36, 31, 28, 0.08);
+  --shadow-lg: 0 24px 48px rgba(36, 31, 28, 0.1);
+  --shadow-xl: 0 32px 64px rgba(36, 31, 28, 0.14);
+  --shadow-luxe: 0 20px 40px rgba(36, 31, 28, 0.07);
+  --shadow-glow: 0 12px 32px rgba(232, 101, 74, 0.28);
+
+  /* ---- Glassmorphism ---- */
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-bg-strong: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-blur: blur(24px);
+
+  /* ---- Motion ---- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 160ms;
+  --dur-base: 320ms;
+  --dur-slow: 560ms;
 }
 
 * {
@@ -78,6 +124,10 @@
     'opsz' 24;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   height: 100%;
@@ -88,6 +138,8 @@ body {
   font-family: var(--font-family-base);
   background-color: var(--color-surface);
   color: var(--color-charcoal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -100,6 +152,34 @@ p {
 
 a {
   color: var(--color-primary);
+  transition: color var(--dur-fast) var(--ease-smooth);
+}
+
+/* Custom scrollbar — subtle, on-brand */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-rose-gold);
+}
+
+/* Accessible, visible focus ring everywhere */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 /* ==========================================================================
@@ -114,15 +194,20 @@ a {
   background: var(--color-surface-container-lowest);
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-subtle-border);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--dur-base) var(--ease-smooth), transform var(--dur-base) var(--ease-smooth);
 }
 
 .text-headline-md {
+  font-family: var(--font-family-display);
   font-size: var(--font-headline-md-size);
   font-weight: 500;
   color: var(--color-charcoal);
+  letter-spacing: -0.01em;
 }
 
 .text-headline-sm {
+  font-family: var(--font-family-display);
   font-size: var(--font-headline-sm-size);
   font-weight: 500;
   color: var(--color-charcoal);
@@ -138,6 +223,216 @@ a {
   font-weight: var(--font-label-md-weight);
 }
 
+/* ---- Glassmorphism surface ---- */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ---- Hover-lift, used on cards / interactive tiles ---- */
+.hover-lift {
+  transition: transform var(--dur-base) var(--ease-out-expo), box-shadow var(--dur-base) var(--ease-out-expo);
+}
+
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ---- Floating decorative blobs (purely visual, aria-hidden in markup) ---- */
+.bg-mesh {
+  position: relative;
+  isolation: isolate;
+}
+
+.bg-mesh::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-mesh);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.floating-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  pointer-events: none;
+  animation: float-y 9s var(--ease-smooth) infinite;
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-24px) translateX(10px);
+  }
+}
+
+/* ==========================================================================
+   Animation keyframes + trigger utility classes
+   ========================================================================== */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes blur-reveal {
+  from {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+@keyframes pop-check {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes gradient-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in var(--dur-slow) var(--ease-out-expo) both;
+}
+
+.animate-fade-up {
+  animation: fade-up var(--dur-slow) var(--ease-out-expo) both;
+}
+
+.animate-fade-down {
+  animation: fade-down var(--dur-slow) var(--ease-out-expo) both;
+}
+
+.animate-scale-in {
+  animation: scale-in var(--dur-base) var(--ease-spring) both;
+}
+
+.animate-blur-reveal {
+  animation: blur-reveal var(--dur-slow) var(--ease-out-expo) both;
+}
+
+.animate-pop {
+  animation: pop-check var(--dur-slow) var(--ease-spring) both;
+}
+
+/* Stagger helpers — pair with animate-fade-up on lists of items */
+.stagger-1 {
+  animation-delay: 60ms;
+}
+.stagger-2 {
+  animation-delay: 120ms;
+}
+.stagger-3 {
+  animation-delay: 180ms;
+}
+.stagger-4 {
+  animation-delay: 240ms;
+}
+.stagger-5 {
+  animation-delay: 300ms;
+}
+.stagger-6 {
+  animation-delay: 360ms;
+}
+
+/* ---- Skeleton loading ---- */
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface-container) 0%, var(--color-soft-beige) 50%, var(--color-surface-container) 100%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: var(--radius-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ==========================================================================
    Shared vendor-dashboard chrome (modal, icon buttons) — used by both the
    packages and availability features, so it lives here instead of being
@@ -149,14 +444,16 @@ a {
   background: transparent;
   color: var(--color-secondary);
   cursor: pointer;
-  padding: 0.4rem;
+  padding: 0.5rem;
   border-radius: var(--radius-md);
   display: inline-flex;
+  transition: background var(--dur-fast) var(--ease-smooth), color var(--dur-fast) var(--ease-smooth), transform var(--dur-fast) var(--ease-smooth);
 }
 
 .icon-btn:hover:not(:disabled) {
   background: var(--color-soft-beige);
   color: var(--color-primary);
+  transform: translateY(-1px);
 }
 
 .icon-btn:disabled {
@@ -166,17 +463,20 @@ a {
 
 .icon-btn--danger:hover:not(:disabled) {
   color: var(--color-error);
+  background: var(--color-error-container);
 }
 
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(26, 26, 26, 0.45);
+  background: rgba(36, 31, 28, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-md);
   z-index: 50;
+  animation: fade-in var(--dur-base) var(--ease-smooth) both;
 }
 
 .modal-card {
@@ -188,10 +488,16 @@ a {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  background: var(--color-surface-container-lowest);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-subtle-border);
+  box-shadow: var(--shadow-xl);
+  animation: scale-in var(--dur-base) var(--ease-spring) both;
 }
 
 .package-table-wrap {
   overflow-x: auto;
+  border-radius: var(--radius-lg);
 }
 
 .package-table {
@@ -216,6 +522,7 @@ a {
 
 .package-table tbody tr {
   border-top: 1px solid var(--color-subtle-border);
+  transition: background var(--dur-fast) var(--ease-smooth);
 }
 
 .package-table tbody tr:hover {
@@ -252,11 +559,45 @@ a {
 }
 
 .package-badge--active {
-  background: #dcf5e3;
-  color: #1f7a3f;
+  background: var(--color-success-container);
+  color: var(--color-success);
 }
 
 .package-badge--inactive {
   background: var(--color-surface-container);
   color: var(--color-secondary);
+}
+
+/* ==========================================================================
+   Gold-gradient primary action button — shared across client-facing
+   features (Stitch design export's "primary-gradient-btn", translated to
+   the token system above instead of Tailwind).
+   ========================================================================== */
+
+.btn-gold-gradient {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.25rem;
+  border: none;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #d4af37 0%, #e9c349 100%);
+  color: #fff;
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: var(--font-label-md-weight);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(212, 175, 55, 0.25);
+  transition: box-shadow 0.2s ease, opacity 0.2s ease, transform 0.05s ease;
+}
+
+.btn-gold-gradient:hover {
+  opacity: 0.92;
+  box-shadow: 0 14px 24px rgba(212, 175, 55, 0.32);
+}
+
+.btn-gold-gradient:active {
+  transform: scale(0.98);
 }

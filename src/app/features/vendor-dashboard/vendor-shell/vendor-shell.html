@@ -1,7 +1,10 @@
 <aside class="vendor-nav">
   <div class="vendor-nav__brand">
-    <span class="text-headline-sm">Planura Pro</span>
-    <p class="text-label-sm vendor-nav__brand-sub">Vendor Dashboard</p>
+    <span class="vendor-nav__logo material-symbols-outlined" aria-hidden="true">celebration</span>
+    <div class="vendor-nav__brand-text">
+      <span class="text-headline-sm">Planura Pro</span>
+      <p class="text-label-sm vendor-nav__brand-sub">Vendor Dashboard</p>
+    </div>
   </div>
 
   <nav class="vendor-nav__links">
@@ -10,7 +13,7 @@
       routerLink="/vendor/dashboard/packages"
       routerLinkActive="vendor-nav__link--active"
     >
-      <span class="material-symbols-outlined">inventory_2</span>
+      <span class="material-symbols-outlined vendor-nav__link-icon">inventory_2</span>
       <span class="text-label-md">My Packages</span>
     </a>
     <a
@@ -18,7 +21,7 @@
       routerLink="/vendor/dashboard/availability"
       routerLinkActive="vendor-nav__link--active"
     >
-      <span class="material-symbols-outlined">event_available</span>
+      <span class="material-symbols-outlined vendor-nav__link-icon">event_available</span>
       <span class="text-label-md">Availability</span>
     </a>
     <a
@@ -26,7 +29,7 @@
       routerLink="/vendor/dashboard/browse-packages"
       routerLinkActive="vendor-nav__link--active"
     >
-      <span class="material-symbols-outlined">search</span>
+      <span class="material-symbols-outlined vendor-nav__link-icon">search</span>
       <span class="text-label-md">Browse Packages</span>
     </a>
     <a
@@ -59,7 +62,7 @@
     }
   </header>
 
-  <div class="vendor-content">
+  <div class="vendor-content animate-fade-in">
     <router-outlet />
   </div>
 </main>

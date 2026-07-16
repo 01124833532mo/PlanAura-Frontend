@@ -21,4 +21,8 @@ export class AdminDashboard {
     this.authService.logout();
     this.router.navigateByUrl('/auth');
   }
+
+  protected goToVendorVerifications(): void {
+    this.router.navigateByUrl('/admin/vendor-verifications');
+  }
 }

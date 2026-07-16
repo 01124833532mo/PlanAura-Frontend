@@ -1,7 +1,103 @@
-<section class="home-placeholder">
-  <h1>Welcome to Planura</h1>
-  <button class="home-placeholder__logout" type="button" (click)="logout()">
-    <span class="material-symbols-outlined">logout</span>
-    <span class="text-label-md">Log Out</span>
-  </button>
-</section>
+<div class="home-page">
+  <header class="home-topbar">
+    <span class="text-headline-sm home-topbar__brand">Planura</span>
+    <nav class="home-topbar__actions">
+      <button class="home-topbar__link" type="button" (click)="goToDashboard()">
+        <span class="material-symbols-outlined">dashboard</span>
+        Dashboard
+      </button>
+      <button class="home-topbar__link" type="button" (click)="logout()">
+        <span class="material-symbols-outlined">logout</span>
+        Log Out
+      </button>
+    </nav>
+  </header>
+
+  <section class="home-hero">
+    <h1 class="home-hero__headline">Plan Your Perfect Event</h1>
+    <p class="home-hero__subhead">
+      Discover trusted vendors and bring your vision to life, all in one place.
+    </p>
+
+    <form class="home-hero__search luxe-shadow" (submit)="$event.preventDefault()">
+      <label class="home-hero__search-field">
+        <span class="material-symbols-outlined">search</span>
+        <input type="text" placeholder="What are you planning? (e.g. Wedding, Birthday)" />
+      </label>
+      <label class="home-hero__search-field">
+        <span class="material-symbols-outlined">location_on</span>
+        <input type="text" placeholder="City" />
+      </label>
+      <button
+        class="btn-gold-gradient home-hero__search-btn"
+        type="submit"
+        disabled
+        title="Vendor search launches in Slice 2"
+      >
+        Search
+      </button>
+    </form>
+
+    <button class="btn-gold-gradient home-hero__cta" type="button" (click)="goToNewPlan()">
+      <span class="material-symbols-outlined">add</span>
+      Start a New Event Plan
+    </button>
+  </section>
+
+  @if (categories().length > 0) {
+    <section class="home-section">
+      <h2 class="text-headline-md">Signature Occasions</h2>
+      <p class="text-body-md home-section__subhead">
+        Browse vendors by the type of event you're planning.
+      </p>
+
+      <div class="home-category-grid">
+        @for (category of categories(); track category.id) {
+          <a
+            class="category-tile"
+            [routerLink]="['/client/vendors']"
+            [queryParams]="{ category: category.slug }"
+          >
+            @if (category.iconUrl && !failedCategoryImages().has(category.id)) {
+              <img
+                [src]="category.iconUrl"
+                alt="{{ category.nameEn }}"
+                title="{{ category.nameEn }}"
+                class="category-tile__image"
+                (error)="onCategoryImageError(category.id)"
+              />
+            } @else {
+              <div class="category-tile__image category-tile__image--fallback">
+                <span class="material-symbols-outlined">{{ categoryIcon(category.slug) }}</span>
+              </div>
+            }
+            <div class="category-tile__overlay"></div>
+            <span class="category-tile__label">{{ category.nameEn }}</span>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (featuredVendors().length > 0) {
+    <section class="home-section">
+      <h2 class="text-headline-md">Featured Vendors</h2>
+      <p class="text-body-md home-section__subhead">A few of our top-rated partners.</p>
+
+      <div class="home-vendor-grid">
+        @for (vendor of featuredVendors(); track vendor.id) {
+          <ui-vendor-card [vendor]="vendor" />
+        }
+      </div>
+    </section>
+  }
+
+  <section class="home-cta card-luxe luxe-shadow">
+    <h2 class="text-headline-md">Ready to start planning?</h2>
+    <p class="text-body-md">Create your first event plan and start connecting with vendors.</p>
+    <button class="btn-gold-gradient" type="button" (click)="goToNewPlan()">
+      <span class="material-symbols-outlined">add</span>
+      New Event
+    </button>
+  </section>
+</div>

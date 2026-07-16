@@ -1,8 +1,12 @@
-<main class="auth-shell luxe-shadow">
+<span class="floating-blob auth-shell__blob auth-shell__blob--one" aria-hidden="true"></span>
+<span class="floating-blob auth-shell__blob auth-shell__blob--two" aria-hidden="true"></span>
+<span class="floating-blob auth-shell__blob auth-shell__blob--three" aria-hidden="true"></span>
+
+<main class="auth-shell luxe-shadow animate-scale-in">
   <section class="auth-shell__image">
     <div class="auth-shell__image-bg"></div>
     <div class="auth-shell__image-overlay">
-      <div class="auth-shell__glass-panel">
+      <div class="auth-shell__glass-panel animate-blur-reveal stagger-2">
         <h2 class="auth-shell__glass-title">Moments that matter.</h2>
         <p class="auth-shell__glass-text">
           Join the world's most exclusive network of event professionals and discerning hosts.
@@ -12,37 +16,38 @@
   </section>
 
   <section class="auth-shell__form-side">
-    <span class="auth-shell__brand">Planura</span>
+    <span class="auth-shell__brand animate-fade-down">Planura</span>
 
     <div class="auth-shell__content">
       @if (signedInUser(); as user) {
-        <ui-alert-banner variant="success" [message]="'Welcome back, ' + user.fullName + '.'" />
-        <p class="text-body-md">
+        <ui-alert-banner class="animate-fade-in" variant="success" [message]="'Welcome back, ' + user.fullName + '.'" />
+        <p class="text-body-md animate-fade-up stagger-1">
           Signed in as {{ user.email }} ({{ user.roles.join(', ') }}). The vendor dashboard isn't part of
           this build yet — this page only covers sign-in and vendor onboarding.
         </p>
         <ui-button variant="outline" (click)="logout()">Sign out</ui-button>
       } @else {
-        <div class="auth-shell__header">
+        <div class="auth-shell__header animate-fade-up stagger-1">
           <h1 class="text-headline-md" id="form-title">{{ title() }}</h1>
           <p class="text-body-md">{{ subtitle() }}</p>
         </div>
 
         <ui-segmented-toggle
-          class="auth-shell__toggle"
+          class="auth-shell__toggle animate-fade-up stagger-2"
           [options]="modeOptions"
           [value]="mode()"
           (valueChange)="setMode($event)"
         />
 
         <ui-alert-banner
+          class="animate-fade-in"
           [message]="error()?.message ?? null"
           [details]="error()?.fieldErrors ?? []"
         />
-        <ui-alert-banner variant="info" [message]="infoMessage()" />
+        <ui-alert-banner class="animate-fade-in" variant="info" [message]="infoMessage()" />
 
         @if (mode() === 'login') {
-          <form class="auth-shell__form" (ngSubmit)="submitLogin()" [formGroup]="loginForm">
+          <form class="auth-shell__form animate-fade-up stagger-3" (ngSubmit)="submitLogin()" [formGroup]="loginForm">
             <ui-text-field
               label="Email Address"
               type="email"
@@ -77,9 +82,10 @@
             </div>
           </form>
         } @else {
-          <form class="auth-shell__form" (ngSubmit)="submitRegister()" [formGroup]="registerForm">
+          <form class="auth-shell__form animate-fade-up stagger-3" (ngSubmit)="submitRegister()" [formGroup]="registerForm">
             <div class="auth-shell__roles">
               <ui-selectable-card
+                class="hover-lift"
                 icon="person"
                 title="Customer"
                 subtitle="Plan your dream event"
@@ -87,6 +93,7 @@
                 (select)="selectRole('customer')"
               />
               <ui-selectable-card
+                class="hover-lift"
                 icon="storefront"
                 title="Vendor"
                 subtitle="Grow your luxury business"
@@ -150,7 +157,7 @@
       }
     </div>
 
-    <div class="auth-shell__footer">
+    <div class="auth-shell__footer animate-fade-in stagger-4">
       <p class="text-body-md">
         By continuing, you agree to Planura's
         <a href="javascript:void(0)">Terms of Service</a> and

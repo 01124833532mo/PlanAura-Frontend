@@ -1,14 +1,21 @@
 <div class="wizard-step" [formGroup]="group">
-  <h2 class="text-headline-sm">Your account</h2>
-  <p class="text-body-md">Let's start with who you are and how to reach you.</p>
+  <div class="step-header">
+    <span class="material-symbols-outlined step-header__icon" aria-hidden="true">badge</span>
+    <div class="step-header__text">
+      <h2 class="text-headline-sm">Your account</h2>
+      <p class="text-body-md">Let's start with who you are and how to reach you.</p>
+    </div>
+  </div>
 
   <ui-text-field
+    class="animate-fade-up stagger-1"
     label="Full Name"
     placeholder="e.g. Julian Hart"
     formControlName="fullName"
     [errorMessage]="touchedInvalid('fullName') ? 'Full name must be between 2 and 150 characters.' : null"
   />
   <ui-text-field
+    class="animate-fade-up stagger-2"
     label="Email Address"
     type="email"
     placeholder="e.g. julian@luxe.com"
@@ -16,6 +23,7 @@
     [errorMessage]="touchedInvalid('email') ? 'A valid email address is required.' : null"
   />
   <ui-text-field
+    class="animate-fade-up stagger-3"
     label="Phone Number"
     type="tel"
     placeholder="e.g. 01012345678"
@@ -23,6 +31,7 @@
     [errorMessage]="touchedInvalid('phoneNumber') ? 'Phone number is required.' : null"
   />
   <ui-password-field
+    class="animate-fade-up stagger-4"
     label="Password"
     formControlName="password"
     [errorMessage]="
@@ -32,6 +41,7 @@
     "
   />
   <ui-password-field
+    class="animate-fade-up stagger-5"
     label="Confirm Password"
     formControlName="confirmPassword"
     [errorMessage]="passwordMismatch() ? 'Passwords do not match.' : null"

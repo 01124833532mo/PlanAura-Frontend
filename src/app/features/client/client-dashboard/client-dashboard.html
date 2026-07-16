@@ -1,0 +1,76 @@
+<div class="client-dashboard">
+  <div class="client-dashboard__header">
+    <h1 class="text-headline-md">Welcome back</h1>
+    <p class="text-body-md">Here's what's happening with your events.</p>
+  </div>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <section class="client-dashboard__section">
+    <div class="client-dashboard__section-header">
+      <h3 class="text-headline-sm">Current Projects</h3>
+      @if (plans().length > 0) {
+        <button class="client-dashboard__view-all" type="button" (click)="goToPlans()">
+          View all
+        </button>
+      }
+    </div>
+
+    @if (loading()) {
+      <p class="text-body-md client-dashboard__empty">Loading your event plans...</p>
+    } @else if (plans().length === 0) {
+      <div class="card-luxe luxe-shadow client-dashboard__empty-card">
+        <p class="text-body-md">
+          No event plans yet — create your first event plan to get started.
+        </p>
+        <ui-button [fullWidth]="false" (click)="goToNewPlan()">Create your first event plan</ui-button>
+      </div>
+    } @else {
+      <div class="client-dashboard__project-grid">
+        @for (plan of plans(); track plan.id) {
+          <button
+            class="card-luxe luxe-shadow client-dashboard__project-card"
+            type="button"
+            (click)="viewPlan(plan)"
+          >
+            <h4 class="text-headline-sm">{{ plan.title }}</h4>
+            <p class="text-body-md client-dashboard__project-meta">
+              {{ plan.eventDate | date: 'mediumDate' }} · {{ plan.city }} ·
+              {{ plan.guestCount }} guests
+            </p>
+          </button>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="client-dashboard__section">
+    <h3 class="text-headline-sm">Quick Actions</h3>
+    <div class="client-dashboard__tiles">
+      <button
+        class="card-luxe luxe-shadow client-dashboard__tile"
+        type="button"
+        (click)="goToNewPlan()"
+      >
+        <span class="material-symbols-outlined">event</span>
+        <span class="text-label-md">Plan an event</span>
+      </button>
+      <div
+        class="card-luxe client-dashboard__tile client-dashboard__tile--disabled"
+        title="Coming in Slice 2"
+      >
+        <span class="material-symbols-outlined">storefront</span>
+        <span class="text-label-md">Browse vendors</span>
+        <span class="text-label-sm client-dashboard__tile-badge">Coming soon</span>
+      </div>
+      <div
+        class="card-luxe client-dashboard__tile client-dashboard__tile--disabled"
+        title="Coming in Slice 4"
+      >
+        <span class="material-symbols-outlined">event_available</span>
+        <span class="text-label-md">My bookings</span>
+        <span class="text-label-sm client-dashboard__tile-badge">Coming soon</span>
+      </div>
+    </div>
+  </section>
+</div>

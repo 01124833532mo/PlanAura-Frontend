@@ -1,0 +1,160 @@
+<div class="verif-details">
+  <div class="verif-details__header">
+    <div class="verif-details__heading">
+      <span class="verif-details__icon material-symbols-outlined" aria-hidden="true">badge</span>
+      <div>
+        <h4 class="text-headline-sm">{{ details?.vendorName ?? 'Vendor details' }}</h4>
+        @if (details?.businessName) {
+          <p class="text-body-md verif-details__subtitle">{{ details!.businessName }}</p>
+        }
+      </div>
+    </div>
+    @if (details) {
+      <span
+        class="verif-badge"
+        [class.verif-badge--pending]="details.verificationStatus === 'pending'"
+        [class.verif-badge--verified]="
+          details.verificationStatus === 'verified' || details.verificationStatus === 'trusted'
+        "
+        [class.verif-badge--rejected]="details.verificationStatus === 'rejected'"
+      >
+        {{ details.verificationStatus }}
+      </span>
+    }
+  </div>
+
+  <ui-alert-banner [message]="error?.message ?? null" [details]="error?.fieldErrors ?? []" />
+
+  @if (loading) {
+    <div class="verif-details__state">
+      <span class="material-symbols-outlined verif-details__state-icon skeleton-icon">hourglass_top</span>
+      <p class="text-body-md">Loading vendor details...</p>
+    </div>
+  } @else if (details) {
+    @if (details.verificationStatus === 'rejected' && details.rejectionReason) {
+      <ui-alert-banner variant="error" [message]="'Previously rejected: ' + details.rejectionReason" />
+    }
+
+    <section class="verif-section">
+      <h5 class="text-label-md verif-section__title">
+        <span class="material-symbols-outlined">person</span>
+        Vendor Information
+      </h5>
+      <dl class="verif-details__grid">
+        <div class="verif-details__field">
+          <dt class="text-label-sm">Full Name</dt>
+          <dd class="text-body-md">{{ details.vendorName }}</dd>
+        </div>
+        <div class="verif-details__field">
+          <dt class="text-label-sm">Email</dt>
+          <dd class="text-body-md verif-details__muted">Not provided by API</dd>
+        </div>
+        <div class="verif-details__field">
+          <dt class="text-label-sm">Phone Number</dt>
+          <dd class="text-body-md verif-details__muted">Not provided by API</dd>
+        </div>
+        <div class="verif-details__field">
+          <dt class="text-label-sm">Business Name</dt>
+          <dd class="text-body-md">{{ details.businessName }}</dd>
+        </div>
+        <div class="verif-details__field">
+          <dt class="text-label-sm">Category</dt>
+          <dd class="text-body-md">{{ details.categoryName ?? 'Not specified' }}</dd>
+        </div>
+        <div class="verif-details__field">
+          <dt class="text-label-sm">Vendor Type</dt>
+          <dd class="text-body-md">{{ details.vendorType === VendorType.Business ? 'Business' : 'Individual' }}</dd>
+        </div>
+        <div class="verif-details__field">
+          <dt class="text-label-sm">City</dt>
+          <dd class="text-body-md">{{ details.city ?? 'Not specified' }}</dd>
+        </div>
+        <div class="verif-details__field">
+          <dt class="text-label-sm">Address</dt>
+          <dd class="text-body-md">{{ details.address ?? 'Not specified' }}</dd>
+        </div>
+        <div class="verif-details__field">
+          <dt class="text-label-sm">Submitted</dt>
+          <dd class="text-body-md">{{ details.submittedAt | date: 'MMM d, y, h:mm a' }}</dd>
+        </div>
+        @if (details.reviewedAt) {
+          <div class="verif-details__field">
+            <dt class="text-label-sm">Reviewed</dt>
+            <dd class="text-body-md">{{ details.reviewedAt | date: 'MMM d, y, h:mm a' }}</dd>
+          </div>
+        }
+      </dl>
+      @if (details.businessDescription) {
+        <p class="text-body-md verif-details__description">{{ details.businessDescription }}</p>
+      }
+    </section>
+
+    <section class="verif-section">
+      <h5 class="text-label-md verif-section__title">
+        <span class="material-symbols-outlined">verified_user</span>
+        Verification Documents
+      </h5>
+      @if (details.documents.length === 0) {
+        <p class="text-body-md verif-details__muted">No verification documents uploaded.</p>
+      } @else {
+        <div class="verif-doc-grid">
+          @for (doc of details.documents; track doc.documentType) {
+            <a
+              class="verif-doc-card"
+              [href]="documentUrl(doc)"
+              target="_blank"
+              rel="noopener noreferrer"
+              [title]="'Open ' + documentLabel(doc) + ' full size'"
+            >
+              <img class="verif-doc-card__img" [src]="documentUrl(doc)" [alt]="documentLabel(doc)" loading="lazy" />
+              <div class="verif-doc-card__meta">
+                <span class="text-label-sm verif-doc-card__label">{{ documentLabel(doc) }}</span>
+                @if (formatFileSize(doc.fileSizeBytes); as size) {
+                  <span class="verif-doc-card__size">{{ size }}</span>
+                }
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="verif-section">
+      <h5 class="text-label-md verif-section__title">
+        <span class="material-symbols-outlined">photo_library</span>
+        Portfolio
+      </h5>
+      @if (details.portfolioMedia.length === 0) {
+        <p class="text-body-md verif-details__muted">No portfolio images provided.</p>
+      } @else {
+        <div class="verif-doc-grid">
+          @for (media of details.portfolioMedia; track media.displayOrder) {
+            <a
+              class="verif-doc-card"
+              [href]="documentUrl(media)"
+              target="_blank"
+              rel="noopener noreferrer"
+              [title]="'Open ' + (media.title ?? 'portfolio image') + ' full size'"
+            >
+              <img
+                class="verif-doc-card__img"
+                [src]="documentUrl(media)"
+                [alt]="media.title ?? 'Portfolio image'"
+                loading="lazy"
+              />
+              @if (media.title) {
+                <div class="verif-doc-card__meta">
+                  <span class="text-label-sm verif-doc-card__label">{{ media.title }}</span>
+                </div>
+              }
+            </a>
+          }
+        </div>
+      }
+    </section>
+  }
+
+  <div class="verif-details__actions">
+    <ui-button variant="outline" (click)="closed.emit()">Close</ui-button>
+  </div>
+</div>

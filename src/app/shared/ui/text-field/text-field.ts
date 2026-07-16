@@ -18,7 +18,9 @@ let nextId = 0;
 export class TextField implements ControlValueAccessor {
   @Input() label = '';
   @Input() placeholder = '';
-  @Input() type: 'text' | 'email' | 'tel' = 'text';
+  @Input() type: 'text' | 'email' | 'tel' | 'date' | 'number' = 'text';
+  @Input() multiline = false;
+  @Input() min: string | number | null = null;
   @Input() errorMessage: string | null = null;
   @Input() hint: string | null = null;
 
@@ -46,7 +48,7 @@ export class TextField implements ControlValueAccessor {
   }
 
   protected handleInput(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+    const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
     this.value = value;
     this.onChange(value);
   }

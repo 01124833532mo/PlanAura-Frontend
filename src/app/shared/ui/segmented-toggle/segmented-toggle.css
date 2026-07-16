@@ -1,24 +1,28 @@
 .ui-segmented {
   display: flex;
-  padding: 0.25rem;
+  padding: 0.3rem;
   background: var(--color-soft-beige);
   border: 1px solid var(--color-subtle-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-full);
   gap: 0.25rem;
 }
 
 .ui-segmented__tab {
   flex: 1;
-  padding: 0.5rem 0;
+  padding: 0.55rem 0.75rem;
   background: transparent;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   font-family: var(--font-family-base);
   font-size: var(--font-label-md-size);
   font-weight: var(--font-label-md-weight);
   color: var(--color-secondary);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition:
+    background var(--dur-base) var(--ease-spring),
+    color var(--dur-fast) var(--ease-smooth),
+    box-shadow var(--dur-base) var(--ease-smooth),
+    transform var(--dur-base) var(--ease-spring);
 }
 
 .ui-segmented__tab:hover:not(.ui-segmented__tab--active) {
@@ -26,7 +30,8 @@
 }
 
 .ui-segmented__tab--active {
-  background: var(--color-surface-container-lowest);
-  color: var(--color-primary);
-  box-shadow: 0 1px 3px rgba(26, 26, 26, 0.08);
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-sm);
+  transform: scale(1.02);
 }

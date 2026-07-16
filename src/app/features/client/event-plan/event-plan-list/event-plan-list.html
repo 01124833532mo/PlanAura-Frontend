@@ -1,0 +1,59 @@
+<div class="event-plan-page">
+  <div class="event-plan-page__header">
+    <div>
+      <h3 class="text-headline-sm">My Event Plans</h3>
+      <p class="text-body-md">Keep track of the events you're planning on Planura.</p>
+    </div>
+    <ui-button [fullWidth]="false" (click)="createPlan()">
+      <span class="material-symbols-outlined">add</span>
+      Create plan
+    </ui-button>
+  </div>
+
+  @if (bookingSuccess()) {
+    <ui-alert-banner
+      variant="success"
+      message="Booking request sent! The vendor will respond soon."
+    />
+  }
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  @if (loading()) {
+    <p class="text-body-md event-plan-page__empty">Loading your event plans...</p>
+  } @else if (plans().length === 0) {
+    <div class="card-luxe luxe-shadow event-plan-page__empty-card">
+      <p class="text-body-md">No event plans yet — create your first.</p>
+      <ui-button [fullWidth]="false" (click)="createPlan()">Create plan</ui-button>
+    </div>
+  } @else {
+    <div class="event-plan-grid">
+      @for (plan of plans(); track plan.id) {
+        <div class="card-luxe luxe-shadow event-plan-card">
+          <h4 class="text-headline-sm">{{ plan.title }}</h4>
+          <p class="text-body-md event-plan-card__meta">
+            {{ plan.eventDate | date: 'mediumDate' }} · {{ plan.city }} · {{ plan.guestCount }}
+            guests · {{ plan.budgetTotal | number: '1.0-2' }}
+          </p>
+          <div class="event-plan-card__actions">
+            <ui-button variant="outline" [fullWidth]="false" (click)="viewPlan(plan)">
+              View
+            </ui-button>
+            <ui-button [fullWidth]="false" (click)="bookVendors(plan)">
+              Add bookings
+            </ui-button>
+            <button
+              class="icon-btn icon-btn--danger"
+              type="button"
+              title="Delete"
+              [disabled]="deletingId() === plan.id"
+              (click)="deletePlan(plan)"
+            >
+              <span class="material-symbols-outlined">delete</span>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

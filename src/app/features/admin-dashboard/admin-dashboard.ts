@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { confirmLogout } from '../../shared/utils/confirm-logout';
 
 /**
  * Temporary placeholder for the admin area. No admin functionality is
@@ -17,7 +18,11 @@ export class AdminDashboard {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  protected logout(): void {
+  protected async logout(): Promise<void> {
+    const confirmed = await confirmLogout();
+    if (!confirmed) {
+      return;
+    }
     this.authService.logout();
     this.router.navigateByUrl('/auth');
   }

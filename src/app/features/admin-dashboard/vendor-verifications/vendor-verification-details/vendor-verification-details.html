@@ -1,5 +1,5 @@
 <div class="verif-details">
-  <div class="verif-details__header">
+  <div class="verif-details__header animate-fade-up">
     <div class="verif-details__heading">
       <span class="verif-details__icon material-symbols-outlined" aria-hidden="true">badge</span>
       <div>
@@ -35,51 +35,51 @@
       <ui-alert-banner variant="error" [message]="'Previously rejected: ' + details.rejectionReason" />
     }
 
-    <section class="verif-section">
+    <section class="verif-section animate-fade-up stagger-1">
       <h5 class="text-label-md verif-section__title">
         <span class="material-symbols-outlined">person</span>
         Vendor Information
       </h5>
       <dl class="verif-details__grid">
         <div class="verif-details__field">
-          <dt class="text-label-sm">Full Name</dt>
+          <dt class="text-label-sm"><span class="material-symbols-outlined">person</span>Full Name</dt>
           <dd class="text-body-md">{{ details.vendorName }}</dd>
         </div>
         <div class="verif-details__field">
-          <dt class="text-label-sm">Email</dt>
+          <dt class="text-label-sm"><span class="material-symbols-outlined">mail</span>Email</dt>
           <dd class="text-body-md">{{ details.email ?? 'Not specified' }}</dd>
         </div>
         <div class="verif-details__field">
-          <dt class="text-label-sm">Phone Number</dt>
+          <dt class="text-label-sm"><span class="material-symbols-outlined">call</span>Phone Number</dt>
           <dd class="text-body-md">{{ details.phoneNumber ?? 'Not specified' }}</dd>
         </div>
         <div class="verif-details__field">
-          <dt class="text-label-sm">Business Name</dt>
+          <dt class="text-label-sm"><span class="material-symbols-outlined">storefront</span>Business Name</dt>
           <dd class="text-body-md">{{ details.businessName }}</dd>
         </div>
         <div class="verif-details__field">
-          <dt class="text-label-sm">Category</dt>
+          <dt class="text-label-sm"><span class="material-symbols-outlined">category</span>Category</dt>
           <dd class="text-body-md">{{ details.categoryName ?? 'Not specified' }}</dd>
         </div>
         <div class="verif-details__field">
-          <dt class="text-label-sm">Vendor Type</dt>
+          <dt class="text-label-sm"><span class="material-symbols-outlined">badge</span>Vendor Type</dt>
           <dd class="text-body-md">{{ details.vendorType === VendorType.Business ? 'Business' : 'Individual' }}</dd>
         </div>
         <div class="verif-details__field">
-          <dt class="text-label-sm">City</dt>
+          <dt class="text-label-sm"><span class="material-symbols-outlined">location_city</span>City</dt>
           <dd class="text-body-md">{{ details.city ?? 'Not specified' }}</dd>
         </div>
         <div class="verif-details__field">
-          <dt class="text-label-sm">Address</dt>
+          <dt class="text-label-sm"><span class="material-symbols-outlined">home_pin</span>Address</dt>
           <dd class="text-body-md">{{ details.address ?? 'Not specified' }}</dd>
         </div>
         <div class="verif-details__field">
-          <dt class="text-label-sm">Submitted</dt>
+          <dt class="text-label-sm"><span class="material-symbols-outlined">calendar_month</span>Submitted</dt>
           <dd class="text-body-md">{{ details.submittedAt | date: 'MMM d, y, h:mm a' }}</dd>
         </div>
         @if (details.reviewedAt) {
           <div class="verif-details__field">
-            <dt class="text-label-sm">Reviewed</dt>
+            <dt class="text-label-sm"><span class="material-symbols-outlined">event_available</span>Reviewed</dt>
             <dd class="text-body-md">{{ details.reviewedAt | date: 'MMM d, y, h:mm a' }}</dd>
           </div>
         }
@@ -89,7 +89,7 @@
       }
     </section>
 
-    <section class="verif-section">
+    <section class="verif-section animate-fade-up stagger-2">
       <h5 class="text-label-md verif-section__title">
         <span class="material-symbols-outlined">verified_user</span>
         Verification Documents
@@ -119,7 +119,7 @@
       }
     </section>
 
-    <section class="verif-section">
+    <section class="verif-section animate-fade-up stagger-3">
       <h5 class="text-label-md verif-section__title">
         <span class="material-symbols-outlined">photo_library</span>
         Portfolio

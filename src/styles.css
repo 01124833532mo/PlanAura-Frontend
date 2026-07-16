@@ -569,9 +569,9 @@ a {
 }
 
 /* ==========================================================================
-   Gold-gradient primary action button — shared across client-facing
-   features (Stitch design export's "primary-gradient-btn", translated to
-   the token system above instead of Tailwind).
+   Coral-gradient primary action button — shared across client-facing
+   features. Same visual language as ui-btn--primary (the shared <ui-button>
+   component), for places that need a plain anchor/button element instead.
    ========================================================================== */
 
 .btn-gold-gradient {
@@ -582,22 +582,396 @@ a {
   padding: 0.85rem 1.25rem;
   border: none;
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #d4af37 0%, #e9c349 100%);
-  color: #fff;
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
   font-family: var(--font-family-base);
   font-size: var(--font-label-md-size);
   font-weight: var(--font-label-md-weight);
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(212, 175, 55, 0.25);
-  transition: box-shadow 0.2s ease, opacity 0.2s ease, transform 0.05s ease;
+  box-shadow: var(--shadow-glow);
+  transition: box-shadow var(--dur-base) var(--ease-smooth), opacity var(--dur-base) var(--ease-smooth),
+    transform var(--dur-fast) var(--ease-smooth);
 }
 
 .btn-gold-gradient:hover {
-  opacity: 0.92;
-  box-shadow: 0 14px 24px rgba(212, 175, 55, 0.32);
+  opacity: 0.94;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(232, 101, 74, 0.34);
 }
 
 .btn-gold-gradient:active {
   transform: scale(0.98);
+}
+
+/* ==========================================================================
+   SweetAlert2 theming — used for the logout confirmation dialog (and any
+   future Swal-based confirmations). Swal renders its markup directly on
+   <body>, outside any component's view encapsulation, so this has to live
+   here in the global stylesheet rather than in a component .css file.
+   Visually mirrors the app's native `.modal-backdrop` / `.modal-card` /
+   `confirm-dialog` pattern (same radius, shadow, gradient button language).
+   ========================================================================== */
+
+.swal-planura-container.swal2-container {
+  background: rgba(36, 31, 28, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.swal-planura-popup.swal2-popup {
+  width: auto;
+  max-width: 420px;
+  padding: var(--space-lg);
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  font-family: var(--font-family-base);
+}
+
+.swal-planura-popup .swal2-title.swal-planura-title {
+  padding: 0;
+  margin: 0 0 var(--space-sm);
+  font-family: var(--font-family-display);
+  font-size: var(--font-headline-sm-size);
+  font-weight: 500;
+  color: var(--color-charcoal);
+}
+
+.swal-planura-popup .swal2-html-container.swal-planura-text {
+  margin: 0;
+  padding: 0;
+  font-size: var(--font-body-md-size);
+  color: var(--color-secondary);
+}
+
+.swal-planura-popup .swal2-actions.swal-planura-actions {
+  width: 100%;
+  margin-top: var(--space-lg);
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-subtle-border);
+}
+
+.swal-planura-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-xl);
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: var(--font-label-md-weight);
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  cursor: pointer;
+  box-shadow: none;
+  transition: box-shadow var(--dur-base) var(--ease-smooth), opacity var(--dur-base) var(--ease-smooth),
+    transform var(--dur-fast) var(--ease-smooth);
+}
+
+.swal-planura-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.swal-planura-btn:active {
+  transform: scale(0.98);
+}
+
+/* Confirm — same gradient treatment as ui-btn--primary / .btn-gold-gradient */
+.swal-planura-btn--confirm {
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.swal-planura-btn--confirm:hover {
+  opacity: 0.94;
+  box-shadow: 0 16px 36px rgba(232, 101, 74, 0.34);
+}
+
+/* Cancel — neutral outline, same as ui-btn--outline */
+.swal-planura-btn--cancel {
+  background: var(--color-surface-container-lowest);
+  color: var(--color-charcoal);
+  border-color: var(--color-subtle-border);
+}
+
+/* ---- Toast variant (used by notifySuccess) — compact, top-right, no actions ---- */
+.swal-planura-toast.swal2-popup {
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-subtle-border);
+  box-shadow: var(--shadow-lg);
+  background: var(--color-surface-container-lowest);
+}
+
+.swal-planura-toast .swal2-title {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: 600;
+  color: var(--color-charcoal);
+}
+
+.swal-planura-toast .swal2-timer-progress-bar {
+  background: var(--gradient-primary);
+}
+
+.swal-planura-btn--cancel:hover {
+  background: var(--color-soft-beige);
+}
+
+/* ==========================================================================
+   Legal pages (Terms of Service / Privacy Policy) — shared chrome so both
+   pages, and any future legal page (Cookie Policy, etc.), look identical:
+   a mesh hero header, a sticky section table-of-contents, and card-luxe
+   section blocks. Page-specific content lives in each component's own
+   template; only this shared layout/typography lives globally.
+   ========================================================================== */
+
+.legal-page {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  min-height: 100vh;
+}
+
+.legal-hero {
+  position: relative;
+  padding: var(--space-2xl) var(--margin-desktop) var(--space-xl);
+  background: var(--gradient-warm-bg);
+  overflow: hidden;
+  text-align: center;
+}
+
+.legal-hero__blob {
+  z-index: 0;
+}
+
+.legal-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.legal-hero__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-glow);
+  font-size: 30px;
+  margin-bottom: var(--space-xs);
+}
+
+.legal-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: var(--font-label-sm-size);
+}
+
+.legal-hero__title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-display-lg-size);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-charcoal);
+}
+
+.legal-hero__subtitle {
+  font-size: var(--font-body-lg-size);
+  color: var(--color-secondary);
+  max-width: 560px;
+}
+
+.legal-hero__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: var(--space-sm);
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-subtle-border);
+  color: var(--color-secondary);
+  font-size: var(--font-label-sm-size);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+.legal-hero__meta .material-symbols-outlined {
+  font-size: 16px;
+  color: var(--color-rose-gold);
+}
+
+/* ---- Body layout: sticky table-of-contents + section cards ---- */
+
+.legal-layout {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--space-xl) var(--margin-desktop) var(--space-2xl);
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.legal-toc {
+  position: sticky;
+  top: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: var(--space-md);
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.legal-toc__heading {
+  font-size: var(--font-label-sm-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-secondary);
+  padding: 0.4rem 0.6rem 0.6rem;
+}
+
+.legal-toc__link {
+  display: block;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--radius-md);
+  color: var(--color-secondary);
+  font-size: var(--font-label-md-size);
+  text-decoration: none;
+  transition: background var(--dur-fast) var(--ease-smooth), color var(--dur-fast) var(--ease-smooth);
+}
+
+.legal-toc__link:hover {
+  background: var(--color-soft-beige);
+  color: var(--color-primary);
+}
+
+.legal-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+
+.legal-section {
+  scroll-margin-top: var(--space-lg);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.legal-section__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.legal-section__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary);
+}
+
+.legal-section__header h2 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-headline-sm-size);
+  font-weight: 500;
+  color: var(--color-charcoal);
+}
+
+.legal-section p {
+  color: var(--color-dark-gray);
+  line-height: 1.7;
+}
+
+.legal-section ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--color-dark-gray);
+  line-height: 1.6;
+}
+
+.legal-section ul li::marker {
+  color: var(--color-primary);
+}
+
+.legal-section strong {
+  color: var(--color-charcoal);
+}
+
+.legal-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: var(--font-label-md-size);
+  font-weight: 600;
+}
+
+.legal-back-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .legal-hero,
+  .legal-layout {
+    padding-left: var(--margin-mobile);
+    padding-right: var(--margin-mobile);
+  }
+
+  .legal-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .legal-toc {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .legal-toc__heading {
+    width: 100%;
+  }
 }

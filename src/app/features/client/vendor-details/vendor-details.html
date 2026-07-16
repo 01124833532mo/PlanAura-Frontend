@@ -1,10 +1,10 @@
-<div class="vendor-details-page">
+<div class="vendor-details-page bg-mesh">
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
   @if (loading()) {
-    <p class="text-body-md vendor-details-page__empty">Loading vendor...</p>
+    <div class="skeleton vendor-details-page__skeleton"></div>
   } @else if (vendor(); as v) {
-    <header class="vendor-details-header card-luxe luxe-shadow">
+    <header class="vendor-details-header card-luxe luxe-shadow animate-blur-reveal">
       <div class="vendor-details-header__media">
         @if (v.logoUrl) {
           <img [src]="v.logoUrl" [alt]="v.businessName" class="vendor-details-header__logo" />
@@ -55,11 +55,15 @@
       </div>
     </header>
 
-    <section class="vendor-details-section">
-      <h3 class="text-headline-sm">Packages</h3>
+    <section class="vendor-details-section animate-fade-up stagger-1">
+      <h3 class="text-headline-sm vendor-details-section__heading">
+        <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
+        Packages
+      </h3>
 
       @if (packages().length === 0) {
         <div class="card-luxe luxe-shadow vendor-details-page__empty-card">
+          <span class="material-symbols-outlined vendor-details-page__empty-icon" aria-hidden="true">inventory_2</span>
           <p class="text-body-md">This vendor hasn't published any packages yet.</p>
         </div>
       } @else {
@@ -90,6 +94,7 @@
                       type="button"
                       (click)="bookPackage(pkg)"
                     >
+                      <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
                       Book this package
                     </button>
                   </td>

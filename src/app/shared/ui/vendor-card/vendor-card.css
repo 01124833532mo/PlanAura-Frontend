@@ -3,12 +3,6 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.vendor-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 24px 36px rgba(26, 26, 26, 0.1);
 }
 
 .vendor-card__media {
@@ -38,7 +32,7 @@
 .vendor-card__media-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(26, 26, 26, 0) 55%, rgba(26, 26, 26, 0.32) 100%);
+  background: linear-gradient(180deg, rgba(36, 31, 28, 0) 55%, rgba(36, 31, 28, 0.32) 100%);
   pointer-events: none;
 }
 
@@ -56,7 +50,7 @@
   color: var(--color-secondary);
   font-size: var(--font-label-sm-size);
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.12);
+  box-shadow: 0 4px 12px rgba(36, 31, 28, 0.12);
 }
 
 .vendor-card__verification .material-symbols-outlined {

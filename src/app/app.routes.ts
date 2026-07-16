@@ -19,6 +19,22 @@ export const routes: Routes = [
       import('./features/auth/auth-page/auth-page').then((m) => m.AuthPage),
   },
   {
+    // Public legal pages — no auth guard, linked from both the signed-out
+    // auth page footer and the signed-in home page footer.
+    path: 'terms',
+    loadComponent: () =>
+      import('./features/legal/terms-of-service/terms-of-service').then(
+        (m) => m.TermsOfService,
+      ),
+  },
+  {
+    path: 'privacy',
+    loadComponent: () =>
+      import('./features/legal/privacy-policy/privacy-policy').then(
+        (m) => m.PrivacyPolicy,
+      ),
+  },
+  {
     path: 'admin/dashboard',
     canActivate: [authGuard, adminGuard],
     loadComponent: () =>
@@ -66,6 +82,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'packages' },
       {
         path: 'packages',
+        data: { title: 'My Packages' },
         loadComponent: () =>
           import('./features/vendor-dashboard/packages/package-list/package-list').then(
             (m) => m.PackageList,
@@ -73,6 +90,7 @@ export const routes: Routes = [
       },
       {
         path: 'availability',
+        data: { title: 'Availability' },
         loadComponent: () =>
           import(
             './features/vendor-dashboard/availability/availability-list/availability-list'
@@ -80,6 +98,7 @@ export const routes: Routes = [
       },
       {
         path: 'browse-packages',
+        data: { title: 'Browse Packages' },
         loadComponent: () =>
           import('./features/vendor-dashboard/packages/package-browser/package-browser').then(
             (m) => m.PackageBrowser,
@@ -87,6 +106,7 @@ export const routes: Routes = [
       },
       {
         path: 'profile',
+        data: { title: 'My Profile' },
         loadComponent: () =>
           import('./features/vendor-dashboard/profile/profile').then((m) => m.Profile),
       },
@@ -101,6 +121,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
+        data: { title: 'Overview' },
         loadComponent: () =>
           import('./features/client/client-dashboard/client-dashboard').then(
             (m) => m.ClientDashboard,
@@ -108,16 +129,19 @@ export const routes: Routes = [
       },
       {
         path: 'vendors',
+        data: { title: 'Browse Vendors' },
         loadComponent: () =>
           import('./features/client/vendor-browse/vendor-browse').then((m) => m.VendorBrowse),
       },
       {
         path: 'vendors/:id',
+        data: { title: 'Vendor Details' },
         loadComponent: () =>
           import('./features/client/vendor-details/vendor-details').then((m) => m.VendorDetails),
       },
       {
         path: 'booking/new',
+        data: { title: 'New Booking' },
         loadComponent: () =>
           import('./features/client/booking/booking-create/booking-create').then(
             (m) => m.BookingCreate,
@@ -125,6 +149,7 @@ export const routes: Routes = [
       },
       {
         path: 'event-plans',
+        data: { title: 'My Event Plans' },
         loadComponent: () =>
           import('./features/client/event-plan/event-plan-list/event-plan-list').then(
             (m) => m.EventPlanList,
@@ -132,6 +157,7 @@ export const routes: Routes = [
       },
       {
         path: 'event-plans/new',
+        data: { title: 'New Event Plan' },
         loadComponent: () =>
           import('./features/client/event-plan/event-plan-form/event-plan-form').then(
             (m) => m.EventPlanForm,
@@ -141,6 +167,7 @@ export const routes: Routes = [
         // Must come after 'event-plans/new' — otherwise ':id' would match
         // the literal 'new' segment first.
         path: 'event-plans/:id',
+        data: { title: 'Event Plan Details' },
         loadComponent: () =>
           import('./features/client/event-plan/event-plan-detail/event-plan-detail').then(
             (m) => m.EventPlanDetail,
@@ -148,9 +175,18 @@ export const routes: Routes = [
       },
       {
         path: 'bookings/:id/pay',
+        data: { title: 'Checkout' },
         loadComponent: () =>
           import('./features/client/payment/payment-checkout/payment-checkout').then(
             (m) => m.PaymentCheckout,
+          ),
+      },
+      {
+        path: 'profile',
+        data: { title: 'My Profile' },
+        loadComponent: () =>
+          import('./features/client/client-profile/client-profile').then(
+            (m) => m.ClientProfileComponent,
           ),
       },
     ],

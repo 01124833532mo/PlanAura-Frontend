@@ -1,0 +1,10 @@
+:host {
+  display: block;
+}
+
+/*
+ * Layout, hero, table-of-contents, and section-card styling for this page
+ * lives in src/styles.css under the shared `.legal-*` classes, reused by
+ * both Terms of Service and Privacy Policy. Nothing page-specific needed
+ * here beyond the host display rule above.
+ */

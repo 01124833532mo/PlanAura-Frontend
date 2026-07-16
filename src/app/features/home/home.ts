@@ -6,6 +6,7 @@ import { ServiceCategory } from '../../core/interfaces/vendor.model';
 import { VendorListItem } from '../../core/interfaces/vendor-browse.model';
 import { VendorBrowseService } from '../../core/services/vendor-browse.service';
 import { VendorCard } from '../../shared/ui/vendor-card/vendor-card';
+import { confirmLogout } from '../../shared/utils/confirm-logout';
 
 /**
  * Fallback Material Symbols per category slug, used only when a category has
@@ -92,7 +93,11 @@ export class Home implements OnInit {
     this.router.navigateByUrl('/client/event-plans/new');
   }
 
-  protected logout(): void {
+  protected async logout(): Promise<void> {
+    const confirmed = await confirmLogout();
+    if (!confirmed) {
+      return;
+    }
     this.authService.logout();
     this.router.navigateByUrl('/auth');
   }

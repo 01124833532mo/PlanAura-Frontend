@@ -1,10 +1,7 @@
 <aside class="vendor-nav">
   <div class="vendor-nav__brand">
     <span class="vendor-nav__logo material-symbols-outlined" aria-hidden="true">celebration</span>
-    <div class="vendor-nav__brand-text">
-      <span class="text-headline-sm">Planura Pro</span>
-      <p class="text-label-sm vendor-nav__brand-sub">Vendor Dashboard</p>
-    </div>
+    <span class="text-headline-sm vendor-nav__brand-name">Planura</span>
   </div>
 
   <nav class="vendor-nav__links">
@@ -52,7 +49,7 @@
 
 <main class="vendor-main">
   <header class="vendor-topbar">
-    <h2 class="text-headline-md vendor-topbar__title">Overview</h2>
+    <h2 class="text-headline-md vendor-topbar__title">{{ pageTitle() }}</h2>
 
     @if (vendorProfileState.profile(); as profile) {
       <div class="vendor-topbar__profile">

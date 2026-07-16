@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertBanner } from '../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../shared/ui/button/button';
@@ -21,6 +21,17 @@ export class ClientDashboard implements OnInit {
   protected readonly plans = signal<EventPlan[]>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal<AppError | null>(null);
+
+  // Pure display-only aggregates for the dashboard's summary stat cards —
+  // derived from the already-fetched `plans` signal, no extra requests.
+  protected readonly totalPlans = computed(() => this.plans().length);
+  protected readonly upcomingCount = computed(() => {
+    const now = Date.now();
+    return this.plans().filter((plan) => new Date(plan.eventDate).getTime() >= now).length;
+  });
+  protected readonly totalGuests = computed(() =>
+    this.plans().reduce((sum, plan) => sum + (plan.guestCount ?? 0), 0),
+  );
 
   ngOnInit(): void {
     this.loading.set(true);

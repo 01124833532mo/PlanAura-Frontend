@@ -1,0 +1,305 @@
+<div class="cp-page">
+  <ui-alert-banner [message]="loadError()?.message ?? null" [details]="loadError()?.fieldErrors ?? []" />
+
+  @if (loading()) {
+    <div class="cp-hero cp-hero--loading card-luxe animate-fade-up">
+      <div class="skeleton cp-skeleton__avatar"></div>
+      <div class="cp-skeleton__lines">
+        <div class="skeleton cp-skeleton__line cp-skeleton__line--wide"></div>
+        <div class="skeleton cp-skeleton__line"></div>
+      </div>
+    </div>
+    <div class="cp-grid">
+      <div class="skeleton cp-skeleton__card"></div>
+      <div class="skeleton cp-skeleton__card"></div>
+      <div class="skeleton cp-skeleton__card"></div>
+      <div class="skeleton cp-skeleton__card"></div>
+    </div>
+  } @else if (profile(); as p) {
+    <!-- ============ Hero ============ -->
+    <section class="cp-hero bg-mesh animate-blur-reveal">
+      <span class="floating-blob cp-hero__blob cp-hero__blob--one" aria-hidden="true"></span>
+      <span class="floating-blob cp-hero__blob cp-hero__blob--two" aria-hidden="true"></span>
+
+      <div class="cp-hero__content">
+        <div class="cp-hero__avatar-wrap">
+          <div class="cp-hero__avatar">
+            @if (p.avatarUrl) {
+              <img [src]="p.avatarUrl" alt="{{ p.fullName }}" />
+            } @else {
+              <span>{{ p.fullName.charAt(0) }}</span>
+            }
+          </div>
+          <button class="cp-hero__avatar-edit" type="button" title="Change photo" (click)="openEdit()">
+            <span class="material-symbols-outlined">photo_camera</span>
+          </button>
+        </div>
+
+        <div class="cp-hero__text">
+          <span class="cp-hero__badge">
+            <span class="material-symbols-outlined">verified</span>
+            Client
+          </span>
+          <h1 class="cp-hero__name">{{ p.fullName }}</h1>
+          <p class="cp-hero__email">
+            <span class="material-symbols-outlined">mail</span>
+            {{ p.email }}
+          </p>
+        </div>
+
+        <ui-button class="cp-hero__edit-btn" variant="outline" [fullWidth]="false" (click)="openEdit()">
+          <span class="material-symbols-outlined">edit</span>
+          Edit Profile
+        </ui-button>
+      </div>
+    </section>
+
+    <!-- ============ Completion ============ -->
+    <section class="cp-completion card-luxe animate-fade-up stagger-1">
+      <div class="cp-completion__top">
+        <div class="cp-completion__heading">
+          <h3 class="text-headline-sm">Profile Completion</h3>
+          <p class="text-body-md">Complete your profile to get the most out of Planura.</p>
+        </div>
+        <span class="cp-completion__percent" [class.cp-completion__percent--full]="completionPercent() === 100">
+          {{ completionPercent() }}%
+        </span>
+      </div>
+
+      <div class="cp-completion__bar" role="progressbar" [attr.aria-valuenow]="completionPercent()" aria-valuemin="0" aria-valuemax="100">
+        <div class="cp-completion__bar-fill" [style.width.%]="completionPercent()"></div>
+      </div>
+
+      @if (missingItems().length > 0) {
+        <div class="cp-completion__missing">
+          @for (item of missingItems(); track item.label) {
+            <button class="cp-completion__chip" type="button" (click)="openEdit()">
+              <span class="material-symbols-outlined">add</span>
+              {{ item.label }}
+            </button>
+          }
+        </div>
+      } @else {
+        <p class="cp-completion__done">
+          <span class="material-symbols-outlined">check_circle</span>
+          Your profile is all set — nice work!
+        </p>
+      }
+    </section>
+
+    <!-- ============ Card grid ============ -->
+    <div class="cp-grid">
+      <section class="cp-card card-luxe hover-lift animate-fade-up stagger-2">
+        <div class="cp-card__header">
+          <span class="cp-card__icon material-symbols-outlined" aria-hidden="true">person</span>
+          <h3 class="text-headline-sm">Personal Information</h3>
+        </div>
+
+        <div class="cp-field">
+          <span class="cp-field__icon material-symbols-outlined" aria-hidden="true">badge</span>
+          <div class="cp-field__body">
+            <span class="cp-field__label">Full Name</span>
+            <span class="cp-field__value">{{ p.fullName }}</span>
+          </div>
+        </div>
+
+        <div class="cp-field">
+          <span class="cp-field__icon material-symbols-outlined" aria-hidden="true">cake</span>
+          <div class="cp-field__body">
+            <span class="cp-field__label">Date of Birth</span>
+            @if (p.dateOfBirth) {
+              <span class="cp-field__value">{{ p.dateOfBirth | date: 'mediumDate' }}</span>
+            } @else {
+              <button class="cp-field__add" type="button" (click)="openEdit()">
+                <span class="material-symbols-outlined">add</span>
+                Add date of birth
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="cp-card card-luxe hover-lift animate-fade-up stagger-3">
+        <div class="cp-card__header">
+          <span class="cp-card__icon material-symbols-outlined" aria-hidden="true">contact_mail</span>
+          <h3 class="text-headline-sm">Contact Information</h3>
+        </div>
+
+        <div class="cp-field">
+          <span class="cp-field__icon material-symbols-outlined" aria-hidden="true">mail</span>
+          <div class="cp-field__body">
+            <span class="cp-field__label">Email Address</span>
+            <span class="cp-field__value">{{ p.email }}</span>
+          </div>
+        </div>
+
+        <div class="cp-field">
+          <span class="cp-field__icon material-symbols-outlined" aria-hidden="true">call</span>
+          <div class="cp-field__body">
+            <span class="cp-field__label">Phone Number</span>
+            @if (p.phoneNumber) {
+              <span class="cp-field__value">{{ p.phoneNumber }}</span>
+            } @else {
+              <button class="cp-field__add" type="button" (click)="openEdit()">
+                <span class="material-symbols-outlined">add</span>
+                Add phone number
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="cp-field">
+          <span class="cp-field__icon material-symbols-outlined" aria-hidden="true">location_on</span>
+          <div class="cp-field__body">
+            <span class="cp-field__label">City</span>
+            @if (p.city) {
+              <span class="cp-field__value">{{ p.city }}</span>
+            } @else {
+              <button class="cp-field__add" type="button" (click)="openEdit()">
+                <span class="material-symbols-outlined">add</span>
+                Add city
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="cp-card card-luxe hover-lift animate-fade-up stagger-4">
+        <div class="cp-card__header">
+          <span class="cp-card__icon material-symbols-outlined" aria-hidden="true">account_circle</span>
+          <h3 class="text-headline-sm">Account Details</h3>
+        </div>
+
+        <div class="cp-field">
+          <span class="cp-field__icon material-symbols-outlined" aria-hidden="true">calendar_month</span>
+          <div class="cp-field__body">
+            <span class="cp-field__label">Member Since</span>
+            <span class="cp-field__value">{{ p.createdAt | date: 'mediumDate' }}</span>
+          </div>
+        </div>
+
+        <div class="cp-field">
+          <span class="cp-field__icon material-symbols-outlined" aria-hidden="true">how_to_reg</span>
+          <div class="cp-field__body">
+            <span class="cp-field__label">Account Type</span>
+            <span class="cp-field__value">Client</span>
+          </div>
+        </div>
+
+        <div class="cp-field">
+          <span class="cp-field__icon material-symbols-outlined" aria-hidden="true">toggle_on</span>
+          <div class="cp-field__body">
+            <span class="cp-field__label">Status</span>
+            <span class="cp-status-badge">
+              <span class="cp-status-badge__dot" aria-hidden="true"></span>
+              Active
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="cp-card cp-card--soon card-luxe animate-fade-up stagger-5">
+        <div class="cp-card__header">
+          <span class="cp-card__icon material-symbols-outlined" aria-hidden="true">lock</span>
+          <h3 class="text-headline-sm">Security</h3>
+          <span class="cp-card__soon-badge">Coming soon</span>
+        </div>
+
+        <div class="cp-field">
+          <span class="cp-field__icon material-symbols-outlined" aria-hidden="true">password</span>
+          <div class="cp-field__body">
+            <span class="cp-field__label">Password</span>
+            <span class="cp-field__value cp-field__value--muted">••••••••••</span>
+          </div>
+        </div>
+
+        <button class="cp-card__cta" type="button" disabled title="Password changes are coming soon">
+          <span class="material-symbols-outlined">key</span>
+          Change Password
+        </button>
+      </section>
+
+      <section class="cp-card cp-card--soon card-luxe animate-fade-up stagger-6">
+        <div class="cp-card__header">
+          <span class="cp-card__icon material-symbols-outlined" aria-hidden="true">tune</span>
+          <h3 class="text-headline-sm">Preferences</h3>
+          <span class="cp-card__soon-badge">Coming soon</span>
+        </div>
+
+        <div class="cp-preference">
+          <div class="cp-preference__text">
+            <span class="cp-field__label">Email Notifications</span>
+            <span class="cp-preference__hint">Booking updates and reminders</span>
+          </div>
+          <span class="cp-toggle cp-toggle--disabled" aria-hidden="true"><span class="cp-toggle__thumb"></span></span>
+        </div>
+
+        <div class="cp-preference">
+          <div class="cp-preference__text">
+            <span class="cp-field__label">SMS Reminders</span>
+            <span class="cp-preference__hint">Event day notifications</span>
+          </div>
+          <span class="cp-toggle cp-toggle--disabled" aria-hidden="true"><span class="cp-toggle__thumb"></span></span>
+        </div>
+      </section>
+    </div>
+  }
+
+  <!-- ============ Edit modal ============ -->
+  @if (editModalOpen()) {
+    <div class="modal-backdrop" (click)="closeEdit()">
+      <div class="modal-card card-luxe cp-edit-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <div class="cp-edit-modal__header">
+          <span class="cp-edit-modal__icon material-symbols-outlined" aria-hidden="true">edit</span>
+          <div class="cp-edit-modal__heading">
+            <h3 class="text-headline-sm">Edit Profile</h3>
+            <p class="text-body-md">Update your personal information</p>
+          </div>
+          <button class="icon-btn" type="button" title="Close" (click)="closeEdit()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <form class="cp-edit-form" [formGroup]="form" (ngSubmit)="save()">
+          <div class="cp-edit-form__grid">
+            <ui-text-field
+              label="Full Name"
+              formControlName="fullName"
+              [errorMessage]="
+                form.controls.fullName.touched && form.controls.fullName.invalid
+                  ? 'Full name must be between 2 and 150 characters.'
+                  : null
+              "
+            />
+            <ui-text-field
+              label="Email Address"
+              type="email"
+              formControlName="email"
+              [errorMessage]="
+                form.controls.email.touched && form.controls.email.invalid
+                  ? 'A valid email address is required.'
+                  : null
+              "
+            />
+            <ui-text-field label="Phone Number" type="tel" formControlName="phoneNumber" />
+            <ui-text-field label="City" formControlName="city" />
+            <ui-text-field label="Date of Birth" type="date" formControlName="dateOfBirth" />
+          </div>
+
+          <ui-file-dropzone
+            label="Change profile picture"
+            formControlName="avatarFile"
+            hint="PNG or JPG, up to 2 MB"
+          />
+
+          <div class="cp-edit-form__actions">
+            <ui-button variant="outline" type="button" [disabled]="saving()" (click)="closeEdit()">
+              Cancel
+            </ui-button>
+            <ui-button type="submit" [loading]="saving()">Save Changes</ui-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

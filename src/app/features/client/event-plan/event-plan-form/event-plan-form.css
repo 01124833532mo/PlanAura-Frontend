@@ -4,12 +4,26 @@
   gap: var(--space-md);
   max-width: 640px;
   margin: 0 auto;
-  padding: var(--margin-desktop) var(--margin-mobile);
 }
 
-.event-plan-form-page__header p {
+.event-plan-form-page__header p.text-body-md {
   color: var(--color-secondary);
   margin-top: 0.25rem;
+}
+
+.event-plan-form-page__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.event-plan-form-page__eyebrow .material-symbols-outlined {
+  font-size: 16px;
 }
 
 .event-plan-form {
@@ -17,6 +31,37 @@
   flex-direction: column;
   gap: var(--space-md);
   padding: var(--space-lg);
+}
+
+.event-plan-form__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.event-plan-form__header-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary);
+  font-size: 22px;
+}
+
+.event-plan-form__header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-top: 0.35rem;
+}
+
+.event-plan-form__header-text p.text-body-md {
+  color: var(--color-secondary);
 }
 
 .event-plan-form__row {
@@ -30,6 +75,7 @@
   justify-content: flex-end;
   gap: var(--space-sm);
   padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-subtle-border);
 }
 
 @media (max-width: 640px) {

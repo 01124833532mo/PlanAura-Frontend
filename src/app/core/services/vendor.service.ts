@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../config/app-config';
 import { PortfolioMediaItem } from '../interfaces/portfolio.model';
+import { VendorDashboardStats } from '../interfaces/vendor-dashboard-stats.model';
 import { UpdateVendorProfilePayload, VendorProfile } from '../interfaces/vendor-profile.model';
 
 /**
@@ -25,6 +26,11 @@ export class VendorService {
   /** GET /api/vendors/{id} */
   getById(id: number): Observable<VendorProfile> {
     return this.http.get<VendorProfile>(`${API_BASE_URL}/vendors/${id}`);
+  }
+
+  /** GET /api/vendors/me/dashboard-stats (VendorOnly, resolved from the JWT) */
+  getMyDashboardStats(): Observable<VendorDashboardStats> {
+    return this.http.get<VendorDashboardStats>(`${API_BASE_URL}/vendors/me/dashboard-stats`);
   }
 
   /** PUT /api/vendors/me */

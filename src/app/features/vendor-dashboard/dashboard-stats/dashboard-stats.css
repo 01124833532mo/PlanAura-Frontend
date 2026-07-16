@@ -1,0 +1,87 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--space-sm);
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-subtle-border);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgb(0 0 0 / 0.04));
+  transition:
+    transform var(--dur-fast) var(--ease-smooth),
+    box-shadow var(--dur-fast) var(--ease-smooth);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
+}
+
+.stat-card--skeleton {
+  height: 5.5rem;
+  border: none;
+}
+
+.stat-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+}
+
+.stat-card__icon .material-symbols-outlined {
+  font-size: 1.45rem;
+}
+
+.stat-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.stat-card__value {
+  color: var(--color-charcoal);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.stat-card__label {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.stat-card__hint {
+  color: var(--color-secondary);
+  opacity: 0.75;
+}
+
+/* Tones — reuse the app's design tokens */
+.stat-card--primary .stat-card__icon {
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary);
+}
+
+.stat-card--gold .stat-card__icon {
+  background: var(--color-primary-fixed);
+  color: var(--color-rose-gold);
+}
+
+.stat-card--success .stat-card__icon {
+  background: var(--color-success-container);
+  color: var(--color-success);
+}
+
+.stat-card--neutral .stat-card__icon {
+  background: var(--color-surface-container);
+  color: var(--color-secondary);
+}

@@ -1,0 +1,43 @@
+<div class="modal-backdrop" (click)="handleBackdropClick()">
+  <div
+    class="modal-card reject-dialog card-luxe luxe-shadow animate-scale-in"
+    role="dialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="reject-dialog__header">
+      <span class="reject-dialog__icon material-symbols-outlined" aria-hidden="true">block</span>
+      <div>
+        <h4 class="text-headline-sm">Decline request</h4>
+        @if (eventDate) {
+          <p class="text-body-md reject-dialog__subtitle">Event on {{ eventDate }}</p>
+        }
+      </div>
+    </div>
+
+    <ui-alert-banner [message]="error?.message ?? null" [details]="error?.fieldErrors ?? []" />
+
+    <div class="reject-dialog__field">
+      <label class="ui-field__label" for="booking-reject-reason">Reason <span class="reject-dialog__optional">(optional)</span></label>
+      <textarea
+        id="booking-reject-reason"
+        class="reject-dialog__textarea"
+        rows="4"
+        maxlength="500"
+        placeholder="Let the client know why you can't take this booking..."
+        [(ngModel)]="reason"
+        [disabled]="saving"
+      ></textarea>
+      <p class="text-label-sm reject-dialog__hint">This reason is shared with the client.</p>
+    </div>
+
+    <div class="reject-dialog__actions">
+      <ui-button variant="outline" type="button" [disabled]="saving" (click)="cancelled.emit()">
+        Cancel
+      </ui-button>
+      <ui-button type="button" [loading]="saving" (click)="submit()">
+        Decline request
+      </ui-button>
+    </div>
+  </div>
+</div>

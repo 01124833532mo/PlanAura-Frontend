@@ -17,7 +17,7 @@ export class VendorShell implements OnInit {
   private readonly router = inject(Router);
 
   protected readonly vendorProfileState = inject(VendorProfileStateService);
-  protected readonly pageTitle = createActiveRouteTitle('My Packages');
+  protected readonly pageTitle = createActiveRouteTitle('Booking Requests');
 
   ngOnInit(): void {
     this.vendorProfileState.load();

@@ -370,13 +370,14 @@ button.client-dashboard__stat {
   border: none;
   background: transparent;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
   font-family: var(--font-family-base);
   color: var(--color-charcoal);
   transition: background var(--dur-fast) var(--ease-smooth), transform var(--dur-fast) var(--ease-smooth);
 }
 
-.client-dashboard__action:hover:not(.client-dashboard__action--disabled) {
+.client-dashboard__action:hover {
   background: var(--color-soft-beige);
   transform: translateX(3px);
 }
@@ -391,11 +392,6 @@ button.client-dashboard__stat {
   border-radius: var(--radius-md);
   background: var(--gradient-primary);
   color: var(--color-on-primary);
-}
-
-.client-dashboard__action--disabled .client-dashboard__action-icon {
-  background: var(--color-surface-container);
-  color: var(--color-secondary);
 }
 
 .client-dashboard__action-body {
@@ -418,19 +414,6 @@ button.client-dashboard__stat {
 
 .client-dashboard__action:hover .client-dashboard__action-chevron {
   transform: translateX(3px);
-}
-
-.client-dashboard__action--disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.client-dashboard__action-badge {
-  flex-shrink: 0;
-  color: var(--color-secondary);
-  background: var(--color-surface-container);
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-full);
 }
 
 /* ==========================================================================

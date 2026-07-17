@@ -23,6 +23,7 @@ export class TextField implements ControlValueAccessor {
   @Input() min: string | number | null = null;
   @Input() errorMessage: string | null = null;
   @Input() hint: string | null = null;
+  @Input() compact = false;
 
   protected readonly fieldId = `ui-text-field-${nextId++}`;
   protected value = '';

@@ -182,12 +182,10 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'bookings/:id/pay',
-        data: { title: 'Checkout' },
+        path: 'bookings',
+        data: { title: 'My Bookings' },
         loadComponent: () =>
-          import('./features/client/payment/payment-checkout/payment-checkout').then(
-            (m) => m.PaymentCheckout,
-          ),
+          import('./features/client/booking/my-bookings/my-bookings').then((m) => m.MyBookings),
       },
       {
         path: 'profile',

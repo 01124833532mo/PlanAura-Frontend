@@ -109,8 +109,29 @@
             [multiline]="true"
           />
 
+          <div class="booking-create-payment">
+            <div class="booking-create-payment__header">
+              <span class="booking-create-payment__icon material-symbols-outlined" aria-hidden="true">credit_card</span>
+              <h4 class="text-headline-sm">Payment</h4>
+            </div>
+
+            @if (mountingPayment()) {
+              <p class="text-body-md booking-create-payment__loading">Loading payment form...</p>
+            }
+            <div
+              #paymentElementContainer
+              class="booking-create-payment__element"
+              [class.booking-create-payment__element--hidden]="mountingPayment()"
+            ></div>
+
+            <p class="text-label-sm booking-create-payment__disclaimer">
+              <span class="material-symbols-outlined">lock</span>
+              Your card will be authorized now but only charged once the vendor accepts your request.
+            </p>
+          </div>
+
           <div class="booking-create-form__actions">
-            <ui-button type="submit" [loading]="submitting()">
+            <ui-button type="submit" [loading]="submitting()" [disabled]="mountingPayment()">
               <span class="material-symbols-outlined">celebration</span>
               Request Booking
             </ui-button>

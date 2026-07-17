@@ -1,25 +1,46 @@
 <div class="browse-page bg-mesh">
-  <aside class="browse-sidebar card-luxe luxe-shadow animate-fade-up">
-    <h4 class="text-headline-sm browse-sidebar__heading">
-      <span class="material-symbols-outlined" aria-hidden="true">tune</span>
-      Filters
-    </h4>
+  <div class="browse-page__header animate-fade-up">
+    <p class="text-label-sm browse-page__eyebrow">
+      <span class="material-symbols-outlined" aria-hidden="true">storefront</span>
+      Vendors
+    </p>
+    <h3 class="text-headline-sm">Browse Vendors</h3>
+    <p class="text-body-md">
+      @if (loading()) {
+        Searching...
+      } @else {
+        Discover {{ totalCount() }} premium partner{{ totalCount() === 1 ? '' : 's' }}
+      }
+    </p>
+  </div>
 
-    <ui-select-field
-      label="Category"
-      placeholder="All categories"
-      [options]="categoryOptions()"
-      [formControl]="filterForm.controls.category"
-    />
+  <div class="browse-filterbar card-luxe luxe-shadow animate-fade-up">
+    <div class="browse-filterbar__field">
+      <ui-select-field
+        label="Category"
+        placeholder="All categories"
+        [compact]="true"
+        [options]="categoryOptions()"
+        [formControl]="filterForm.controls.category"
+      />
+    </div>
 
-    <ui-text-field label="City" placeholder="e.g. Cairo" [formControl]="filterForm.controls.city" />
+    <div class="browse-filterbar__field">
+      <ui-text-field
+        label="City"
+        placeholder="e.g. Cairo"
+        [compact]="true"
+        [formControl]="filterForm.controls.city"
+      />
+    </div>
 
-    <div class="browse-sidebar__row">
+    <div class="browse-filterbar__field browse-filterbar__field--price">
       <ui-text-field
         label="Min price"
         type="number"
         min="0"
         placeholder="0"
+        [compact]="true"
         [formControl]="filterForm.controls.minPrice"
       />
       <ui-text-field
@@ -27,13 +48,14 @@
         type="number"
         min="0"
         placeholder="Any"
+        [compact]="true"
         [formControl]="filterForm.controls.maxPrice"
       />
     </div>
 
-    <div class="browse-sidebar__ratings">
-      <span class="text-label-md">Minimum rating</span>
-      <div class="browse-sidebar__rating-buttons">
+    <div class="browse-filterbar__field browse-filterbar__ratings">
+      <span class="text-label-sm">Minimum rating</span>
+      <div class="browse-filterbar__rating-buttons">
         @for (rating of ratingOptions; track rating) {
           <button
             class="browse-rating-btn"
@@ -47,79 +69,71 @@
       </div>
     </div>
 
-    <ui-button variant="outline" [fullWidth]="true" (click)="resetFilters()">
-      Reset filters
-    </ui-button>
-  </aside>
-
-  <div class="browse-main">
-    <div class="browse-header animate-fade-up">
-      <p class="text-body-md">
-        @if (loading()) {
-          Searching...
-        } @else {
-          Discover {{ totalCount() }} premium partner{{ totalCount() === 1 ? '' : 's' }}
-        }
-      </p>
+    <div class="browse-filterbar__field">
       <ui-select-field
         label="Sort by"
+        [compact]="true"
         [options]="sortOptions"
         [formControl]="filterForm.controls.sortBy"
       />
     </div>
 
-    <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
-
-    @if (loading()) {
-      <div class="browse-grid">
-        <div class="skeleton browse-grid__skeleton"></div>
-        <div class="skeleton browse-grid__skeleton"></div>
-        <div class="skeleton browse-grid__skeleton"></div>
-        <div class="skeleton browse-grid__skeleton"></div>
-      </div>
-    } @else if (vendors().length === 0) {
-      <div class="card-luxe luxe-shadow browse-main__empty-card animate-scale-in">
-        <span class="material-symbols-outlined browse-main__empty-icon" aria-hidden="true">search_off</span>
-        <p class="text-body-md">No vendors match your filters.</p>
-        <ui-button [fullWidth]="false" (click)="resetFilters()">Reset filters</ui-button>
-      </div>
-    } @else {
-      <div class="browse-grid">
-        @for (vendor of vendors(); track vendor.id) {
-          <ui-vendor-card class="animate-fade-up" [vendor]="vendor" [eventPlanId]="eventPlanId()" />
-        }
-      </div>
-
-      @if (totalPages() > 1) {
-        <nav class="browse-pagination">
-          <button
-            class="icon-btn"
-            type="button"
-            [disabled]="page() === 1"
-            (click)="goToPage(page() - 1)"
-          >
-            <span class="material-symbols-outlined">chevron_left</span>
-          </button>
-          @for (p of pageNumbers(); track p) {
-            <button
-              class="browse-pagination__page"
-              type="button"
-              [class.browse-pagination__page--active]="p === page()"
-              (click)="goToPage(p)"
-            >
-              {{ p }}
-            </button>
-          }
-          <button
-            class="icon-btn"
-            type="button"
-            [disabled]="page() === totalPages()"
-            (click)="goToPage(page() + 1)"
-          >
-            <span class="material-symbols-outlined">chevron_right</span>
-          </button>
-        </nav>
-      }
-    }
+    <ui-button
+      class="browse-filterbar__reset"
+      variant="ghost"
+      [fullWidth]="false"
+      (click)="resetFilters()"
+    >
+      Reset filters
+    </ui-button>
   </div>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  @if (loading()) {
+    <div class="browse-grid">
+      <div class="skeleton browse-grid__skeleton"></div>
+      <div class="skeleton browse-grid__skeleton"></div>
+      <div class="skeleton browse-grid__skeleton"></div>
+      <div class="skeleton browse-grid__skeleton"></div>
+    </div>
+  } @else if (vendors().length === 0) {
+    <div class="card-luxe luxe-shadow browse-main__empty-card animate-scale-in">
+      <span class="material-symbols-outlined browse-main__empty-icon" aria-hidden="true">search_off</span>
+      <p class="text-body-md">No vendors match your filters.</p>
+      <ui-button [fullWidth]="false" (click)="resetFilters()">Reset filters</ui-button>
+    </div>
+  } @else {
+    <div class="browse-grid">
+      @for (vendor of vendors(); track vendor.id) {
+        <ui-vendor-card class="animate-fade-up" [vendor]="vendor" [eventPlanId]="eventPlanId()" />
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <nav class="browse-pagination">
+        <button class="icon-btn" type="button" [disabled]="page() === 1" (click)="goToPage(page() - 1)">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        @for (p of pageNumbers(); track p) {
+          <button
+            class="browse-pagination__page"
+            type="button"
+            [class.browse-pagination__page--active]="p === page()"
+            (click)="goToPage(p)"
+          >
+            {{ p }}
+          </button>
+        }
+        <button
+          class="icon-btn"
+          type="button"
+          [disabled]="page() === totalPages()"
+          (click)="goToPage(page() + 1)"
+        >
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </nav>
+    }
+  }
 </div>

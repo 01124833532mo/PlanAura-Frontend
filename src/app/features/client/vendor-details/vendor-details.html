@@ -89,14 +89,24 @@
                   <td>{{ pkg.currency }} {{ pkg.basePrice | number: '1.0-2' }}</td>
                   <td>{{ pkg.maxGuests ?? '—' }}</td>
                   <td class="package-table__actions">
-                    <button
-                      class="btn-gold-gradient"
-                      type="button"
-                      (click)="bookPackage(pkg)"
-                    >
-                      <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
-                      Book this package
-                    </button>
+                    @if (blockingBooking(pkg); as blocking) {
+                      <span
+                        class="status-badge"
+                        [class.status-badge--pending]="blockingTone(blocking) === 'pending'"
+                        [class.status-badge--success]="blockingTone(blocking) === 'success'"
+                      >
+                        {{ blockingLabel(blocking) }}
+                      </span>
+                    } @else {
+                      <button
+                        class="btn-gold-gradient"
+                        type="button"
+                        (click)="bookPackage(pkg)"
+                      >
+                        <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
+                        Book this package
+                      </button>
+                    }
                   </td>
                 </tr>
               }

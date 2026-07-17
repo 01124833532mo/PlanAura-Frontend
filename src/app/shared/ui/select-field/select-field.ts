@@ -25,6 +25,7 @@ export class SelectField implements ControlValueAccessor {
   @Input() placeholder = 'Select an option';
   @Input() options: SelectOption[] = [];
   @Input() errorMessage: string | null = null;
+  @Input() compact = false;
 
   protected readonly fieldId = `ui-select-field-${nextId++}`;
   protected value: string | number | null = null;

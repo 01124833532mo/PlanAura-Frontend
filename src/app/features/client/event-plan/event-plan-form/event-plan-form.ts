@@ -8,6 +8,7 @@ import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { notPastDateValidator } from '../../../../shared/validators/future-date.validator';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import { EventPlanService } from '../../../../core/services/event-plan.service';
+import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
 
 @Component({
   selector: 'app-event-plan-form',
@@ -80,6 +81,7 @@ export class EventPlanForm {
       .subscribe({
         next: (createdPlan) => {
           this.saving.set(false);
+          notifySuccess('Event plan created.');
 
           if (this.fromBooking && this.bookingVendorId && this.bookingPackageId) {
             this.router.navigate(['/client/booking/new'], {
@@ -97,6 +99,7 @@ export class EventPlanForm {
         error: (err: AppError) => {
           this.error.set(err);
           this.saving.set(false);
+          notifyError('Could not create event plan', err.message);
         },
       });
   }

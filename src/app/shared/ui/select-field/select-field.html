@@ -1,10 +1,11 @@
 @if (label) {
-  <label class="ui-field__label" [for]="fieldId">{{ label }}</label>
+  <label class="ui-field__label" [class.ui-field__label--compact]="compact" [for]="fieldId">{{ label }}</label>
 }
 <div class="ui-select-wrapper">
   <select
     class="ui-field__input ui-select"
     [class.ui-field__input--invalid]="!!errorMessage"
+    [class.ui-field__input--compact]="compact"
     [id]="fieldId"
     [disabled]="disabled"
     [value]="value ?? ''"
@@ -16,7 +17,11 @@
       <option [value]="option.value">{{ option.label }}</option>
     }
   </select>
-  <span class="material-symbols-outlined ui-select__chevron" aria-hidden="true">expand_more</span>
+  <span
+    class="material-symbols-outlined ui-select__chevron"
+    [class.ui-select__chevron--compact]="compact"
+    aria-hidden="true"
+  >expand_more</span>
 </div>
 @if (errorMessage) {
   <p class="ui-field__error">{{ errorMessage }}</p>

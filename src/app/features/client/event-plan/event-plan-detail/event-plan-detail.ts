@@ -1,15 +1,15 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
+import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
 import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
-  BookingPaymentStatus,
   BookingRequest,
   BookingStatus,
   DisputeStatus,
@@ -21,6 +21,7 @@ import { BookingRequestService } from '../../../../core/services/booking-request
 import { EventPlanService } from '../../../../core/services/event-plan.service';
 import { VendorPackageService } from '../../../../core/services/vendor-package.service';
 import { VendorService } from '../../../../core/services/vendor.service';
+import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
 
 @Component({
   selector: 'app-event-plan-detail',
@@ -28,12 +29,12 @@ import { VendorService } from '../../../../core/services/vendor.service';
   imports: [
     AlertBanner,
     Button,
+    ConfirmDialog,
     TextField,
     ReactiveFormsModule,
     StatusBadge,
     DatePipe,
     DecimalPipe,
-    RouterLink,
   ],
   templateUrl: './event-plan-detail.html',
   styleUrl: './event-plan-detail.css',
@@ -49,7 +50,6 @@ export class EventPlanDetail implements OnInit {
 
   // Exposed so the template can reference enum members directly.
   protected readonly BookingStatus = BookingStatus;
-  protected readonly BookingPaymentStatus = BookingPaymentStatus;
   protected readonly DisputeStatus = DisputeStatus;
 
   protected readonly plan = signal<EventPlan | null>(null);
@@ -67,6 +67,8 @@ export class EventPlanDetail implements OnInit {
   });
   protected readonly disputeSubmitting = signal(false);
   protected readonly disputeError = signal<AppError | null>(null);
+
+  protected readonly cancelTarget = signal<BookingRequest | null>(null);
 
   private planId = 0;
 
@@ -167,7 +169,16 @@ export class EventPlanDetail implements OnInit {
   }
 
   protected cancelBooking(booking: BookingRequest): void {
-    if (!confirm('Are you sure you want to cancel this request?')) {
+    this.cancelTarget.set(booking);
+  }
+
+  protected closeCancel(): void {
+    this.cancelTarget.set(null);
+  }
+
+  protected confirmCancel(): void {
+    const booking = this.cancelTarget();
+    if (!booking) {
       return;
     }
 
@@ -178,10 +189,14 @@ export class EventPlanDetail implements OnInit {
       next: (updated) => {
         this.bookings.update((list) => list.map((b) => (b.id === updated.id ? updated : b)));
         this.actioningId.set(null);
+        this.cancelTarget.set(null);
+        notifySuccess('Booking request cancelled.');
       },
       error: (err: AppError) => {
         this.error.set(err);
         this.actioningId.set(null);
+        this.cancelTarget.set(null);
+        notifyError('Could not cancel booking', err.message);
       },
     });
   }
@@ -215,10 +230,12 @@ export class EventPlanDetail implements OnInit {
         this.bookings.update((list) => list.map((b) => (b.id === updated.id ? updated : b)));
         this.disputeSubmitting.set(false);
         this.disputeTargetId.set(null);
+        notifySuccess('Your report has been submitted.');
       },
       error: (err: AppError) => {
         this.disputeError.set(err);
         this.disputeSubmitting.set(false);
+        notifyError('Could not submit report', err.message);
       },
     });
   }

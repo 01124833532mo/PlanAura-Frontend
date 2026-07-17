@@ -173,6 +173,29 @@
   color: var(--color-primary);
 }
 
+/* Matches shared/ui/status-badge exactly (component styles don't cross
+   component boundaries) — reused here for the package-row booking-status
+   indicator, which needs custom text status-badge itself doesn't produce. */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-label-sm-size);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-badge--pending {
+  background: var(--color-primary-fixed);
+  color: var(--color-primary);
+}
+
+.status-badge--success {
+  background: var(--color-success-container);
+  color: var(--color-success);
+}
+
 @media (max-width: 640px) {
   .vendor-details-header {
     flex-direction: column;

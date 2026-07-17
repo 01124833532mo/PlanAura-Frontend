@@ -28,6 +28,10 @@ export interface CreateBookingRequest {
   vendorPackageId?: number;
   guestCount?: number;
   clientMessage?: string;
+  /** Stripe PaymentMethod id (pm_...) collected client-side via Stripe Elements. */
+  paymentMethodId: string;
+  /** Client-generated id, reused as the Stripe idempotency key to dedupe retried submits. */
+  requestId: string;
 }
 
 /** Mirrors Planura.Core.Application.Models.BookingRequestDto. */

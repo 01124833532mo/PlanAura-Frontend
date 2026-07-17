@@ -45,6 +45,16 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 14%, transparent);
 }
 
+.ui-field__label--compact {
+  font-size: var(--font-label-sm-size);
+  margin-bottom: 0.3rem;
+}
+
+.ui-field__input--compact {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-label-md-size);
+}
+
 .ui-field__textarea {
   resize: vertical;
   min-height: 6rem;

@@ -1,0 +1,117 @@
+<a routerLink="/admin/clients" class="admin-back-link admin-animate-fade-up">
+  <span class="material-symbols-outlined">arrow_back</span>
+  Back to Clients
+</a>
+
+@if (loading()) {
+  <div class="admin-panel__loading" style="padding: 80px 0;">
+    <span class="admin-spinner admin-spinner--dark"></span>
+  </div>
+} @else if (error()) {
+  <admin-error-state [message]="error()!.message" (retry)="load()" />
+} @else if (details(); as c) {
+  <section class="admin-page-header admin-animate-fade-up">
+    <div>
+      <p class="admin-eyebrow">Client Profile</p>
+      <h2 class="admin-page-header__title">{{ c.fullName }}</h2>
+      <p class="admin-page-header__subtitle">{{ c.email ?? 'No email on file' }}</p>
+    </div>
+    <div class="admin-page-header__actions">
+      @if (c.isAccountActive) {
+        <button type="button" class="admin-btn admin-btn--danger" (click)="openSuspend()">Suspend</button>
+      } @else {
+        <button type="button" class="admin-btn admin-btn--primary" (click)="openReactivate()">Reactivate</button>
+      }
+    </div>
+  </section>
+
+  <section class="admin-stat-grid admin-animate-fade-up admin-stagger-1" style="margin-bottom: var(--admin-space-lg);">
+    <div class="admin-card" style="padding: var(--admin-space-lg);">
+      <p class="admin-field__label">Event Plans</p>
+      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ c.eventPlanCount }}</p>
+    </div>
+    <div class="admin-card" style="padding: var(--admin-space-lg);">
+      <p class="admin-field__label">Bookings</p>
+      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ c.bookingCount }}</p>
+    </div>
+    <div class="admin-card" style="padding: var(--admin-space-lg);">
+      <p class="admin-field__label">Total Spend</p>
+      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ c.totalSpend | number: '1.0-0' }} EGP</p>
+    </div>
+  </section>
+
+  <div class="admin-detail-grid admin-animate-fade-up admin-stagger-2">
+    <div class="admin-detail-grid__main">
+      <section class="admin-card">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Profile</h3>
+        <div class="admin-field-grid">
+          <div class="admin-field"><span class="admin-field__label">Phone</span><span class="admin-field__value">{{ c.phoneNumber ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">City</span><span class="admin-field__value">{{ c.city ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Date of Birth</span><span class="admin-field__value">{{ c.dateOfBirth ? (c.dateOfBirth | date: 'mediumDate') : '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Joined</span><span class="admin-field__value">{{ c.createdAt | date: 'mediumDate' }}</span></div>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Booking History</h3>
+        @if (c.bookings.length === 0) {
+          <p style="color: var(--admin-text-muted); font-size: var(--admin-text-sm);">No bookings yet.</p>
+        } @else {
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Vendor</th><th>Event Date</th><th>Price</th><th>Status</th><th>Payment</th></tr></thead>
+              <tbody>
+                @for (booking of c.bookings; track booking.id) {
+                  <tr>
+                    <td>{{ booking.vendorName }}</td>
+                    <td>{{ booking.eventDate | date: 'mediumDate' }}</td>
+                    <td>{{ booking.agreedPrice ? (booking.agreedPrice | number: '1.0-0') + ' EGP' : '—' }}</td>
+                    <td>{{ booking.status }}</td>
+                    <td>{{ booking.paymentStatus }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+
+      <section class="admin-card" style="padding: var(--admin-space-lg);">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Event Plans</h3>
+        @if (c.eventPlans.length === 0) {
+          <p style="color: var(--admin-text-muted); font-size: var(--admin-text-sm);">No event plans yet.</p>
+        } @else {
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Title</th><th>Type</th><th>Event Date</th><th>Status</th></tr></thead>
+              <tbody>
+                @for (plan of c.eventPlans; track plan.id) {
+                  <tr>
+                    <td>{{ plan.title ?? '—' }}</td>
+                    <td>{{ plan.eventType }}</td>
+                    <td>{{ plan.eventDate ? (plan.eventDate | date: 'mediumDate') : '—' }}</td>
+                    <td>{{ plan.status }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    </div>
+  </div>
+}
+
+@if (confirmAction()) {
+  <admin-confirm-dialog
+    [icon]="confirmDialogConfig().icon"
+    [title]="confirmDialogConfig().title"
+    [message]="confirmDialogConfig().message"
+    [confirmLabel]="confirmDialogConfig().confirmLabel"
+    [variant]="confirmDialogConfig().variant"
+    [loading]="actionLoading()"
+    [errorMessage]="actionError()?.message ?? null"
+    (confirmed)="confirmActionSubmit()"
+    (cancelled)="cancelAction()"
+  />
+}

@@ -82,6 +82,21 @@ export class VendorVerificationService {
     );
   }
 
+  /** GET /api/admin/vendor-verifications/{vendorId}/history */
+  getHistory(vendorId: number): Observable<VendorVerificationHistoryEntry[]> {
+    return this.http.get<VendorVerificationHistoryEntry[]>(
+      `${API_BASE_URL}/admin/vendor-verifications/${vendorId}/history`,
+    );
+  }
+
+  /** POST /api/admin/vendor-verifications/{vendorId}/trust — promotes an already-Verified vendor to Trusted. */
+  promoteToTrusted(vendorId: number): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${API_BASE_URL}/admin/vendor-verifications/${vendorId}/trust`,
+      {},
+    );
+  }
+
   /**
    * Verification document/portfolio FileUrl values come back as paths
    * relative to the API server's static root ("images/..."), not fully

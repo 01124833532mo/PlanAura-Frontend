@@ -1,0 +1,85 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Vendor Management</p>
+    <h2 class="admin-page-header__title">All Vendors</h2>
+    <p class="admin-page-header__subtitle">Every vendor on the platform, regardless of verification status.</p>
+  </div>
+</section>
+
+<div class="admin-status-tabs admin-animate-fade-up">
+  @for (tab of statusTabs; track tab.label) {
+    <button
+      type="button"
+      class="admin-status-tab"
+      [class.admin-status-tab--active]="isActiveTab(tab.value)"
+      (click)="onStatusTab(tab.value)"
+    >
+      {{ tab.label }}
+      @if (statusCounts(); as counts) {
+        <span class="admin-status-tab__count">
+          {{
+            tab.value === 'unverified' ? counts.unverified :
+            tab.value === 'pending' ? counts.pending :
+            tab.value === 'verified' ? counts.verified :
+            tab.value === 'trusted' ? counts.trusted :
+            tab.value === 'rejected' ? counts.rejected :
+            (counts.unverified + counts.pending + counts.verified + counts.trusted + counts.rejected)
+          }}
+        </span>
+      }
+    </button>
+  }
+</div>
+
+<div class="admin-card admin-animate-fade-up admin-stagger-1">
+  <div class="admin-table-toolbar">
+    <admin-search-bar placeholder="Search by vendor or business name..." (search)="onSearch($event)" />
+  </div>
+
+  @if (loading()) {
+    <admin-skeleton-rows [rows]="6" [columns]="6" />
+  } @else if (error()) {
+    <admin-error-state [message]="error()!.message" (retry)="load()" />
+  } @else if (vendors().length === 0) {
+    <admin-empty-state icon="storefront" title="No vendors found" message="Try adjusting your search or filters." />
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Owner</th>
+            <th>Category</th>
+            <th>City</th>
+            <th>Type</th>
+            <th>Rating</th>
+            <th>Status</th>
+            <th>Joined</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (vendor of vendors(); track vendor.vendorId) {
+            <tr class="is-clickable" [routerLink]="['/admin/vendors', vendor.vendorId]">
+              <td>{{ vendor.businessName }}</td>
+              <td>{{ vendor.vendorName }}</td>
+              <td>{{ vendor.categoryName ?? '—' }}</td>
+              <td>{{ vendor.city ?? '—' }}</td>
+              <td>{{ vendor.vendorType === VendorType.Business ? 'Business' : 'Individual' }}</td>
+              <td>
+                @if (vendor.totalReviews > 0) {
+                  {{ vendor.avgRating | number: '1.1-1' }} ({{ vendor.totalReviews }})
+                } @else {
+                  —
+                }
+              </td>
+              <td><admin-badge [label]="mapVendorStatus(vendor.verificationStatus).label" [tone]="mapVendorStatus(vendor.verificationStatus).tone" /></td>
+              <td>{{ vendor.createdAt | date: 'mediumDate' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <admin-pagination [page]="filter().page ?? 1" [pageSize]="filter().pageSize ?? 20" [totalCount]="totalCount()" (pageChange)="onPageChange($event)" />
+  }
+</div>

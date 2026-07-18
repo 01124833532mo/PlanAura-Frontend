@@ -4,6 +4,8 @@ export enum PaymentStatus {
   Completed = 2,
   Failed = 3,
   Refunded = 4,
+  Authorized = 5,
+  Cancelled = 6,
 }
 
 /** Mirrors Planura.Core.Application.Models.PaymentOptionsDto. */

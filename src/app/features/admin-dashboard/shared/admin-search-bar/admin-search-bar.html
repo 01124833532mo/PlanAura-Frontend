@@ -1,0 +1,15 @@
+<div class="admin-search-bar">
+  <span class="material-symbols-outlined admin-search-bar__icon">search</span>
+  <input
+    type="text"
+    class="admin-input admin-search-bar__input"
+    [placeholder]="placeholder"
+    [ngModel]="value"
+    (ngModelChange)="onInput($event)"
+  />
+  @if (value) {
+    <button type="button" class="admin-search-bar__clear" (click)="clear()" aria-label="Clear search">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  }
+</div>

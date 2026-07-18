@@ -1,0 +1,110 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Platform</p>
+    <h2 class="admin-page-header__title">Service Categories</h2>
+    <p class="admin-page-header__subtitle">Categories vendors can list their services under.</p>
+  </div>
+  <button type="button" class="admin-btn admin-btn--primary" (click)="openCreate()">
+    <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+    New Category
+  </button>
+</section>
+
+<div class="admin-card admin-animate-fade-up admin-stagger-1">
+  @if (loading()) {
+    <admin-skeleton-rows [rows]="6" [columns]="5" />
+  } @else if (error()) {
+    <admin-error-state [message]="error()!.message" (retry)="load()" />
+  } @else if (categories().length === 0) {
+    <admin-empty-state icon="category" title="No categories yet" />
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Slug</th>
+            <th>Vendors</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (category of categories(); track category.id) {
+            <tr>
+              <td>{{ category.nameEn }}</td>
+              <td>{{ category.slug }}</td>
+              <td>{{ category.vendorCount }}</td>
+              <td><admin-badge [label]="category.isActive ? 'Active' : 'Inactive'" [tone]="category.isActive ? 'success' : 'neutral'" /></td>
+              <td>{{ category.createdAt | date: 'mediumDate' }}</td>
+              <td>
+                <div class="admin-row-actions">
+                  <button class="admin-icon-btn" type="button" title="Edit" (click)="openEdit(category)">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="admin-icon-btn admin-icon-btn--danger" type="button" title="Delete" (click)="openDelete(category)">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (formOpen()) {
+  <div class="admin-modal-backdrop" (click)="closeForm()">
+    <div class="admin-modal-card admin-modal-card--wide admin-animate-scale-in" style="text-align: left;" (click)="$event.stopPropagation()">
+      <h3 class="admin-modal-card__title" style="text-align: left;">{{ form.id ? 'Edit Category' : 'New Category' }}</h3>
+
+      @if (saveError()?.message) {
+        <p class="admin-modal-card__error">{{ saveError()?.message }}</p>
+      }
+
+      <div style="margin-top: var(--admin-space-md); display: flex; flex-direction: column; gap: var(--admin-space-md);">
+        <div>
+          <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">Name</label>
+          <input type="text" class="admin-input" [(ngModel)]="form.nameEn" [disabled]="saving()" />
+        </div>
+        <div>
+          <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">Slug</label>
+          <input type="text" class="admin-input" [(ngModel)]="form.slug" [disabled]="saving()" />
+        </div>
+        <div>
+          <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">Icon (optional)</label>
+          <input type="file" accept="image/*" (change)="onIconSelected($event)" [disabled]="saving()" />
+        </div>
+        <label style="display: flex; align-items: center; gap: 8px; font-size: var(--admin-text-sm); color: var(--admin-text-secondary); cursor: pointer;">
+          <input type="checkbox" [(ngModel)]="form.isActive" [disabled]="saving()" />
+          Active
+        </label>
+      </div>
+
+      <div class="admin-modal-card__actions">
+        <button type="button" class="admin-btn admin-btn--secondary" [disabled]="saving()" (click)="closeForm()">Cancel</button>
+        <button type="button" class="admin-btn admin-btn--primary" [disabled]="!canSubmit" (click)="submitForm()">
+          @if (saving()) { <span class="admin-spinner"></span> }
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (deleteTarget(); as target) {
+  <admin-confirm-dialog
+    icon="delete"
+    title="Delete this category?"
+    [message]="'This will permanently remove ' + target.nameEn + '. This cannot be undone.'"
+    confirmLabel="Delete"
+    variant="danger"
+    [loading]="deleting()"
+    [errorMessage]="deleteError()?.message ?? null"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()"
+  />
+}

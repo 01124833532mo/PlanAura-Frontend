@@ -1,0 +1,47 @@
+:host {
+  display: block;
+  min-width: 240px;
+  flex: 1 1 260px;
+}
+
+.admin-search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.admin-search-bar__icon {
+  position: absolute;
+  left: 12px;
+  font-size: 18px;
+  color: var(--admin-text-muted);
+  pointer-events: none;
+}
+
+.admin-search-bar__input {
+  padding-left: 38px;
+  padding-right: 32px;
+}
+
+.admin-search-bar__clear {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--admin-text-muted);
+  cursor: pointer;
+  border-radius: var(--admin-radius-full);
+}
+.admin-search-bar__clear:hover {
+  background: var(--admin-slate-100);
+  color: var(--admin-text-primary);
+}
+.admin-search-bar__clear .material-symbols-outlined {
+  font-size: 16px;
+}

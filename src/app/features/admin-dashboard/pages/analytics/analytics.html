@@ -1,0 +1,29 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Insights</p>
+    <h2 class="admin-page-header__title">Analytics</h2>
+    <p class="admin-page-header__subtitle">Platform performance across revenue, bookings, and growth.</p>
+  </div>
+</section>
+
+<div class="analytics-grid admin-animate-fade-up admin-stagger-1">
+  <admin-chart-card
+    title="Revenue Over Time"
+    subtitle="Last 12 months"
+    [config]="revenueChart"
+    [loading]="loadingRevenue()"
+    class="analytics-grid__wide"
+  />
+  <admin-chart-card title="Booking Status Distribution" [config]="statusChart" [loading]="loadingStatus()" />
+  <admin-chart-card title="Monthly Bookings" subtitle="Last 12 months" [config]="bookingsChart" [loading]="loadingBookings()" />
+  <admin-chart-card title="Vendor Verification Funnel" [config]="funnelChart" [loading]="loadingFunnel()" />
+  <admin-chart-card
+    title="Client & Vendor Growth"
+    subtitle="New registrations per month"
+    [config]="growthChart"
+    [loading]="loadingGrowth()"
+    class="analytics-grid__wide"
+  />
+  <admin-chart-card title="Top Vendors by Revenue" [config]="topVendorsChart" [loading]="loadingTopVendors()" [height]="360" />
+  <admin-chart-card title="Top Categories by Vendor Count" [config]="topCategoriesChart" [loading]="loadingTopCategories()" [height]="360" />
+</div>

@@ -1,0 +1,29 @@
+:host {
+  display: block;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--admin-space-xl);
+  align-items: stretch;
+}
+
+.analytics-grid__wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 1200px) {
+  .analytics-grid {
+    gap: var(--admin-space-lg);
+  }
+}
+
+@media (max-width: 992px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+  .analytics-grid__wide {
+    grid-column: span 1;
+  }
+}

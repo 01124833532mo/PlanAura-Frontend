@@ -12,6 +12,16 @@ export interface ServiceCategory {
   iconUrl: string | null;
   isActive: boolean;
   createdAt: string;
+  /** Number of vendors currently attached to this category. */
+  vendorCount: number;
+}
+
+/** Mirrors Planura.Core.Application.Models.CreateServiceCategoryDto / UpdateServiceCategoryDto. */
+export interface ServiceCategoryPayload {
+  nameEn: string;
+  slug: string;
+  iconFile?: File;
+  isActive: boolean;
 }
 
 /**

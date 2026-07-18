@@ -1,7 +1,5 @@
 import { DatePipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
-import { Button } from '../../../../shared/ui/button/button';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
   VendorVerificationDetails,
@@ -21,7 +19,7 @@ import { VendorVerificationService } from '../../../../core/services/vendor-veri
 @Component({
   selector: 'app-vendor-verification-details',
   standalone: true,
-  imports: [Button, DatePipe, AlertBanner],
+  imports: [DatePipe],
   templateUrl: './vendor-verification-details.html',
   styleUrl: './vendor-verification-details.css',
 })

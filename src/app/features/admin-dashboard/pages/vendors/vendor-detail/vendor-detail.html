@@ -1,0 +1,148 @@
+<a routerLink="/admin/vendors" class="admin-back-link admin-animate-fade-up">
+  <span class="material-symbols-outlined">arrow_back</span>
+  Back to Vendors
+</a>
+
+@if (loading()) {
+  <div class="admin-panel__loading" style="padding: 80px 0;">
+    <span class="admin-spinner admin-spinner--dark"></span>
+  </div>
+} @else if (error()) {
+  <admin-error-state [message]="error()!.message" (retry)="load()" />
+} @else if (details(); as v) {
+  <section class="admin-page-header admin-animate-fade-up">
+    <div>
+      <p class="admin-eyebrow">Vendor Profile</p>
+      <h2 class="admin-page-header__title">{{ v.businessName }}</h2>
+      <p class="admin-page-header__subtitle">{{ v.vendorName }} · {{ v.categoryName ?? 'Uncategorized' }}</p>
+    </div>
+    <div class="admin-page-header__actions">
+      <admin-badge [label]="mapVendorStatus(v.verificationStatus).label" [tone]="mapVendorStatus(v.verificationStatus).tone" />
+      @if (v.verificationStatus === 'pending') {
+        <button type="button" class="admin-btn admin-btn--primary" (click)="openApprove()">Approve</button>
+        <button type="button" class="admin-btn admin-btn--danger" (click)="openReject()">Reject</button>
+      }
+      @if (v.verificationStatus === 'verified') {
+        <button type="button" class="admin-btn admin-btn--primary" (click)="openTrust()">Promote to Trusted</button>
+      }
+    </div>
+  </section>
+
+  <div class="admin-detail-grid admin-animate-fade-up admin-stagger-1">
+    <div class="admin-detail-grid__main">
+      <section class="admin-card">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Vendor Information</h3>
+        <div class="admin-field-grid">
+          <div class="admin-field"><span class="admin-field__label">Email</span><span class="admin-field__value">{{ v.email ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Phone</span><span class="admin-field__value">{{ v.phoneNumber ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Vendor Type</span><span class="admin-field__value">{{ v.vendorType === VendorType.Business ? 'Business' : 'Individual' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">City</span><span class="admin-field__value">{{ v.city ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Address</span><span class="admin-field__value">{{ v.address ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Submitted</span><span class="admin-field__value">{{ v.submittedAt ? (v.submittedAt | date: 'mediumDate') : '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Reviewed</span><span class="admin-field__value">{{ v.reviewedAt ? (v.reviewedAt | date: 'mediumDate') : '—' }}</span></div>
+          @if (v.trustedSince) {
+            <div class="admin-field"><span class="admin-field__label">Trusted Since</span><span class="admin-field__value">{{ v.trustedSince | date: 'mediumDate' }}</span></div>
+          }
+        </div>
+        @if (v.businessDescription) {
+          <p style="margin-top: var(--admin-space-md); color: var(--admin-text-secondary); font-size: var(--admin-text-base);">{{ v.businessDescription }}</p>
+        }
+        @if (v.verificationStatus === 'rejected' && v.rejectionReason) {
+          <div class="admin-inline-alert admin-inline-alert--danger" style="margin-top: var(--admin-space-md);">
+            <span class="material-symbols-outlined">error</span>
+            Rejected: {{ v.rejectionReason }}
+          </div>
+        }
+      </section>
+
+      <section class="admin-card">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Verification Documents</h3>
+        @if (v.documents.length === 0) {
+          <p style="color: var(--admin-text-muted); font-size: var(--admin-text-sm);">No documents uploaded.</p>
+        } @else {
+          <div class="admin-doc-grid">
+            @for (doc of v.documents; track doc.documentType) {
+              <a class="admin-doc-card" [href]="documentUrl(doc)" target="_blank" rel="noopener noreferrer">
+                <img [src]="documentUrl(doc)" [alt]="documentLabel(doc)" loading="lazy" />
+                <span>{{ documentLabel(doc) }}</span>
+              </a>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="admin-card" style="padding: var(--admin-space-lg);">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Portfolio</h3>
+        @if (v.portfolioMedia.length === 0) {
+          <p style="color: var(--admin-text-muted); font-size: var(--admin-text-sm);">No portfolio images.</p>
+        } @else {
+          <div class="admin-doc-grid">
+            @for (media of v.portfolioMedia; track media.displayOrder) {
+              <a class="admin-doc-card" [href]="documentUrl(media)" target="_blank" rel="noopener noreferrer">
+                <img [src]="documentUrl(media)" [alt]="media.title ?? 'Portfolio image'" loading="lazy" />
+                @if (media.title) { <span>{{ media.title }}</span> }
+              </a>
+            }
+          </div>
+        }
+      </section>
+    </div>
+
+    <div class="admin-detail-grid__side">
+      <section class="admin-card">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Performance</h3>
+        <div class="admin-field-grid" style="grid-template-columns: 1fr;">
+          <div class="admin-field"><span class="admin-field__label">Average Rating</span><span class="admin-field__value">{{ v.avgRating | number: '1.1-1' }} ({{ v.totalReviews }} reviews)</span></div>
+          <div class="admin-field"><span class="admin-field__label">Completed Bookings</span><span class="admin-field__value">{{ v.totalCompletedBookings }}</span></div>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Account</h3>
+        <button type="button" class="admin-btn admin-btn--danger" style="width: 100%;" (click)="openSuspend()">
+          <span class="material-symbols-outlined" style="font-size: 18px;">block</span>
+          Suspend Account
+        </button>
+        <button type="button" class="admin-btn admin-btn--secondary" style="width: 100%; margin-top: 8px;" (click)="openReactivate()">
+          <span class="material-symbols-outlined" style="font-size: 18px;">check_circle</span>
+          Reactivate Account
+        </button>
+      </section>
+
+      <section class="admin-card" style="padding: var(--admin-space-lg);">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Verification History</h3>
+        @if (historyLoading()) {
+          <div class="admin-panel__loading"><span class="admin-spinner admin-spinner--dark"></span></div>
+        } @else if (historyTimeline.length === 0) {
+          <p style="color: var(--admin-text-muted); font-size: var(--admin-text-sm);">No history yet.</p>
+        } @else {
+          <admin-timeline [entries]="historyTimeline" />
+        }
+      </section>
+    </div>
+  </div>
+}
+
+@if (confirmAction()) {
+  <admin-confirm-dialog
+    [icon]="confirmDialogConfig().icon"
+    [title]="confirmDialogConfig().title"
+    [message]="confirmDialogConfig().message"
+    [confirmLabel]="confirmDialogConfig().confirmLabel"
+    [variant]="confirmDialogConfig().variant"
+    [loading]="actionLoading()"
+    [errorMessage]="actionError()?.message ?? null"
+    (confirmed)="confirmActionSubmit()"
+    (cancelled)="cancelAction()"
+  />
+}
+
+@if (rejectDialogOpen()) {
+  <app-reject-vendor-dialog
+    [vendorName]="details()?.businessName ?? ''"
+    [saving]="rejecting()"
+    [error]="rejectError()"
+    (submitted)="submitReject($event)"
+    (cancelled)="cancelReject()"
+  />
+}

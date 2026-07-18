@@ -1,0 +1,126 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Financial Management</p>
+    <h2 class="admin-page-header__title">Payments &amp; Transactions</h2>
+    <p class="admin-page-header__subtitle">Every payment processed on the platform.</p>
+  </div>
+</section>
+
+@if (summary(); as s) {
+  <section class="admin-stat-grid admin-animate-fade-up admin-stagger-1">
+    <div class="admin-card" style="padding: var(--admin-space-lg);">
+      <p class="admin-field__label">Gross Revenue</p>
+      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ s.grossRevenue | number: '1.0-0' }} EGP</p>
+    </div>
+    <div class="admin-card" style="padding: var(--admin-space-lg);">
+      <p class="admin-field__label">Refunded</p>
+      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ s.refundedAmount | number: '1.0-0' }} EGP</p>
+    </div>
+    <div class="admin-card" style="padding: var(--admin-space-lg);">
+      <p class="admin-field__label">Failed Payments</p>
+      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ s.failedPaymentCount }}</p>
+    </div>
+    <div class="admin-card" style="padding: var(--admin-space-lg);">
+      <p class="admin-field__label">Pending Authorization</p>
+      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ s.pendingAuthorizationCount }}</p>
+    </div>
+  </section>
+}
+
+<div class="admin-card admin-animate-fade-up admin-stagger-2">
+  <div class="admin-table-toolbar">
+    <select class="admin-select" (change)="onStatusChange($any($event.target).value)">
+      @for (opt of statusOptions; track opt.label) {
+        <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+      }
+    </select>
+  </div>
+
+  @if (loading()) {
+    <admin-skeleton-rows [rows]="6" [columns]="7" />
+  } @else if (error()) {
+    <admin-error-state [message]="error()!.message" (retry)="load()" />
+  } @else if (payments().length === 0) {
+    <admin-empty-state icon="payments" title="No payments found" message="Try adjusting your filters." />
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Vendor</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Paid At</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (payment of payments(); track payment.paymentId) {
+            <tr>
+              <td>{{ payment.clientName ?? '—' }}</td>
+              <td>{{ payment.vendorName ?? '—' }}</td>
+              <td>{{ payment.amount | number: '1.0-0' }} EGP</td>
+              <td>{{ payment.paymentMethod ?? '—' }}</td>
+              <td><admin-badge [label]="mapPaymentStatus(payment.status).label" [tone]="mapPaymentStatus(payment.status).tone" /></td>
+              <td>{{ payment.paidAt ? (payment.paidAt | date: 'mediumDate') : '—' }}</td>
+              <td>
+                @if (payment.status === PaymentStatus.Completed) {
+                  <button type="button" class="admin-btn admin-btn--secondary admin-btn--sm" (click)="openRefund(payment)">
+                    Refund
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <admin-pagination [page]="filter().page ?? 1" [pageSize]="filter().pageSize ?? 20" [totalCount]="totalCount()" (pageChange)="onPageChange($event)" />
+  }
+</div>
+
+@if (refundTarget(); as target) {
+  <div class="admin-modal-backdrop" (click)="cancelRefund()">
+    <div class="admin-modal-card admin-modal-card--wide admin-animate-scale-in" style="text-align: left;" (click)="$event.stopPropagation()">
+      <h3 class="admin-modal-card__title" style="text-align: left;">Refund Payment</h3>
+      <p class="admin-modal-card__message" style="text-align: left;">
+        {{ target.clientName }} — {{ target.amount | number: '1.0-0' }} EGP paid to {{ target.vendorName }}
+      </p>
+
+      @if (refundError()?.message) {
+        <p class="admin-modal-card__error">{{ refundError()?.message }}</p>
+      }
+
+      <div style="margin-top: var(--admin-space-md);">
+        <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">Reason</label>
+        <textarea
+          class="admin-input"
+          rows="3"
+          maxlength="500"
+          style="resize: vertical; min-height: 70px;"
+          placeholder="Why is this payment being refunded?"
+          [(ngModel)]="refundReason"
+          [disabled]="refunding()"
+        ></textarea>
+      </div>
+
+      <div style="margin-top: var(--admin-space-md);">
+        <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">
+          Partial amount (EGP) — leave blank for a full refund
+        </label>
+        <input type="number" class="admin-input" min="0" [(ngModel)]="refundAmount" [disabled]="refunding()" />
+      </div>
+
+      <div class="admin-modal-card__actions">
+        <button type="button" class="admin-btn admin-btn--secondary" [disabled]="refunding()" (click)="cancelRefund()">Cancel</button>
+        <button type="button" class="admin-btn admin-btn--danger" [disabled]="!canSubmitRefund" (click)="submitRefund()">
+          @if (refunding()) { <span class="admin-spinner"></span> }
+          Refund
+        </button>
+      </div>
+    </div>
+  </div>
+}

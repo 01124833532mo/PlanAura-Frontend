@@ -1,0 +1,110 @@
+<a routerLink="/admin/disputes" class="admin-back-link admin-animate-fade-up">
+  <span class="material-symbols-outlined">arrow_back</span>
+  Back to Disputes
+</a>
+
+@if (loading()) {
+  <div class="admin-panel__loading" style="padding: 80px 0;">
+    <span class="admin-spinner admin-spinner--dark"></span>
+  </div>
+} @else if (error()) {
+  <admin-error-state [message]="error()!.message" (retry)="load()" />
+} @else if (dispute(); as d) {
+  <section class="admin-page-header admin-animate-fade-up">
+    <div>
+      <p class="admin-eyebrow">Dispute</p>
+      <h2 class="admin-page-header__title">Booking #{{ d.bookingId }}</h2>
+      <p class="admin-page-header__subtitle">{{ d.clientName }} × {{ d.vendorName }}</p>
+    </div>
+    <div class="admin-page-header__actions">
+      <admin-badge [label]="mapDisputeStatus(d.disputeStatus).label" [tone]="mapDisputeStatus(d.disputeStatus).tone" />
+      @if (d.disputeStatus === DisputeStatus.Open) {
+        <button type="button" class="admin-btn admin-btn--primary" (click)="openResolve()">Resolve Dispute</button>
+      }
+    </div>
+  </section>
+
+  <div class="admin-detail-grid admin-animate-fade-up admin-stagger-1">
+    <div class="admin-detail-grid__main">
+      <section class="admin-card">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Booking Details</h3>
+        <div class="admin-field-grid">
+          <div class="admin-field"><span class="admin-field__label">Event Date</span><span class="admin-field__value">{{ d.eventDate | date: 'mediumDate' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Agreed Price</span><span class="admin-field__value">{{ d.agreedPrice ? (d.agreedPrice | number: '1.0-0') + ' EGP' : '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Guests</span><span class="admin-field__value">{{ d.guestCount ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Booking Status</span><span class="admin-field__value"><admin-badge [label]="mapBookingStatus(d.bookingStatus).label" [tone]="mapBookingStatus(d.bookingStatus).tone" /></span></div>
+          <div class="admin-field"><span class="admin-field__label">Payment Status</span><span class="admin-field__value"><admin-badge [label]="mapBookingPaymentStatus(d.paymentStatus).label" [tone]="mapBookingPaymentStatus(d.paymentStatus).tone" /></span></div>
+          <div class="admin-field"><span class="admin-field__label">Disputed At</span><span class="admin-field__value">{{ d.disputedAt ? (d.disputedAt | date: 'medium') : '—' }}</span></div>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Dispute Reason</h3>
+        <p style="color: var(--admin-text-secondary); font-size: var(--admin-text-base);">{{ d.disputeReason ?? 'No reason recorded.' }}</p>
+      </section>
+
+      @if (d.clientMessage || d.vendorResponse) {
+        <section class="admin-card">
+          <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Original Booking Conversation</h3>
+          @if (d.clientMessage) {
+            <p style="color: var(--admin-text-secondary); font-size: var(--admin-text-sm); margin-bottom: 8px;"><strong>Client:</strong> {{ d.clientMessage }}</p>
+          }
+          @if (d.vendorResponse) {
+            <p style="color: var(--admin-text-secondary); font-size: var(--admin-text-sm);"><strong>Vendor:</strong> {{ d.vendorResponse }}</p>
+          }
+        </section>
+      }
+
+      @if (d.disputeStatus === DisputeStatus.Resolved) {
+        <section class="admin-card" style="padding: var(--admin-space-lg);">
+          <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Resolution</h3>
+          <div class="admin-field-grid">
+            <div class="admin-field"><span class="admin-field__label">Resolved By</span><span class="admin-field__value">{{ d.resolvedByAdminName ?? '—' }}</span></div>
+            <div class="admin-field"><span class="admin-field__label">Resolved At</span><span class="admin-field__value">{{ d.resolvedAt ? (d.resolvedAt | date: 'medium') : '—' }}</span></div>
+          </div>
+          <p style="margin-top: var(--admin-space-md); color: var(--admin-text-secondary); font-size: var(--admin-text-base);">{{ d.resolutionNotes }}</p>
+        </section>
+      }
+    </div>
+  </div>
+}
+
+@if (resolveDialogOpen()) {
+  <div class="admin-modal-backdrop" (click)="cancelResolve()">
+    <div class="admin-modal-card admin-modal-card--wide admin-animate-scale-in" style="text-align: left;" (click)="$event.stopPropagation()">
+      <h3 class="admin-modal-card__title" style="text-align: left;">Resolve Dispute</h3>
+      <p class="admin-modal-card__message" style="text-align: left;">Record the resolution and optionally refund the client.</p>
+
+      @if (resolveError()?.message) {
+        <p class="admin-modal-card__error">{{ resolveError()?.message }}</p>
+      }
+
+      <div style="margin-top: var(--admin-space-md);">
+        <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;" for="resolution-notes">Resolution notes</label>
+        <textarea
+          id="resolution-notes"
+          class="admin-input"
+          rows="4"
+          maxlength="500"
+          style="resize: vertical; min-height: 90px;"
+          placeholder="Explain how this dispute was resolved..."
+          [(ngModel)]="resolutionNotes"
+          [disabled]="resolving()"
+        ></textarea>
+      </div>
+
+      <label style="display: flex; align-items: center; gap: 8px; margin-top: var(--admin-space-md); font-size: var(--admin-text-sm); color: var(--admin-text-secondary); cursor: pointer;">
+        <input type="checkbox" [(ngModel)]="refundClient" [disabled]="resolving()" />
+        Refund the client's payment as part of this resolution
+      </label>
+
+      <div class="admin-modal-card__actions">
+        <button type="button" class="admin-btn admin-btn--secondary" [disabled]="resolving()" (click)="cancelResolve()">Cancel</button>
+        <button type="button" class="admin-btn admin-btn--primary" [disabled]="!canSubmitResolve" (click)="submitResolve()">
+          @if (resolving()) { <span class="admin-spinner"></span> }
+          Resolve
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
-import { Button } from '../../../../shared/ui/button/button';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 
 /**
@@ -12,7 +10,7 @@ import { AppError } from '../../../../core/interfaces/api-response.model';
 @Component({
   selector: 'app-reject-vendor-dialog',
   standalone: true,
-  imports: [FormsModule, AlertBanner, Button],
+  imports: [FormsModule],
   templateUrl: './reject-vendor-dialog.html',
   styleUrl: './reject-vendor-dialog.css',
 })

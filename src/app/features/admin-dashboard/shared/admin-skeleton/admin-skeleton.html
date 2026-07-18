@@ -1,0 +1,11 @@
+<table class="admin-table">
+  <tbody>
+    @for (row of rowArray; track row) {
+      <tr>
+        @for (col of columnArray; track col) {
+          <td><div class="admin-skeleton" style="height: 16px; width: 100%;"></div></td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>

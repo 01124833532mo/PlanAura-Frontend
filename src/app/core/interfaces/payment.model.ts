@@ -6,24 +6,6 @@ export enum PaymentStatus {
   Refunded = 4,
 }
 
-/** Mirrors Planura.Core.Application.Models.PaymentOptionsDto. */
-export interface PaymentOptions {
-  bookingRequestId: number;
-  amountDue: number;
-  currency: string;
-  isPayable: boolean;
-  publishableKey: string;
-}
-
-/** Mirrors Planura.Core.Application.Models.InitiatePaymentResultDto. */
-export interface InitiatePaymentResult {
-  paymentId: number;
-  clientSecret: string;
-  publishableKey: string;
-  amount: number;
-  currency: string;
-}
-
 /** Mirrors Planura.Core.Application.Models.PaymentDto. No currency field — the platform is single-currency. */
 export interface PaymentTransaction {
   id: number;

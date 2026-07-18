@@ -1,6 +1,4 @@
-import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
-import { AppError } from '../../../core/interfaces/api-response.model';
-import { AiChatService } from '../../../core/services/ai-chat.service';
+import { Component, ElementRef, ViewChild, signal } from '@angular/core';
 
 interface ChatMessage {
   sender: 'bot' | 'user';
@@ -8,8 +6,14 @@ interface ChatMessage {
 }
 
 /**
- * Live Planura AI Assistant widget, backed by AiChatController
- * (POST /api/ai-chat/messages) via AiChatService.
+ * Frontend-only preview of the upcoming Planura AI Assistant. No backend,
+ * no API calls, no AI integration — this is purely the chat UI shell so it
+ * can be wired up to a real conversation service later without reworking
+ * the presentation layer.
+ *
+ * "Sending" a message only echoes it into the local thread as a user
+ * bubble; there is no bot reply logic, intentionally, so this never looks
+ * like it's actually answering anything yet.
  *
  * Mounted once at the app root (see app.ts/app.html) so it persists across
  * client-area navigation instead of being re-created per page.
@@ -21,12 +25,8 @@ interface ChatMessage {
   styleUrl: './chatbot-widget.css',
 })
 export class ChatbotWidget {
-  private readonly aiChat = inject(AiChatService);
-
   protected readonly open = signal(false);
   protected readonly minimized = signal(false);
-  protected readonly sending = signal(false);
-  protected readonly errorText = signal<string | null>(null);
 
   protected readonly messages = signal<ChatMessage[]>([
     { sender: 'bot', text: "👋 Hi! I'm your Planura AI Assistant." },
@@ -35,8 +35,6 @@ export class ChatbotWidget {
       text: 'I can help you find vendors, plan your event, answer questions, and more.',
     },
   ]);
-
-  private conversationId?: number;
 
   @ViewChild('scrollAnchor') private scrollAnchor?: ElementRef<HTMLElement>;
 
@@ -59,31 +57,13 @@ export class ChatbotWidget {
 
   protected sendMessage(input: HTMLInputElement): void {
     const text = input.value.trim();
-    if (!text || this.sending()) {
+    if (!text) {
       return;
     }
 
     this.messages.update((list) => [...list, { sender: 'user', text }]);
     input.value = '';
-    this.errorText.set(null);
-    this.sending.set(true);
     queueMicrotask(() => this.scrollToBottom());
-
-    this.aiChat.sendMessage({ conversationId: this.conversationId, message: text }).subscribe({
-      next: (response) => {
-        this.conversationId = response.conversationId;
-        this.messages.update((list) => [
-          ...list,
-          { sender: 'bot', text: response.assistantMessage.content },
-        ]);
-        this.sending.set(false);
-        queueMicrotask(() => this.scrollToBottom());
-      },
-      error: (err: AppError) => {
-        this.errorText.set(err.message ?? 'The assistant is unavailable right now.');
-        this.sending.set(false);
-      },
-    });
   }
 
   private scrollToBottom(): void {

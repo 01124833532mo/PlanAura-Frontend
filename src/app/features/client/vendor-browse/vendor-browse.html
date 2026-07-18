@@ -14,12 +14,13 @@
 
     <ui-text-field label="City" placeholder="e.g. Cairo" [formControl]="filterForm.controls.city" />
 
-    <div class="browse-sidebar__row">
+    <div class="browse-filterbar__field browse-filterbar__field--price">
       <ui-text-field
         label="Min price"
         type="number"
         min="0"
         placeholder="0"
+        [compact]="true"
         [formControl]="filterForm.controls.minPrice"
       />
       <ui-text-field
@@ -27,13 +28,14 @@
         type="number"
         min="0"
         placeholder="Any"
+        [compact]="true"
         [formControl]="filterForm.controls.maxPrice"
       />
     </div>
 
-    <div class="browse-sidebar__ratings">
-      <span class="text-label-md">Minimum rating</span>
-      <div class="browse-sidebar__rating-buttons">
+    <div class="browse-filterbar__field browse-filterbar__ratings">
+      <span class="text-label-sm">Minimum rating</span>
+      <div class="browse-filterbar__rating-buttons">
         @for (rating of ratingOptions; track rating) {
           <button
             class="browse-rating-btn"
@@ -63,12 +65,23 @@
       </p>
       <ui-select-field
         label="Sort by"
+        [compact]="true"
         [options]="sortOptions"
         [formControl]="filterForm.controls.sortBy"
       />
     </div>
 
-    <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+    <ui-button
+      class="browse-filterbar__reset"
+      variant="ghost"
+      [fullWidth]="false"
+      (click)="resetFilters()"
+    >
+      Reset filters
+    </ui-button>
+  </div>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
     @if (loading()) {
       <div class="browse-grid">
@@ -90,36 +103,30 @@
         }
       </div>
 
-      @if (totalPages() > 1) {
-        <nav class="browse-pagination">
+    @if (totalPages() > 1) {
+      <nav class="browse-pagination">
+        <button class="icon-btn" type="button" [disabled]="page() === 1" (click)="goToPage(page() - 1)">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        @for (p of pageNumbers(); track p) {
           <button
-            class="icon-btn"
+            class="browse-pagination__page"
             type="button"
-            [disabled]="page() === 1"
-            (click)="goToPage(page() - 1)"
+            [class.browse-pagination__page--active]="p === page()"
+            (click)="goToPage(p)"
           >
-            <span class="material-symbols-outlined">chevron_left</span>
+            {{ p }}
           </button>
-          @for (p of pageNumbers(); track p) {
-            <button
-              class="browse-pagination__page"
-              type="button"
-              [class.browse-pagination__page--active]="p === page()"
-              (click)="goToPage(p)"
-            >
-              {{ p }}
-            </button>
-          }
-          <button
-            class="icon-btn"
-            type="button"
-            [disabled]="page() === totalPages()"
-            (click)="goToPage(page() + 1)"
-          >
-            <span class="material-symbols-outlined">chevron_right</span>
-          </button>
-        </nav>
-      }
+        }
+        <button
+          class="icon-btn"
+          type="button"
+          [disabled]="page() === totalPages()"
+          (click)="goToPage(page() + 1)"
+        >
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </nav>
     }
-  </div>
+  }
 </div>

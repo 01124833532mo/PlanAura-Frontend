@@ -86,7 +86,7 @@
                 {{ req.agreedPrice | number: '1.0-2' }} {{ priceCurrency(req) }}
               </span>
             }
-            <ui-status-badge [status]="req.status" [paymentStatus]="req.paymentStatus" />
+            <ui-status-badge [status]="req.status" />
 
             @if (req.status === BookingStatus.Pending) {
               <div class="request-row__actions" (click)="$event.stopPropagation()">

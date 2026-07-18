@@ -164,7 +164,7 @@
 }
 
 .client-topbar {
-  height: 80px;
+  height: var(--client-topbar-height);
   display: flex;
   align-items: center;
   justify-content: space-between;

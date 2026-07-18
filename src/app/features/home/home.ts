@@ -71,7 +71,7 @@ export class Home implements OnInit {
       error: () => this.categories.set([]),
     });
 
-    this.vendorBrowseService.list({ sortBy: 'featured', pageSize: 3 }).subscribe({
+    this.vendorBrowseService.list({ sortBy: 'featured', pageSize: 6 }).subscribe({
       next: (result) => this.featuredVendors.set(result.items),
       error: () => this.featuredVendors.set([]),
     });

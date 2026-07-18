@@ -13,12 +13,6 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
-    // Same reasoning — booking ids are dynamic/unbounded, and this route
-    // also reads Stripe redirect query params that only make sense per-request.
-    path: 'client/bookings/:id/pay',
-    renderMode: RenderMode.Server,
-  },
-  {
     path: '**',
     renderMode: RenderMode.Prerender
   }

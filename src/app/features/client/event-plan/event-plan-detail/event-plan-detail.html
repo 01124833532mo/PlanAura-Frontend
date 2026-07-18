@@ -102,7 +102,7 @@
               </div>
 
               <div class="booking-row__status">
-                <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
+                <ui-status-badge [status]="booking.status" />
               </div>
 
               <div class="booking-row__actions">
@@ -185,4 +185,18 @@
       </form>
     </div>
   </div>
+}
+
+@if (cancelTarget(); as target) {
+  <ui-confirm-dialog
+    icon="event_busy"
+    title="Cancel this booking request?"
+    message="Are you sure you want to cancel this request?"
+    confirmLabel="Cancel request"
+    cancelLabel="Keep it"
+    variant="danger"
+    [loading]="actioningId() === target.id"
+    (confirmed)="confirmCancel()"
+    (cancelled)="closeCancel()"
+  />
 }

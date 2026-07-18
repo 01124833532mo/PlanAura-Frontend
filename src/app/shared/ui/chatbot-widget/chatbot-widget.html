@@ -38,12 +38,6 @@
                 <div class="chatbot-message__bubble">{{ message.text }}</div>
               </div>
             }
-            @if (sending()) {
-              <div class="chatbot-message animate-fade-up">
-                <span class="chatbot-message__avatar material-symbols-outlined" aria-hidden="true">smart_toy</span>
-                <div class="chatbot-message__bubble chatbot-message__bubble--typing">Typing…</div>
-              </div>
-            }
             <div #scrollAnchor class="chatbot-panel__scroll-anchor"></div>
           </div>
 
@@ -54,27 +48,21 @@
               type="text"
               placeholder="Type your message..."
               autocomplete="off"
-              [disabled]="sending()"
               (keydown.enter)="sendMessage(msgInput)"
             />
             <button
               class="chatbot-panel__send"
               type="button"
               aria-label="Send message"
-              [disabled]="sending()"
               (click)="sendMessage(msgInput)"
             >
               <span class="material-symbols-outlined">send</span>
             </button>
           </div>
 
-          @if (errorText(); as err) {
-            <p class="chatbot-panel__error">{{ err }}</p>
-          }
-
           <p class="chatbot-panel__disclaimer">
             <span class="material-symbols-outlined">info</span>
-            AI-generated responses may be inaccurate. Verify important details before booking.
+            Preview only — Planura AI Assistant isn't connected yet.
           </p>
         </div>
       }

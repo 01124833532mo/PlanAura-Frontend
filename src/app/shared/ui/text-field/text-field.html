@@ -1,10 +1,11 @@
 @if (label) {
-  <label class="ui-field__label" [for]="fieldId">{{ label }}</label>
+  <label class="ui-field__label" [class.ui-field__label--compact]="compact" [for]="fieldId">{{ label }}</label>
 }
 @if (multiline) {
   <textarea
     class="ui-field__input ui-field__textarea"
     [class.ui-field__input--invalid]="!!errorMessage"
+    [class.ui-field__input--compact]="compact"
     [id]="fieldId"
     [placeholder]="placeholder"
     [disabled]="disabled"
@@ -16,6 +17,7 @@
   <input
     class="ui-field__input"
     [class.ui-field__input--invalid]="!!errorMessage"
+    [class.ui-field__input--compact]="compact"
     [id]="fieldId"
     [type]="type"
     [placeholder]="placeholder"

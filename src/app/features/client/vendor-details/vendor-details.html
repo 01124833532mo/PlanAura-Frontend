@@ -7,7 +7,7 @@
     <header class="vendor-details-header card-luxe luxe-shadow animate-blur-reveal">
       <div class="vendor-details-header__media">
         @if (v.logoUrl) {
-          <img [src]="v.logoUrl" [alt]="v.businessName" class="vendor-details-header__logo" />
+          <img [src]="v.logoUrl" [alt]="v.businessName" [title]="v.businessName" title="Vendor logo" class="vendor-details-header__logo" />
         } @else {
           <div class="vendor-details-header__logo-placeholder">
             <span class="material-symbols-outlined">storefront</span>

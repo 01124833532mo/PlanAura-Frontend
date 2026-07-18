@@ -83,3 +83,17 @@
     </div>
   }
 </div>
+
+@if (deleteTarget(); as target) {
+  <ui-confirm-dialog
+    icon="delete"
+    title="Delete this event plan?"
+    [message]="'Delete \'' + target.title + '\'? This can not be undone.'"
+    confirmLabel="Delete"
+    cancelLabel="Cancel"
+    variant="danger"
+    [loading]="deletingId() === target.id"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()"
+  />
+}

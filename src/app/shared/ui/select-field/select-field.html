@@ -1,5 +1,5 @@
 @if (label) {
-  <label class="ui-field__label" [for]="fieldId">{{ label }}</label>
+  <label class="ui-field__label" [class.ui-field__label--compact]="compact" [for]="fieldId">{{ label }}</label>
 }
 <div class="ui-select-wrapper">
   <select

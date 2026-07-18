@@ -3,3 +3,14 @@
 }
 
 /* Uses global admin-theme.css utility classes. */
+
+.payment-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--admin-text-muted);
+}
+
+.payment-filter__icon {
+  font-size: 20px;
+}

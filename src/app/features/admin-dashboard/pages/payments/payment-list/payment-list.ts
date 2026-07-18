@@ -11,6 +11,7 @@ import { AdminErrorState } from '../../../shared/admin-error-state/admin-error-s
 import { adminNotifyError, adminNotifySuccess } from '../../../shared/admin-notify';
 import { AdminPagination } from '../../../shared/admin-pagination/admin-pagination';
 import { AdminSkeletonRows } from '../../../shared/admin-skeleton/admin-skeleton';
+import { AdminStatCard } from '../../../shared/admin-stat-card/admin-stat-card';
 import { mapPaymentStatus } from '../../../shared/status-maps';
 
 const STATUS_OPTIONS: { label: string; value: PaymentStatus | undefined }[] = [
@@ -27,7 +28,7 @@ const STATUS_OPTIONS: { label: string; value: PaymentStatus | undefined }[] = [
 @Component({
   selector: 'app-payment-list',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, FormsModule, AdminBadge, AdminEmptyState, AdminErrorState, AdminPagination, AdminSkeletonRows],
+  imports: [DatePipe, DecimalPipe, FormsModule, AdminBadge, AdminEmptyState, AdminErrorState, AdminPagination, AdminSkeletonRows, AdminStatCard],
   templateUrl: './payment-list.html',
   styleUrl: './payment-list.css',
 })

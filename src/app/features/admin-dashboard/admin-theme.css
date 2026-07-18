@@ -189,6 +189,28 @@
   transform: translateY(-3px);
 }
 
+/* Responsive KPI/stat card row — 2-4 cards per row depending on viewport width,
+   generous even gaps, equal-height cards. Used on Dashboard Home, Reports,
+   Payments, and any detail page that opens with a row of summary numbers. */
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--admin-space-lg);
+  margin-bottom: var(--admin-space-xl);
+  align-items: stretch;
+}
+
+/* Lightweight stat tile for pages that don't use <admin-stat-card> (plain
+   markup, no icon/trend) — kept visually consistent with the component. */
+.admin-stat-tile {
+  padding: var(--admin-space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 108px;
+  justify-content: center;
+}
+
 /* Standard internal card header — title + optional subtitle, used above tables,
    chart bodies, and detail panels for a consistent hierarchy across the app. */
 .admin-card__header {
@@ -343,6 +365,42 @@
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--admin-text-primary);
+}
+
+/* Groups a page into clearly separated sections (stat row, table group, ...)
+   with consistent 32-40px breathing room between each block. */
+.admin-section {
+  margin-bottom: var(--admin-space-xl);
+}
+.admin-section:last-child {
+  margin-bottom: 0;
+}
+
+.admin-section__head {
+  margin-bottom: var(--admin-space-lg);
+}
+.admin-section__head .admin-section-title {
+  font-size: var(--admin-text-lg);
+  margin: 4px 0 2px;
+}
+.admin-section__subtitle {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-text-muted);
+  margin: 0;
+}
+
+/* Responsive 2-column grid for grouping related report/analytics cards side
+   by side, collapsing to one column on narrower viewports. */
+.admin-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--admin-space-xl);
+  align-items: stretch;
+}
+@media (max-width: 992px) {
+  .admin-section-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .admin-eyebrow {

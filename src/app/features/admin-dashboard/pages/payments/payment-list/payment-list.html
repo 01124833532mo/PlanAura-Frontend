@@ -7,33 +7,26 @@
 </section>
 
 @if (summary(); as s) {
-  <section class="admin-stat-grid admin-animate-fade-up admin-stagger-1">
-    <div class="admin-card" style="padding: var(--admin-space-lg);">
-      <p class="admin-field__label">Gross Revenue</p>
-      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ s.grossRevenue | number: '1.0-0' }} EGP</p>
-    </div>
-    <div class="admin-card" style="padding: var(--admin-space-lg);">
-      <p class="admin-field__label">Refunded</p>
-      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ s.refundedAmount | number: '1.0-0' }} EGP</p>
-    </div>
-    <div class="admin-card" style="padding: var(--admin-space-lg);">
-      <p class="admin-field__label">Failed Payments</p>
-      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ s.failedPaymentCount }}</p>
-    </div>
-    <div class="admin-card" style="padding: var(--admin-space-lg);">
-      <p class="admin-field__label">Pending Authorization</p>
-      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ s.pendingAuthorizationCount }}</p>
+  <section class="admin-section admin-animate-fade-up admin-stagger-1">
+    <div class="admin-stat-grid">
+      <admin-stat-card label="Gross Revenue" [value]="(s.grossRevenue | number: '1.0-0') + ' EGP'" icon="payments" accent="success" />
+      <admin-stat-card label="Refunded" [value]="(s.refundedAmount | number: '1.0-0') + ' EGP'" icon="undo" accent="warning" />
+      <admin-stat-card label="Failed Payments" [value]="s.failedPaymentCount" icon="error" accent="danger" />
+      <admin-stat-card label="Pending Authorization" [value]="s.pendingAuthorizationCount" icon="hourglass_empty" accent="indigo" />
     </div>
   </section>
 }
 
 <div class="admin-card admin-animate-fade-up admin-stagger-2">
   <div class="admin-table-toolbar">
-    <select class="admin-select" (change)="onStatusChange($any($event.target).value)">
-      @for (opt of statusOptions; track opt.label) {
-        <option [value]="opt.value ?? ''">{{ opt.label }}</option>
-      }
-    </select>
+    <div class="payment-filter">
+      <span class="material-symbols-outlined payment-filter__icon">filter_list</span>
+      <select class="admin-select" (change)="onStatusChange($any($event.target).value)">
+        @for (opt of statusOptions; track opt.label) {
+          <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
   </div>
 
   @if (loading()) {

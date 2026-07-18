@@ -7,84 +7,107 @@
 </section>
 
 @if (funnel(); as f) {
-  <section class="admin-stat-grid admin-animate-fade-up admin-stagger-1" style="margin-bottom: var(--admin-space-lg);">
-    <div class="admin-card" style="padding: var(--admin-space-lg);">
-      <p class="admin-field__label">Submitted</p>
-      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ f.submitted }}</p>
+  <section class="admin-section admin-animate-fade-up admin-stagger-1">
+    <div class="admin-section__head">
+      <p class="admin-eyebrow">Vendor Verification</p>
+      <h3 class="admin-section-title">Approval Funnel</h3>
     </div>
-    <div class="admin-card" style="padding: var(--admin-space-lg);">
-      <p class="admin-field__label">Pending</p>
-      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ f.pending }}</p>
-    </div>
-    <div class="admin-card" style="padding: var(--admin-space-lg);">
-      <p class="admin-field__label">Approved</p>
-      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ f.approved }} <span style="font-size: var(--admin-text-sm); color: var(--admin-text-muted);">({{ funnelDropoff(f.submitted, f.approved) }})</span></p>
-    </div>
-    <div class="admin-card" style="padding: var(--admin-space-lg);">
-      <p class="admin-field__label">Rejected</p>
-      <p class="admin-field__value" style="font-size: var(--admin-text-2xl);">{{ f.rejected }}</p>
+    <div class="admin-stat-grid">
+      <admin-stat-card label="Submitted" [value]="f.submitted" icon="assignment" accent="indigo" />
+      <admin-stat-card label="Pending" [value]="f.pending" icon="hourglass_empty" accent="warning" />
+      <admin-stat-card
+        label="Approved"
+        [value]="f.approved"
+        icon="check_circle"
+        accent="success"
+        [trend]="funnelDropoff(f.submitted, f.approved) + ' of submitted'"
+        trendDirection="neutral"
+      />
+      <admin-stat-card label="Rejected" [value]="f.rejected" icon="cancel" accent="danger" />
     </div>
   </section>
 }
 
-<div class="reports-grid admin-animate-fade-up admin-stagger-2">
-  <section class="admin-card" style="padding: var(--admin-space-lg);">
-    <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Top Vendors by Revenue</h3>
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead><tr><th>#</th><th>Vendor</th><th>Revenue</th><th>Bookings</th></tr></thead>
-        <tbody>
-          @for (vendor of topVendorsByRevenue(); track vendor.vendorId; let i = $index) {
-            <tr><td>{{ i + 1 }}</td><td>{{ vendor.businessName }}</td><td>{{ vendor.revenue | number: '1.0-0' }} EGP</td><td>{{ vendor.bookingCount }}</td></tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="admin-card" style="padding: var(--admin-space-lg);">
-    <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Top Vendors by Bookings</h3>
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead><tr><th>#</th><th>Vendor</th><th>Bookings</th><th>Revenue</th></tr></thead>
-        <tbody>
-          @for (vendor of topVendorsByBookings(); track vendor.vendorId; let i = $index) {
-            <tr><td>{{ i + 1 }}</td><td>{{ vendor.businessName }}</td><td>{{ vendor.bookingCount }}</td><td>{{ vendor.revenue | number: '1.0-0' }} EGP</td></tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="admin-card" style="padding: var(--admin-space-lg);">
-    <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Top Categories</h3>
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead><tr><th>#</th><th>Category</th><th>Vendors</th><th>Bookings</th></tr></thead>
-        <tbody>
-          @for (cat of topCategories(); track cat.categoryId; let i = $index) {
-            <tr><td>{{ i + 1 }}</td><td>{{ cat.categoryName }}</td><td>{{ cat.vendorCount }}</td><td>{{ cat.bookingCount }}</td></tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="admin-card" style="padding: var(--admin-space-lg);">
-    <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Monthly Registrations</h3>
-    @if (loading()) {
-      <div class="admin-panel__loading"><span class="admin-spinner admin-spinner--dark"></span></div>
-    } @else {
+<section class="admin-section admin-animate-fade-up admin-stagger-2">
+  <div class="admin-section__head">
+    <p class="admin-eyebrow">Marketplace</p>
+    <h3 class="admin-section-title">Vendor Performance</h3>
+  </div>
+  <div class="admin-section-grid">
+    <section class="admin-card">
+      <div class="admin-card__header">
+        <h3 class="admin-card__title">Top Vendors by Revenue</h3>
+      </div>
       <div class="admin-table-wrap">
         <table class="admin-table">
-          <thead><tr><th>Month</th><th>Clients</th><th>Vendors</th><th>Total</th></tr></thead>
+          <thead><tr><th>#</th><th>Vendor</th><th>Revenue</th><th>Bookings</th></tr></thead>
           <tbody>
-            @for (row of registrations(); track row.year + '-' + row.month) {
-              <tr><td>{{ monthName(row.month) }} {{ row.year }}</td><td>{{ row.clientCount }}</td><td>{{ row.vendorCount }}</td><td>{{ row.totalCount }}</td></tr>
+            @for (vendor of topVendorsByRevenue(); track vendor.vendorId; let i = $index) {
+              <tr><td>{{ i + 1 }}</td><td>{{ vendor.businessName }}</td><td>{{ vendor.revenue | number: '1.0-0' }} EGP</td><td>{{ vendor.bookingCount }}</td></tr>
             }
           </tbody>
         </table>
       </div>
-    }
-  </section>
-</div>
+    </section>
+
+    <section class="admin-card">
+      <div class="admin-card__header">
+        <h3 class="admin-card__title">Top Vendors by Bookings</h3>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>#</th><th>Vendor</th><th>Bookings</th><th>Revenue</th></tr></thead>
+          <tbody>
+            @for (vendor of topVendorsByBookings(); track vendor.vendorId; let i = $index) {
+              <tr><td>{{ i + 1 }}</td><td>{{ vendor.businessName }}</td><td>{{ vendor.bookingCount }}</td><td>{{ vendor.revenue | number: '1.0-0' }} EGP</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="admin-section admin-animate-fade-up admin-stagger-3">
+  <div class="admin-section__head">
+    <p class="admin-eyebrow">Growth</p>
+    <h3 class="admin-section-title">Platform Trends</h3>
+  </div>
+  <div class="admin-section-grid">
+    <section class="admin-card">
+      <div class="admin-card__header">
+        <h3 class="admin-card__title">Top Categories</h3>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>#</th><th>Category</th><th>Vendors</th><th>Bookings</th></tr></thead>
+          <tbody>
+            @for (cat of topCategories(); track cat.categoryId; let i = $index) {
+              <tr><td>{{ i + 1 }}</td><td>{{ cat.categoryName }}</td><td>{{ cat.vendorCount }}</td><td>{{ cat.bookingCount }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="admin-card">
+      <div class="admin-card__header">
+        <h3 class="admin-card__title">Monthly Registrations</h3>
+      </div>
+      @if (loading()) {
+        <div class="admin-panel__loading"><span class="admin-spinner admin-spinner--dark"></span></div>
+      } @else {
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Month</th><th>Clients</th><th>Vendors</th><th>Total</th></tr></thead>
+            <tbody>
+              @for (row of registrations(); track row.year + '-' + row.month) {
+                <tr><td>{{ monthName(row.month) }} {{ row.year }}</td><td>{{ row.clientCount }}</td><td>{{ row.vendorCount }}</td><td>{{ row.totalCount }}</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  </div>
+</section>

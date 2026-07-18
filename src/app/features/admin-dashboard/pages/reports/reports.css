@@ -2,14 +2,5 @@
   display: block;
 }
 
-.reports-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--admin-space-lg);
-}
-
-@media (max-width: 992px) {
-  .reports-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* Layout now comes from the global .admin-section / .admin-section-grid /
+   .admin-stat-grid utility classes in admin-theme.css. */

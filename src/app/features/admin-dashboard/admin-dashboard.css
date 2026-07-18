@@ -20,13 +20,8 @@
   margin: 0;
 }
 
-.admin-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: var(--admin-space-lg);
-  margin-bottom: var(--admin-space-xl);
-  align-items: stretch;
-}
+/* .admin-stat-grid now lives in the global admin-theme.css so every page
+   (Dashboard Home, Reports, Payments, detail pages) gets the same spacing. */
 
 .admin-dashboard-grid {
   display: grid;

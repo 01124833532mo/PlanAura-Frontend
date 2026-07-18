@@ -7,6 +7,7 @@ import {
   TopVendor,
   VendorVerificationFunnel,
 } from '../../../../core/interfaces/admin-report.model';
+import { AdminStatCard } from '../../shared/admin-stat-card/admin-stat-card';
 
 const MONTH_LABELS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -14,7 +15,7 @@ const MONTH_LABELS = ['January', 'February', 'March', 'April', 'May', 'June', 'J
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, AdminStatCard],
   templateUrl: './reports.html',
   styleUrl: './reports.css',
 })

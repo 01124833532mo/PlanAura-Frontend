@@ -22,14 +22,3 @@ export const API_BASE_URL = 'https://localhost:7123/api';
  * those relative paths into <img> srcs.
  */
 export const STATIC_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, '');
-
-/**
- * Stripe's publishable key is not secret (it's designed to be embedded in
- * client code), so it's safe to hardcode here. This replaces the old
- * per-booking fetch from GET /booking-requests/{id}/payment-options, which
- * was removed when the payment flow moved to authorize-at-booking-time —
- * there is no longer a per-request server round trip that could hand this
- * back dynamically. Matches the backend's Stripe:PublishableKey dev value.
- */
-export const STRIPE_PUBLISHABLE_KEY =
-  'pk_test_51TsjWvJTBgcTyrCLDrVYXp1HZFOfa1LNUaHp7P4faMd5zJ6hYQSiCRUGcjtwo2XNN5nNMAFi8zc7p8othY68Ccxu00i7L2YVTl';

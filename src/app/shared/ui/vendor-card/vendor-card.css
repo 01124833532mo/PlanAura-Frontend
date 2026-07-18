@@ -60,7 +60,7 @@
   color: var(--color-secondary);
   font-size: var(--font-label-sm-size);
   font-weight: 700;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 12px rgba(36, 31, 28, 0.12);
 }
 
 .vendor-card__verification .material-symbols-outlined {

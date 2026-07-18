@@ -116,6 +116,18 @@
                     Cancel request
                   </ui-button>
                 }
+                @if (
+                  booking.status === BookingStatus.Accepted &&
+                  booking.paymentStatus === BookingPaymentStatus.Unpaid
+                ) {
+                  <a
+                    class="btn-gold-gradient"
+                    [routerLink]="['/client/bookings', booking.id, 'pay']"
+                  >
+                    <span class="material-symbols-outlined">payments</span>
+                    Pay now
+                  </a>
+                }
                 @if (booking.status === BookingStatus.Completed) {
                   <ui-button
                     variant="outline"

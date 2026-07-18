@@ -203,55 +203,6 @@
   box-shadow: var(--shadow-glow);
 }
 
-.booking-create-payment {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  padding-top: var(--space-sm);
-  border-top: 1px solid var(--color-subtle-border);
-}
-
-.booking-create-payment__header {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.booking-create-payment__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  border-radius: var(--radius-md);
-  background: var(--gradient-primary-soft);
-  color: var(--color-primary);
-}
-
-.booking-create-payment__loading {
-  color: var(--color-secondary);
-}
-
-.booking-create-payment__element {
-  min-height: 200px;
-}
-
-.booking-create-payment__element--hidden {
-  display: none;
-}
-
-.booking-create-payment__disclaimer {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: var(--color-secondary);
-}
-
-.booking-create-payment__disclaimer .material-symbols-outlined {
-  font-size: 1rem;
-}
-
 .booking-create-form__actions {
   display: flex;
   justify-content: flex-end;

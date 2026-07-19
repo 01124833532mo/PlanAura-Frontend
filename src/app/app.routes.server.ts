@@ -13,6 +13,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
+    // Same reasoning — booking ids are dynamic/unbounded.
+    path: 'client/bookings/:id/pay',
+    renderMode: RenderMode.Server,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender
   }

@@ -35,34 +35,10 @@ export const routes: Routes = [
       ),
   },
   {
-    // Public legal pages — no auth guard, linked from both the signed-out
-    // auth page footer and the signed-in home page footer.
-    path: 'terms',
-    loadComponent: () =>
-      import('./features/legal/terms-of-service/terms-of-service').then(
-        (m) => m.TermsOfService,
-      ),
-  },
-  {
-    path: 'privacy',
-    loadComponent: () =>
-      import('./features/legal/privacy-policy/privacy-policy').then(
-        (m) => m.PrivacyPolicy,
-      ),
-  },
-  {
     path: 'admin/dashboard',
     canActivate: [authGuard, adminGuard],
     loadComponent: () =>
       import('./features/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
-  },
-  {
-    path: 'admin/vendor-verifications',
-    canActivate: [authGuard, adminGuard],
-    loadComponent: () =>
-      import(
-        './features/admin-dashboard/vendor-verifications/vendor-verification-list/vendor-verification-list'
-      ).then((m) => m.VendorVerificationList),
   },
   {
     path: 'admin/vendor-verifications',
@@ -78,22 +54,6 @@ export const routes: Routes = [
       import('./features/vendor-onboarding/vendor-onboarding').then(
         (m) => m.VendorOnboarding,
       ),
-  },
-  {
-    path: 'vendor/verification-pending',
-    canActivate: [authGuard, vendorGuard],
-    loadComponent: () =>
-      import(
-        './features/vendor-verification/verification-pending/verification-pending'
-      ).then((m) => m.VerificationPending),
-  },
-  {
-    path: 'vendor/verification-rejected',
-    canActivate: [authGuard, vendorGuard],
-    loadComponent: () =>
-      import(
-        './features/vendor-verification/verification-rejected/verification-rejected'
-      ).then((m) => m.VerificationRejected),
   },
   {
     path: 'vendor/verification-pending',
@@ -128,18 +88,8 @@ export const routes: Routes = [
             './features/vendor-dashboard/booking-requests/booking-request-list/booking-request-list'
           ).then((m) => m.BookingRequestList),
       },
-      { path: '', pathMatch: 'full', redirectTo: 'requests' },
-      {
-        path: 'requests',
-        data: { title: 'Booking Requests' },
-        loadComponent: () =>
-          import(
-            './features/vendor-dashboard/booking-requests/booking-request-list/booking-request-list'
-          ).then((m) => m.BookingRequestList),
-      },
       {
         path: 'packages',
-        data: { title: 'My Packages' },
         data: { title: 'My Packages' },
         loadComponent: () =>
           import('./features/vendor-dashboard/packages/package-list/package-list').then(
@@ -149,7 +99,6 @@ export const routes: Routes = [
       {
         path: 'availability',
         data: { title: 'Availability' },
-        data: { title: 'Availability' },
         loadComponent: () =>
           import(
             './features/vendor-dashboard/availability/availability-list/availability-list'
@@ -158,17 +107,10 @@ export const routes: Routes = [
       {
         path: 'browse-packages',
         data: { title: 'Browse Packages' },
-        data: { title: 'Browse Packages' },
         loadComponent: () =>
           import('./features/vendor-dashboard/packages/package-browser/package-browser').then(
             (m) => m.PackageBrowser,
           ),
-      },
-      {
-        path: 'profile',
-        data: { title: 'My Profile' },
-        loadComponent: () =>
-          import('./features/vendor-dashboard/profile/profile').then((m) => m.Profile),
       },
       {
         path: 'profile',
@@ -188,7 +130,6 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         data: { title: 'Overview' },
-        data: { title: 'Overview' },
         loadComponent: () =>
           import('./features/client/client-dashboard/client-dashboard').then(
             (m) => m.ClientDashboard,
@@ -197,20 +138,17 @@ export const routes: Routes = [
       {
         path: 'vendors',
         data: { title: 'Browse Vendors' },
-        data: { title: 'Browse Vendors' },
         loadComponent: () =>
           import('./features/client/vendor-browse/vendor-browse').then((m) => m.VendorBrowse),
       },
       {
         path: 'vendors/:id',
         data: { title: 'Vendor Details' },
-        data: { title: 'Vendor Details' },
         loadComponent: () =>
           import('./features/client/vendor-details/vendor-details').then((m) => m.VendorDetails),
       },
       {
         path: 'booking/new',
-        data: { title: 'New Booking' },
         data: { title: 'New Booking' },
         loadComponent: () =>
           import('./features/client/booking/booking-create/booking-create').then(
@@ -220,7 +158,6 @@ export const routes: Routes = [
       {
         path: 'event-plans',
         data: { title: 'My Event Plans' },
-        data: { title: 'My Event Plans' },
         loadComponent: () =>
           import('./features/client/event-plan/event-plan-list/event-plan-list').then(
             (m) => m.EventPlanList,
@@ -228,7 +165,6 @@ export const routes: Routes = [
       },
       {
         path: 'event-plans/new',
-        data: { title: 'New Event Plan' },
         data: { title: 'New Event Plan' },
         loadComponent: () =>
           import('./features/client/event-plan/event-plan-form/event-plan-form').then(
@@ -240,27 +176,26 @@ export const routes: Routes = [
         // the literal 'new' segment first.
         path: 'event-plans/:id',
         data: { title: 'Event Plan Details' },
-        data: { title: 'Event Plan Details' },
         loadComponent: () =>
           import('./features/client/event-plan/event-plan-detail/event-plan-detail').then(
             (m) => m.EventPlanDetail,
           ),
       },
       {
+        // Must come before 'bookings' — otherwise it'd never be reached
+        // (Angular matches path segments in order, and 'bookings' has fewer
+        // segments so it wouldn't itself shadow this, but keeping the more
+        // specific route first mirrors the event-plans ordering above).
         path: 'bookings/:id/pay',
         data: { title: 'Checkout' },
+        loadComponent: () =>
+          import('./features/client/booking/booking-pay/booking-pay').then((m) => m.BookingPay),
+      },
+      {
         path: 'bookings',
         data: { title: 'My Bookings' },
         loadComponent: () =>
           import('./features/client/booking/my-bookings/my-bookings').then((m) => m.MyBookings),
-      },
-      {
-        path: 'profile',
-        data: { title: 'My Profile' },
-        loadComponent: () =>
-          import('./features/client/client-profile/client-profile').then(
-            (m) => m.ClientProfileComponent,
-          ),
       },
       {
         path: 'profile',

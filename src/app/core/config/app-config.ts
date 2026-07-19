@@ -22,3 +22,11 @@ export const API_BASE_URL = 'https://localhost:7123/api';
  * those relative paths into <img> srcs.
  */
 export const STATIC_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, '');
+
+/**
+ * Stripe publishable key for client-side Elements — safe to expose in
+ * frontend code (unlike the secret key). Matches the dev key in
+ * Planura.Apis/appsettings.json ("Stripe:PublishableKey").
+ */
+export const STRIPE_PUBLISHABLE_KEY =
+  'pk_test_51TsjWvJTBgcTyrCLDrVYXp1HZFOfa1LNUaHp7P4faMd5zJ6hYQSiCRUGcjtwo2XNN5nNMAFi8zc7p8othY68Ccxu00i7L2YVTl';

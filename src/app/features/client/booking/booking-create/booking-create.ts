@@ -39,6 +39,16 @@ import { VendorPackageService } from '../../../../core/services/vendor-package.s
 import { VendorService } from '../../../../core/services/vendor.service';
 import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
 
+/**
+ * This dev environment has shown a pattern of intermittent extreme outbound
+ * network latency (observed elsewhere this session as an ~8min delay on a
+ * Stripe capture call, and a live repro of the Payment Element never
+ * mounting even 60s+ after navigating here). loadStripe() has no built-in
+ * timeout, so without this, a slow/stuck network leaves the form stuck on
+ * "Loading payment form..." forever with no feedback.
+ */
+const STRIPE_LOAD_TIMEOUT_MS = 15000;
+
 @Component({
   selector: 'app-booking-create',
   standalone: true,
@@ -76,6 +86,8 @@ export class BookingCreate implements OnInit, OnDestroy {
 
   /** True while Stripe.js/Elements is loading — the payment section stays present but visually hidden. */
   protected readonly mountingPayment = signal(true);
+  /** True if Stripe.js failed to load or didn't respond within STRIPE_LOAD_TIMEOUT_MS — shows a retry affordance instead of hanging silently. */
+  protected readonly paymentSetupFailed = signal(false);
 
   private vendorId = 0;
   private packageId = 0;
@@ -218,15 +230,18 @@ export class BookingCreate implements OnInit, OnDestroy {
    */
   private async setupPayment(pkg: VendorPackage): Promise<void> {
     this.mountingPayment.set(true);
+    this.paymentSetupFailed.set(false);
 
-    this.stripe = await this.stripeService.getStripe(STRIPE_PUBLISHABLE_KEY);
+    const timeout = new Promise<null>((resolve) =>
+      setTimeout(() => resolve(null), STRIPE_LOAD_TIMEOUT_MS),
+    );
+    this.stripe = await Promise.race([
+      this.stripeService.getStripe(STRIPE_PUBLISHABLE_KEY),
+      timeout,
+    ]);
 
     if (!this.stripe || !this.paymentElementContainer) {
-      this.error.set({
-        status: 0,
-        message: 'Unable to load the payment form. Please refresh and try again.',
-        fieldErrors: [],
-      });
+      this.paymentSetupFailed.set(true);
       this.mountingPayment.set(false);
       return;
     }
@@ -249,6 +264,13 @@ export class BookingCreate implements OnInit, OnDestroy {
     this.paymentElement.mount(this.paymentElementContainer.nativeElement);
 
     this.mountingPayment.set(false);
+  }
+
+  protected retryPaymentSetup(): void {
+    const p = this.pkg();
+    if (p) {
+      this.setupPayment(p);
+    }
   }
 
   private refreshSlots(): void {
@@ -289,7 +311,9 @@ export class BookingCreate implements OnInit, OnDestroy {
     if (!this.stripe || !this.elements) {
       this.error.set({
         status: 0,
-        message: 'The payment form is still loading — please wait a moment and try again.',
+        message: this.paymentSetupFailed()
+          ? 'The payment form failed to load — use the Retry button above before submitting.'
+          : 'The payment form is still loading — please wait a moment and try again.',
         fieldErrors: [],
       });
       return;

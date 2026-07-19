@@ -116,12 +116,25 @@
             </div>
 
             @if (mountingPayment()) {
-              <p class="text-body-md booking-create-payment__loading">Loading payment form...</p>
+              <p class="text-body-md booking-create-payment__loading">
+                <span class="material-symbols-outlined skeleton-icon">progress_activity</span>
+                Loading payment form...
+              </p>
+            } @else if (paymentSetupFailed()) {
+              <div class="booking-create-payment__failed">
+                <p class="text-body-md">
+                  <span class="material-symbols-outlined">error</span>
+                  Payment form is taking longer than usual to load.
+                </p>
+                <ui-button variant="outline" [fullWidth]="false" (click)="retryPaymentSetup()">
+                  Retry
+                </ui-button>
+              </div>
             }
             <div
               #paymentElementContainer
               class="booking-create-payment__element"
-              [class.booking-create-payment__element--hidden]="mountingPayment()"
+              [class.booking-create-payment__element--hidden]="mountingPayment() || paymentSetupFailed()"
             ></div>
 
             <p class="text-label-sm booking-create-payment__disclaimer">

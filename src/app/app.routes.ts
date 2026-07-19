@@ -232,6 +232,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'reviews',
+        data: { title: 'Reviews' },
+        loadComponent: () =>
+          import('./features/vendor-dashboard/reviews/reviews-list/reviews-list').then(
+            (m) => m.ReviewsList,
+          ),
+      },
+      {
         path: 'profile',
         data: { title: 'My Profile' },
         loadComponent: () =>

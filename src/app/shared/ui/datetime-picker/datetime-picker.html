@@ -1,0 +1,94 @@
+<button
+  type="button"
+  class="dtp__trigger"
+  [class.dtp__trigger--invalid]="invalid"
+  [class.dtp__trigger--open]="open()"
+  [disabled]="disabled()"
+  (click)="toggle()"
+>
+  <span class="dtp__trigger-icon material-symbols-outlined" aria-hidden="true">calendar_month</span>
+  @if (display(); as value) {
+    <span class="dtp__trigger-value">{{ value }}</span>
+  } @else {
+    <span class="dtp__trigger-placeholder">{{ placeholder }}</span>
+  }
+  <span class="dtp__trigger-caret material-symbols-outlined" aria-hidden="true">
+    {{ open() ? 'expand_less' : 'expand_more' }}
+  </span>
+</button>
+
+@if (open()) {
+  <div class="dtp__panel animate-fade-down">
+    <div class="dtp__cal-head">
+      <button class="dtp__nav-btn" type="button" title="Previous month" (click)="prevMonth()">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+      <span class="dtp__month">{{ monthLabel() }}</span>
+      <button class="dtp__nav-btn" type="button" title="Next month" (click)="nextMonth()">
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+    </div>
+
+    <div class="dtp__weekdays">
+      @for (wd of weekdays; track wd) {
+        <span class="dtp__weekday">{{ wd }}</span>
+      }
+    </div>
+
+    <div class="dtp__grid">
+      @for (week of weeks(); track $index) {
+        @for (cell of week; track cell.key) {
+          <button
+            type="button"
+            class="dtp__day"
+            [class.dtp__day--outside]="!cell.inMonth"
+            [class.dtp__day--today]="cell.isToday"
+            [class.dtp__day--selected]="cell.isSelected"
+            (click)="selectDay(cell)"
+          >
+            {{ cell.dayNum }}
+          </button>
+        }
+      }
+    </div>
+
+    <div class="dtp__time">
+      <span class="dtp__time-icon material-symbols-outlined" aria-hidden="true">schedule</span>
+      <select class="dtp__select" [value]="hour()" (change)="onHourChange($any($event.target).value)">
+        @for (h of hours; track h) {
+          <option [value]="h">{{ pad(h) }}</option>
+        }
+      </select>
+      <span class="dtp__time-colon">:</span>
+      <select class="dtp__select" [value]="minute()" (change)="onMinuteChange($any($event.target).value)">
+        @for (m of minutes; track m) {
+          <option [value]="m">{{ pad(m) }}</option>
+        }
+      </select>
+      <div class="dtp__ampm">
+        <button
+          type="button"
+          class="dtp__ampm-btn"
+          [class.dtp__ampm-btn--active]="ampm() === 'AM'"
+          (click)="setAmpm('AM')"
+        >
+          AM
+        </button>
+        <button
+          type="button"
+          class="dtp__ampm-btn"
+          [class.dtp__ampm-btn--active]="ampm() === 'PM'"
+          (click)="setAmpm('PM')"
+        >
+          PM
+        </button>
+      </div>
+    </div>
+
+    <div class="dtp__footer">
+      <button class="dtp__link" type="button" (click)="clear()">Clear</button>
+      <button class="dtp__link" type="button" (click)="goToday()">Today</button>
+      <button class="dtp__done" type="button" (click)="done()">Done</button>
+    </div>
+  </div>
+}

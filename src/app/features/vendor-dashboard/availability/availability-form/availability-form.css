@@ -5,15 +5,9 @@
 }
 
 .availability-form__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: var(--space-md);
-}
-
-@media (max-width: 560px) {
-  .availability-form__grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .availability-form__field {
@@ -45,28 +39,20 @@
   color: var(--color-rose-gold);
 }
 
-.ui-field__input {
-  width: 100%;
-  padding: 0.85rem 1rem;
-  background: var(--color-soft-beige);
-  border: 1px solid transparent;
-  border-radius: var(--radius-xl);
-  font-family: var(--font-family-base);
-  font-size: var(--font-body-md-size);
-  color: var(--color-charcoal);
-  transition: background-color var(--dur-fast) var(--ease-smooth), box-shadow var(--dur-fast) var(--ease-smooth),
-    border-color var(--dur-fast) var(--ease-smooth);
+/* Live range preview */
+.availability-form__preview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
-.ui-field__input:hover {
-  background: var(--color-surface-container);
-}
-
-.ui-field__input:focus {
-  outline: none;
-  background: var(--color-surface-container-lowest);
-  border-color: var(--color-primary-container);
-  box-shadow: 0 0 0 2px var(--color-primary-container);
+.availability-form__preview .material-symbols-outlined {
+  font-size: 1.2rem;
 }
 
 .ui-field__error {

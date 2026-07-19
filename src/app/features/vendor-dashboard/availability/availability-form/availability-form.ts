@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, inject } from '@angu
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
+import { DatetimePicker } from '../../../../shared/ui/datetime-picker/datetime-picker';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
   UpdateVendorAvailabilityPayload,
@@ -18,7 +19,7 @@ function toDateTimeLocalValue(iso: string): string {
 @Component({
   selector: 'app-availability-form',
   standalone: true,
-  imports: [ReactiveFormsModule, Button, AlertBanner],
+  imports: [ReactiveFormsModule, Button, AlertBanner, DatetimePicker],
   templateUrl: './availability-form.html',
   styleUrl: './availability-form.css',
 })
@@ -54,6 +55,55 @@ export class AvailabilityForm implements OnChanges {
       startAt: this.initialDate ? `${this.initialDate}T12:00` : '',
       endAt: this.initialDate ? `${this.initialDate}T13:00` : '',
     });
+  }
+
+  /** Human-readable preview of the chosen range, shown live under the fields. */
+  protected preview(): string | null {
+    const { startAt, endAt } = this.form.getRawValue();
+    if (!startAt || !endAt) {
+      return null;
+    }
+
+    const start = new Date(startAt);
+    const end = new Date(endAt);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end <= start) {
+      return null;
+    }
+
+    const sameDay =
+      start.getFullYear() === end.getFullYear() &&
+      start.getMonth() === end.getMonth() &&
+      start.getDate() === end.getDate();
+
+    const dateFmt: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+    const timeFmt: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit' };
+    const time = (d: Date) => d.toLocaleTimeString('en-US', timeFmt);
+    const date = (d: Date) => d.toLocaleDateString('en-US', dateFmt);
+
+    const range = sameDay
+      ? `${date(start)} · ${time(start)} – ${time(end)}`
+      : `${date(start)}, ${time(start)} → ${date(end)}, ${time(end)}`;
+
+    return `${range} (${this.formatDuration(end.getTime() - start.getTime())})`;
+  }
+
+  private formatDuration(ms: number): string {
+    const totalMinutes = Math.round(ms / 60000);
+    const days = Math.floor(totalMinutes / 1440);
+    const hours = Math.floor((totalMinutes % 1440) / 60);
+    const minutes = totalMinutes % 60;
+
+    const parts: string[] = [];
+    if (days > 0) {
+      parts.push(`${days}d`);
+    }
+    if (hours > 0) {
+      parts.push(`${hours}h`);
+    }
+    if (minutes > 0) {
+      parts.push(`${minutes}m`);
+    }
+    return parts.length > 0 ? parts.join(' ') : '0m';
   }
 
   protected submit(): void {

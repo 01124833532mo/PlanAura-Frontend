@@ -4,14 +4,13 @@
   <div class="availability-form__grid">
     <div class="availability-form__field">
       <label class="ui-field__label" for="startAt">
-        <span class="material-symbols-outlined ui-field__label-icon" aria-hidden="true">event</span>
-        Start
+        <span class="material-symbols-outlined ui-field__label-icon" aria-hidden="true">line_start_circle</span>
+        Starts
       </label>
-      <input
-        id="startAt"
-        class="ui-field__input"
-        type="datetime-local"
+      <ui-datetime-picker
         formControlName="startAt"
+        placeholder="Pick a start date & time"
+        [invalid]="form.get('startAt')!.touched && form.get('startAt')!.invalid"
       />
       @if (form.get('startAt')!.touched && form.get('startAt')!.invalid) {
         <p class="ui-field__error">
@@ -23,10 +22,14 @@
 
     <div class="availability-form__field">
       <label class="ui-field__label" for="endAt">
-        <span class="material-symbols-outlined ui-field__label-icon" aria-hidden="true">event</span>
-        End
+        <span class="material-symbols-outlined ui-field__label-icon" aria-hidden="true">line_end_circle</span>
+        Ends
       </label>
-      <input id="endAt" class="ui-field__input" type="datetime-local" formControlName="endAt" />
+      <ui-datetime-picker
+        formControlName="endAt"
+        placeholder="Pick an end date & time"
+        [invalid]="form.get('endAt')!.touched && form.get('endAt')!.invalid"
+      />
       @if (form.get('endAt')!.touched && form.get('endAt')!.hasError('required')) {
         <p class="ui-field__error">
           <span class="material-symbols-outlined ui-field__error-icon" aria-hidden="true">error</span>
@@ -41,6 +44,13 @@
       }
     </div>
   </div>
+
+  @if (preview(); as p) {
+    <div class="availability-form__preview animate-fade-in">
+      <span class="material-symbols-outlined" aria-hidden="true">schedule</span>
+      <span class="text-label-md">{{ p }}</span>
+    </div>
+  }
 
   <div class="availability-form__actions">
     <ui-button variant="outline" type="button" (click)="cancelled.emit()">Cancel</ui-button>

@@ -776,6 +776,13 @@
   color: var(--color-on-primary);
   font-weight: 700;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.vp-review-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .vp-review-card__identity {
@@ -804,6 +811,33 @@
 .vp-review-card__comment {
   color: var(--color-secondary);
   line-height: 1.55;
+}
+
+.vp-review-card__response {
+  margin-top: 0.25rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-soft-beige);
+  border-left: 3px solid var(--color-rose-gold);
+}
+
+.vp-review-card__response-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--color-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+
+.vp-review-card__response-label .material-symbols-outlined {
+  font-size: 15px;
+}
+
+.vp-review-card__response p {
+  color: var(--color-charcoal);
+  line-height: 1.5;
 }
 
 /* ==========================================================================

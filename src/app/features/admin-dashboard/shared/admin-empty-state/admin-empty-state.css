@@ -1,0 +1,43 @@
+:host {
+  display: block;
+}
+
+.admin-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--admin-space-3xl) var(--admin-space-lg);
+  color: var(--admin-text-muted);
+}
+
+.admin-empty-state__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--admin-radius-full);
+  background: var(--admin-surface-muted);
+  margin-bottom: var(--admin-space-md);
+}
+
+.admin-empty-state__icon {
+  font-size: 30px;
+  color: var(--admin-slate-300);
+}
+
+.admin-empty-state__title {
+  font-size: var(--admin-text-md);
+  font-weight: 700;
+  color: var(--admin-text-secondary);
+  margin: 0 0 5px;
+}
+
+.admin-empty-state__message {
+  font-size: var(--admin-text-sm);
+  margin: 0;
+  max-width: 360px;
+  line-height: 1.55;
+}

@@ -1,0 +1,10 @@
+<div class="admin-empty-state">
+  <div class="admin-empty-state__icon-wrap">
+    <span class="material-symbols-outlined admin-empty-state__icon">{{ icon }}</span>
+  </div>
+  <p class="admin-empty-state__title">{{ title }}</p>
+  @if (message) {
+    <p class="admin-empty-state__message">{{ message }}</p>
+  }
+  <ng-content></ng-content>
+</div>

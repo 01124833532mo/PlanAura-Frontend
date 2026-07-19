@@ -35,18 +35,137 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'admin/dashboard',
+    path: 'admin',
     canActivate: [authGuard, adminGuard],
     loadComponent: () =>
-      import('./features/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
-  },
-  {
-    path: 'admin/vendor-verifications',
-    canActivate: [authGuard, adminGuard],
-    loadComponent: () =>
-      import(
-        './features/admin-dashboard/vendor-verifications/vendor-verification-list/vendor-verification-list'
-      ).then((m) => m.VendorVerificationList),
+      import('./features/admin-dashboard/admin-shell/admin-shell').then((m) => m.AdminShell),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      {
+        path: 'dashboard',
+        data: { title: 'Overview' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
+      },
+      {
+        path: 'analytics',
+        data: { title: 'Analytics' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/analytics/analytics').then(
+            (m) => m.Analytics,
+          ),
+      },
+      {
+        path: 'vendors',
+        data: { title: 'Vendors' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/vendors/vendor-list/vendor-list').then(
+            (m) => m.VendorList,
+          ),
+      },
+      {
+        path: 'vendors/:id',
+        data: { title: 'Vendor Details' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/vendors/vendor-detail/vendor-detail').then(
+            (m) => m.VendorDetail,
+          ),
+      },
+      {
+        path: 'vendor-verifications',
+        data: { title: 'Vendor Verifications' },
+        loadComponent: () =>
+          import(
+            './features/admin-dashboard/vendor-verifications/vendor-verification-list/vendor-verification-list'
+          ).then((m) => m.VendorVerificationList),
+      },
+      {
+        path: 'clients',
+        data: { title: 'Clients' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/clients/client-list/client-list').then(
+            (m) => m.ClientList,
+          ),
+      },
+      {
+        path: 'clients/:id',
+        data: { title: 'Client Details' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/clients/client-detail/client-detail').then(
+            (m) => m.ClientDetail,
+          ),
+      },
+      {
+        path: 'bookings',
+        data: { title: 'Bookings' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/bookings/booking-list/booking-list').then(
+            (m) => m.BookingList,
+          ),
+      },
+      {
+        path: 'disputes',
+        data: { title: 'Disputes' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/disputes/dispute-list/dispute-list').then(
+            (m) => m.DisputeList,
+          ),
+      },
+      {
+        path: 'disputes/:id',
+        data: { title: 'Dispute Details' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/disputes/dispute-detail/dispute-detail').then(
+            (m) => m.DisputeDetail,
+          ),
+      },
+      {
+        path: 'payments',
+        data: { title: 'Payments' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/payments/payment-list/payment-list').then(
+            (m) => m.PaymentList,
+          ),
+      },
+      {
+        path: 'reports',
+        data: { title: 'Reports' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/reports/reports').then((m) => m.Reports),
+      },
+      {
+        path: 'categories',
+        data: { title: 'Categories' },
+        loadComponent: () =>
+          import(
+            './features/admin-dashboard/pages/categories/category-list/category-list'
+          ).then((m) => m.CategoryList),
+      },
+      {
+        path: 'notifications',
+        data: { title: 'Notifications' },
+        loadComponent: () =>
+          import(
+            './features/admin-dashboard/pages/notifications/notification-broadcast/notification-broadcast'
+          ).then((m) => m.NotificationBroadcast),
+      },
+      {
+        path: 'accounts',
+        data: { title: 'Admin Accounts' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/accounts/admin-accounts/admin-accounts').then(
+            (m) => m.AdminAccounts,
+          ),
+      },
+      {
+        path: 'profile',
+        data: { title: 'My Profile' },
+        loadComponent: () =>
+          import('./features/admin-dashboard/pages/profile/admin-profile/admin-profile').then(
+            (m) => m.AdminProfile,
+          ),
+      },
+    ],
   },
   {
     path: 'vendor/register',

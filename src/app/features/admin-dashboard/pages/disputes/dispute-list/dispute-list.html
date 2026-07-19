@@ -1,0 +1,50 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Dispute Management</p>
+    <h2 class="admin-page-header__title">Open Disputes</h2>
+    <p class="admin-page-header__subtitle">Bookings currently flagged as disputed, awaiting resolution.</p>
+  </div>
+  <button type="button" class="admin-btn admin-btn--secondary" (click)="load()" [disabled]="loading()">
+    <span class="material-symbols-outlined" style="font-size: 18px;">refresh</span>
+    Refresh
+  </button>
+</section>
+
+<div class="admin-card admin-animate-fade-up admin-stagger-1">
+  @if (loading()) {
+    <admin-skeleton-rows [rows]="5" [columns]="6" />
+  } @else if (error()) {
+    <admin-error-state [message]="error()!.message" (retry)="load()" />
+  } @else if (disputes().length === 0) {
+    <admin-empty-state icon="task_alt" title="No open disputes" message="All disputes have been resolved." />
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Vendor</th>
+            <th>Event Date</th>
+            <th>Price</th>
+            <th>Booking Status</th>
+            <th>Disputed</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (dispute of disputes(); track dispute.bookingId) {
+            <tr class="is-clickable" [routerLink]="['/admin/disputes', dispute.bookingId]">
+              <td>{{ dispute.clientName ?? '—' }}</td>
+              <td>{{ dispute.vendorName ?? '—' }}</td>
+              <td>{{ dispute.eventDate | date: 'mediumDate' }}</td>
+              <td>{{ dispute.agreedPrice ? (dispute.agreedPrice | number: '1.0-0') + ' EGP' : '—' }}</td>
+              <td><admin-badge [label]="mapBookingStatus(dispute.bookingStatus).label" [tone]="mapBookingStatus(dispute.bookingStatus).tone" /></td>
+              <td>{{ dispute.disputedAt ? (dispute.disputedAt | date: 'mediumDate') : '—' }}</td>
+              <td><admin-badge [label]="mapDisputeStatus(dispute.disputeStatus).label" [tone]="mapDisputeStatus(dispute.disputeStatus).tone" /></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

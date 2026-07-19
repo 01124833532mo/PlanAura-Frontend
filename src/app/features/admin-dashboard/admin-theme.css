@@ -1,0 +1,944 @@
+/* ==========================================================================
+   PlanAura Admin — design system
+   Deliberately distinct from the main app's warm coral/rose theme. Evokes
+   modern SaaS admin panels (Vercel / Stripe / Linear / Clerk / Notion):
+   dark slate + indigo/purple accents, cyan highlights, soft gray surfaces,
+   white cards, subtle gradients. All tokens are scoped under `.admin-app`
+   (the AdminShell host class) so nothing here leaks into, or is overridden
+   by, the main site's `:root` tokens in styles.css.
+   ========================================================================== */
+
+.admin-app {
+  /* ---- Core neutrals ---- */
+  --admin-slate-950: #0b0f1a;
+  --admin-slate-900: #0f1420;
+  --admin-slate-800: #171d2c;
+  --admin-slate-700: #232a3d;
+  --admin-slate-600: #333c54;
+  --admin-slate-500: #4b5570;
+  --admin-slate-400: #6b7590;
+  --admin-slate-300: #9aa3ba;
+  --admin-slate-200: #c7cddc;
+  --admin-slate-100: #e6e9f2;
+  --admin-slate-50: #f4f6fb;
+
+  /* ---- Brand accents ---- */
+  --admin-indigo-700: #4338ca;
+  --admin-indigo-600: #4f46e5;
+  --admin-indigo-500: #6366f1;
+  --admin-indigo-400: #818cf8;
+  --admin-indigo-100: #e0e2fc;
+
+  --admin-purple-600: #7c3aed;
+  --admin-purple-500: #8b5cf6;
+  --admin-purple-400: #a78bfa;
+  --admin-purple-100: #ede6fd;
+
+  --admin-cyan-500: #06b6d4;
+  --admin-cyan-400: #22d3ee;
+  --admin-cyan-300: #67e8f9;
+  --admin-cyan-100: #cffafe;
+
+  /* ---- Semantic ---- */
+  --admin-success-600: #059669;
+  --admin-success-500: #10b981;
+  --admin-success-100: #d1fae5;
+
+  --admin-warning-600: #d97706;
+  --admin-warning-500: #f59e0b;
+  --admin-warning-100: #fef3c7;
+
+  --admin-danger-600: #dc2626;
+  --admin-danger-500: #ef4444;
+  --admin-danger-100: #fee2e2;
+
+  --admin-info-500: var(--admin-indigo-500);
+  --admin-info-100: var(--admin-indigo-100);
+
+  /* ---- Surfaces & backgrounds ---- */
+  --admin-bg: #f5f6fa;
+  --admin-bg-alt: #eef0f8;
+  --admin-surface: #ffffff;
+  --admin-surface-raised: #ffffff;
+  --admin-surface-muted: #f8f9fd;
+  --admin-border: #e5e8f2;
+  --admin-border-strong: #d8dce9;
+
+  /* ---- Text ---- */
+  --admin-text-primary: #101527;
+  --admin-text-secondary: #48506b;
+  --admin-text-muted: #7b839c;
+  --admin-text-inverse: #ffffff;
+  --admin-text-on-brand: #ffffff;
+
+  /* ---- Gradients ---- */
+  --admin-gradient-brand: linear-gradient(135deg, var(--admin-indigo-600) 0%, var(--admin-purple-600) 100%);
+  --admin-gradient-brand-soft: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+  --admin-gradient-accent: linear-gradient(135deg, var(--admin-purple-500) 0%, var(--admin-cyan-400) 100%);
+  --admin-gradient-sidebar: linear-gradient(180deg, var(--admin-slate-950) 0%, var(--admin-slate-900) 60%, #131a2c 100%);
+  --admin-gradient-page-bg: radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.05) 0%, transparent 40%),
+    var(--admin-bg);
+
+  /* ---- Radius scale ---- */
+  --admin-radius-sm: 8px;
+  --admin-radius-md: 12px;
+  --admin-radius-lg: 16px;
+  --admin-radius-xl: 20px;
+  --admin-radius-full: 9999px;
+
+  /* ---- Shadows ---- */
+  --admin-shadow-xs: 0 1px 2px rgba(16, 21, 39, 0.04);
+  --admin-shadow-sm: 0 1px 3px rgba(16, 21, 39, 0.06), 0 1px 2px rgba(16, 21, 39, 0.04);
+  --admin-shadow-md: 0 4px 12px rgba(16, 21, 39, 0.08), 0 2px 4px rgba(16, 21, 39, 0.04);
+  --admin-shadow-lg: 0 12px 32px rgba(16, 21, 39, 0.12), 0 4px 8px rgba(16, 21, 39, 0.04);
+  --admin-shadow-glow-indigo: 0 0 0 1px rgba(99, 102, 241, 0.15), 0 8px 24px rgba(99, 102, 241, 0.18);
+  --admin-shadow-glow-cyan: 0 0 0 1px rgba(34, 211, 238, 0.15), 0 8px 24px rgba(34, 211, 238, 0.16);
+
+  /* ---- Spacing ---- */
+  --admin-space-2xs: 4px;
+  --admin-space-xs: 8px;
+  --admin-space-sm: 12px;
+  --admin-space-md: 16px;
+  --admin-space-lg: 24px;
+  --admin-space-xl: 32px;
+  --admin-space-2xl: 48px;
+  --admin-space-3xl: 64px;
+  --admin-sidebar-width: 264px;
+  --admin-sidebar-width-collapsed: 76px;
+  --admin-topbar-height: 68px;
+
+  /* ---- Typography ---- */
+  --admin-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --admin-font-mono: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
+
+  --admin-text-xs: 12px;
+  --admin-text-sm: 13px;
+  --admin-text-base: 14px;
+  --admin-text-md: 15px;
+  --admin-text-lg: 18px;
+  --admin-text-xl: 22px;
+  --admin-text-2xl: 28px;
+  --admin-text-3xl: 34px;
+
+  /* ---- Motion ---- */
+  --admin-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --admin-transition-fast: 150ms var(--admin-ease);
+  --admin-transition-base: 220ms var(--admin-ease);
+  --admin-transition-slow: 360ms var(--admin-ease);
+
+  /* ---- Base element styling ---- */
+  font-family: var(--admin-font-family);
+  color: var(--admin-text-primary);
+  background: var(--admin-gradient-page-bg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.admin-app * {
+  box-sizing: border-box;
+}
+
+.admin-app ::selection {
+  background: var(--admin-indigo-100);
+  color: var(--admin-indigo-700);
+}
+
+/* ---- Scrollbars inside the admin shell ---- */
+.admin-app ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.admin-app ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-app ::-webkit-scrollbar-thumb {
+  background: var(--admin-slate-200);
+  border-radius: var(--admin-radius-full);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.admin-app ::-webkit-scrollbar-thumb:hover {
+  background: var(--admin-slate-300);
+  background-clip: content-box;
+}
+
+/* ==========================================================================
+   Reusable admin utility classes
+   ========================================================================== */
+
+.admin-card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-xl);
+  box-shadow: var(--admin-shadow-sm);
+  padding: var(--admin-space-lg);
+  transition: box-shadow var(--admin-transition-base), transform var(--admin-transition-base), border-color var(--admin-transition-base);
+}
+
+.admin-card--flush {
+  padding: 0;
+}
+
+.admin-card--interactive {
+  cursor: pointer;
+}
+.admin-card--interactive:hover {
+  box-shadow: var(--admin-shadow-lg);
+  border-color: var(--admin-border-strong);
+  transform: translateY(-3px);
+}
+
+/* Responsive KPI/stat card row — 2-4 cards per row depending on viewport width,
+   generous even gaps, equal-height cards. Used on Dashboard Home, Reports,
+   Payments, and any detail page that opens with a row of summary numbers. */
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--admin-space-lg);
+  margin-bottom: var(--admin-space-xl);
+  align-items: stretch;
+}
+
+/* Lightweight stat tile for pages that don't use <admin-stat-card> (plain
+   markup, no icon/trend) — kept visually consistent with the component. */
+.admin-stat-tile {
+  padding: var(--admin-space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 108px;
+  justify-content: center;
+}
+
+/* Standard internal card header — title + optional subtitle, used above tables,
+   chart bodies, and detail panels for a consistent hierarchy across the app. */
+.admin-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--admin-space-md);
+  margin-bottom: var(--admin-space-lg);
+}
+
+.admin-card__title {
+  font-size: var(--admin-text-md);
+  font-weight: 700;
+  color: var(--admin-text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.admin-card__subtitle {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-text-muted);
+  margin: 3px 0 0;
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: var(--admin-radius-full);
+  font-size: var(--admin-text-xs);
+  font-weight: 650;
+  letter-spacing: 0.015em;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.admin-badge--dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.admin-badge--indigo { background: var(--admin-indigo-100); color: var(--admin-indigo-700); }
+.admin-badge--purple { background: var(--admin-purple-100); color: var(--admin-purple-600); }
+.admin-badge--cyan { background: var(--admin-cyan-100); color: #0e7490; }
+.admin-badge--success { background: var(--admin-success-100); color: var(--admin-success-600); }
+.admin-badge--warning { background: var(--admin-warning-100); color: var(--admin-warning-600); }
+.admin-badge--danger { background: var(--admin-danger-100); color: var(--admin-danger-600); }
+.admin-badge--neutral { background: var(--admin-slate-100); color: var(--admin-slate-600); }
+
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--admin-radius-md);
+  font-family: inherit;
+  font-size: var(--admin-text-base);
+  font-weight: 600;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: background var(--admin-transition-fast), border-color var(--admin-transition-fast), box-shadow var(--admin-transition-fast), transform var(--admin-transition-fast), opacity var(--admin-transition-fast), filter var(--admin-transition-fast);
+  white-space: nowrap;
+}
+
+.admin-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin-btn:not(:disabled):active {
+  transform: translateY(0) scale(0.98);
+}
+
+.admin-btn--primary {
+  background: var(--admin-gradient-brand);
+  color: var(--admin-text-on-brand);
+  box-shadow: var(--admin-shadow-glow-indigo);
+}
+.admin-btn--primary:not(:disabled):hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: var(--admin-shadow-lg), var(--admin-shadow-glow-indigo);
+}
+
+.admin-btn--secondary {
+  background: var(--admin-surface);
+  border-color: var(--admin-border-strong);
+  color: var(--admin-text-primary);
+  box-shadow: var(--admin-shadow-xs);
+}
+.admin-btn--secondary:not(:disabled):hover {
+  border-color: var(--admin-indigo-400);
+  color: var(--admin-indigo-600);
+  box-shadow: var(--admin-shadow-sm);
+  transform: translateY(-1px);
+}
+
+.admin-btn--ghost {
+  background: transparent;
+  color: var(--admin-text-secondary);
+}
+.admin-btn--ghost:not(:disabled):hover {
+  background: var(--admin-slate-50);
+  color: var(--admin-text-primary);
+}
+
+.admin-btn--danger {
+  background: var(--admin-danger-500);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.22);
+}
+.admin-btn--danger:not(:disabled):hover {
+  background: var(--admin-danger-600);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.28);
+}
+
+.admin-btn--sm { padding: 7px 14px; font-size: var(--admin-text-sm); border-radius: var(--admin-radius-sm); }
+.admin-btn--icon { padding: 9px; }
+
+.admin-input,
+.admin-select {
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--admin-text-base);
+  color: var(--admin-text-primary);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border-strong);
+  border-radius: var(--admin-radius-md);
+  padding: 10px 14px;
+  transition: border-color var(--admin-transition-fast), box-shadow var(--admin-transition-fast), background var(--admin-transition-fast);
+}
+
+.admin-input::placeholder {
+  color: var(--admin-text-muted);
+}
+
+.admin-input:focus,
+.admin-select:focus {
+  outline: none;
+  border-color: var(--admin-indigo-400);
+  box-shadow: 0 0 0 3px var(--admin-indigo-100);
+}
+
+.admin-section-title {
+  font-size: var(--admin-text-xl);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--admin-text-primary);
+}
+
+/* Groups a page into clearly separated sections (stat row, table group, ...)
+   with consistent 32-40px breathing room between each block. */
+.admin-section {
+  margin-bottom: var(--admin-space-xl);
+}
+.admin-section:last-child {
+  margin-bottom: 0;
+}
+
+.admin-section__head {
+  margin-bottom: var(--admin-space-lg);
+}
+.admin-section__head .admin-section-title {
+  font-size: var(--admin-text-lg);
+  margin: 4px 0 2px;
+}
+.admin-section__subtitle {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-text-muted);
+  margin: 0;
+}
+
+/* Responsive 2-column grid for grouping related report/analytics cards side
+   by side, collapsing to one column on narrower viewports. */
+.admin-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--admin-space-xl);
+  align-items: stretch;
+}
+@media (max-width: 992px) {
+  .admin-section-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-eyebrow {
+  font-size: var(--admin-text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--admin-text-muted);
+}
+
+.admin-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: admin-spin 0.7s linear infinite;
+}
+.admin-spinner--dark {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--admin-slate-100);
+  border-top-color: var(--admin-indigo-500);
+}
+@keyframes admin-spin {
+  to { transform: rotate(360deg); }
+}
+
+.admin-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--admin-slate-100);
+  border-radius: var(--admin-radius-sm);
+}
+.admin-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  animation: admin-shimmer 1.4s infinite;
+}
+@keyframes admin-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* ---- Page-load / entrance animation utilities (CSS-only, matches main app convention) ---- */
+@keyframes admin-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes admin-scale-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+.admin-animate-fade-up {
+  animation: admin-fade-up var(--admin-transition-slow) both;
+}
+.admin-animate-scale-in {
+  animation: admin-scale-in var(--admin-transition-slow) both;
+}
+.admin-stagger-1 { animation-delay: 40ms; }
+.admin-stagger-2 { animation-delay: 80ms; }
+.admin-stagger-3 { animation-delay: 120ms; }
+.admin-stagger-4 { animation-delay: 160ms; }
+.admin-stagger-5 { animation-delay: 200ms; }
+.admin-stagger-6 { animation-delay: 240ms; }
+
+/* ---- Page header (used at the top of every admin list/detail page) ---- */
+.admin-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--admin-space-md);
+  margin-bottom: var(--admin-space-xl);
+  padding-bottom: var(--admin-space-lg);
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-page-header__title {
+  font-size: var(--admin-text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--admin-text-primary);
+  margin: 6px 0 6px;
+}
+
+.admin-page-header__subtitle {
+  font-size: var(--admin-text-base);
+  color: var(--admin-text-muted);
+  margin: 0;
+  max-width: 56ch;
+}
+
+.admin-page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--admin-space-sm);
+  flex-wrap: wrap;
+}
+
+/* ---- Status filter tabs ---- */
+.admin-status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: var(--admin-space-lg);
+}
+
+.admin-status-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: var(--admin-radius-full);
+  border: 1px solid var(--admin-border-strong);
+  background: var(--admin-surface);
+  color: var(--admin-text-secondary);
+  font-size: var(--admin-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--admin-shadow-xs);
+  transition: all var(--admin-transition-fast);
+}
+.admin-status-tab:hover {
+  border-color: var(--admin-indigo-400);
+  color: var(--admin-indigo-600);
+  transform: translateY(-1px);
+}
+.admin-status-tab--active {
+  background: var(--admin-gradient-brand);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: var(--admin-shadow-glow-indigo);
+}
+.admin-status-tab--active:hover {
+  transform: none;
+}
+
+.admin-status-tab__count {
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.08);
+  padding: 1px 6px;
+  border-radius: var(--admin-radius-full);
+}
+.admin-status-tab--active .admin-status-tab__count {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ---- Inline alert banner ---- */
+.admin-inline-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--admin-radius-md);
+  font-size: var(--admin-text-sm);
+  font-weight: 500;
+  margin-bottom: var(--admin-space-md);
+}
+.admin-inline-alert .material-symbols-outlined {
+  font-size: 19px;
+}
+.admin-inline-alert--success {
+  background: var(--admin-success-100);
+  color: var(--admin-success-600);
+}
+.admin-inline-alert--danger {
+  background: var(--admin-danger-100);
+  color: var(--admin-danger-600);
+}
+.admin-inline-alert--warning {
+  background: var(--admin-warning-100);
+  color: var(--admin-warning-600);
+}
+.admin-inline-alert--info {
+  background: var(--admin-indigo-100);
+  color: var(--admin-indigo-700);
+}
+
+/* ---- Row actions (icon buttons in a table row) ---- */
+.admin-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: var(--admin-text-muted);
+  border-radius: var(--admin-radius-sm);
+  cursor: pointer;
+  transition: background var(--admin-transition-fast), color var(--admin-transition-fast), transform var(--admin-transition-fast);
+}
+.admin-icon-btn .material-symbols-outlined {
+  font-size: 19px;
+}
+.admin-icon-btn:hover {
+  background: var(--admin-indigo-100);
+  color: var(--admin-indigo-600);
+  transform: translateY(-1px);
+}
+.admin-icon-btn:active {
+  transform: translateY(0) scale(0.94);
+}
+.admin-icon-btn--success:hover {
+  background: var(--admin-success-100);
+  color: var(--admin-success-600);
+}
+.admin-icon-btn--danger:hover {
+  background: var(--admin-danger-100);
+  color: var(--admin-danger-600);
+}
+
+/* ---- Modal chrome ----
+   Centralized here (rather than left component-scoped) because several pages
+   compose their own inline modal markup (resolve-dispute, refund, category
+   form, create-admin, ...) instead of the AdminConfirmDialog component —
+   Angular's style encapsulation means a component-scoped rule only reaches
+   markup that component itself renders, so these need to live globally to
+   apply everywhere `.admin-modal-*` classes are used. */
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 15, 26, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--admin-space-lg);
+  z-index: 1000;
+  animation: admin-fade-in 180ms var(--admin-ease) both;
+}
+@keyframes admin-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.admin-modal-card {
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  background: var(--admin-surface);
+  border-radius: var(--admin-radius-xl);
+  box-shadow: 0 24px 64px rgba(16, 21, 39, 0.28);
+  padding: var(--admin-space-xl);
+  text-align: center;
+}
+
+.admin-modal-card--wide {
+  max-width: 640px;
+  text-align: left;
+}
+
+.admin-modal-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--admin-radius-full);
+  background: var(--admin-indigo-100);
+  color: var(--admin-indigo-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--admin-space-md);
+  flex-shrink: 0;
+}
+.admin-modal-card--wide .admin-modal-card__icon {
+  margin: 0 0 var(--admin-space-md);
+}
+.admin-modal-card__icon--danger {
+  background: var(--admin-danger-100);
+  color: var(--admin-danger-600);
+}
+.admin-modal-card__icon .material-symbols-outlined {
+  font-size: 26px;
+}
+
+.admin-modal-card__title {
+  font-size: var(--admin-text-lg);
+  font-weight: 700;
+  color: var(--admin-text-primary);
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+.admin-modal-card__message {
+  font-size: var(--admin-text-base);
+  color: var(--admin-text-secondary);
+  margin: 0 0 var(--admin-space-md);
+  line-height: 1.5;
+}
+
+.admin-modal-card__error {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-danger-600);
+  background: var(--admin-danger-100);
+  border-radius: var(--admin-radius-sm);
+  padding: 10px 14px;
+  margin: var(--admin-space-sm) 0 0;
+  text-align: left;
+}
+
+.admin-modal-card__actions {
+  display: flex;
+  gap: var(--admin-space-sm);
+  margin-top: var(--admin-space-xl);
+  padding-top: var(--admin-space-lg);
+  border-top: 1px solid var(--admin-border);
+}
+.admin-modal-card__actions .admin-btn {
+  flex: 1;
+}
+
+.admin-modal-field {
+  margin-top: var(--admin-space-md);
+}
+.admin-modal-field label {
+  display: block;
+  font-size: var(--admin-text-sm);
+  font-weight: 600;
+  color: var(--admin-text-secondary);
+  margin-bottom: 7px;
+}
+
+/* ---- Detail page layout ---- */
+.admin-detail-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--admin-space-xl);
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .admin-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-detail-grid__main,
+.admin-detail-grid__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-space-lg);
+}
+
+.admin-field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--admin-space-lg) var(--admin-space-md);
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.admin-field__label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text-muted);
+}
+
+.admin-field__value {
+  font-size: var(--admin-text-base);
+  font-weight: 600;
+  color: var(--admin-text-primary);
+  line-height: 1.4;
+}
+
+/* ---- Back link (top of every detail page) ---- */
+.admin-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--admin-text-sm);
+  font-weight: 600;
+  color: var(--admin-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--admin-space-lg);
+  transition: color var(--admin-transition-fast), gap var(--admin-transition-fast);
+}
+.admin-back-link .material-symbols-outlined {
+  font-size: 18px;
+  transition: transform var(--admin-transition-fast);
+}
+.admin-back-link:hover {
+  color: var(--admin-indigo-600);
+}
+.admin-back-link:hover .material-symbols-outlined {
+  transform: translateX(-2px);
+}
+
+/* ---- Document / portfolio image grid ---- */
+.admin-doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--admin-space-md);
+}
+
+.admin-doc-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--admin-radius-md);
+  border: 1px solid var(--admin-border);
+  text-decoration: none;
+  transition: transform var(--admin-transition-base), box-shadow var(--admin-transition-base);
+}
+.admin-doc-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--admin-shadow-md);
+}
+.admin-doc-card img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--admin-surface-muted);
+}
+.admin-doc-card span {
+  padding: 6px 8px;
+  font-size: var(--admin-text-xs);
+  font-weight: 600;
+  color: var(--admin-text-primary);
+}
+
+/* ---- Data table ----
+   Tables live inside an already-padded .admin-card, so the wrap itself stays
+   borderless/edge-to-edge — the surrounding card supplies the visual
+   boundary, and a rounded, inset header bar plus row dividers do the rest. */
+.admin-table-wrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: var(--admin-radius-md);
+  border: 1px solid var(--admin-border);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--admin-text-base);
+}
+
+.admin-table thead th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--admin-text-muted);
+  background: var(--admin-surface-muted);
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--admin-border);
+  white-space: nowrap;
+}
+
+.admin-table thead th:first-child { border-top-left-radius: var(--admin-radius-md); }
+.admin-table thead th:last-child { border-top-right-radius: var(--admin-radius-md); }
+
+.admin-table thead th.is-sortable {
+  cursor: pointer;
+  user-select: none;
+}
+.admin-table thead th.is-sortable:hover {
+  color: var(--admin-indigo-600);
+}
+
+.admin-table tbody td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--admin-border);
+  color: var(--admin-text-primary);
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr.is-clickable {
+  cursor: pointer;
+  transition: background var(--admin-transition-fast);
+}
+.admin-table tbody tr.is-clickable:hover {
+  background: var(--admin-surface-muted);
+}
+.admin-table tbody tr.is-clickable:hover td:first-child {
+  color: var(--admin-indigo-600);
+}
+
+.admin-table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--admin-space-sm);
+  margin-bottom: var(--admin-space-lg);
+  padding-bottom: var(--admin-space-lg);
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-table-toolbar .admin-input,
+.admin-table-toolbar .admin-select {
+  width: auto;
+  min-width: 180px;
+}
+
+/* ==========================================================================
+   SweetAlert2 admin theming — deliberately NOT scoped under .admin-app,
+   since Swal appends its popup to <body>. Kept visually consistent with the
+   admin palette (indigo/purple/cyan) instead of the main site's
+   .swal-planura-* (warm coral) classes.
+   ========================================================================== */
+.swal-admin-toast {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 32px rgba(16, 21, 39, 0.16) !important;
+}
+
+.swal-admin-popup {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  border-radius: 20px !important;
+}
+
+@media (max-width: 992px) {
+  .admin-app {
+    --admin-sidebar-width: 240px;
+  }
+}

@@ -1,0 +1,48 @@
+<div class="admin-modal-backdrop" (click)="handleBackdropClick()">
+  <div
+    class="admin-modal-card admin-animate-scale-in"
+    role="alertdialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="admin-modal-card__icon" [class.admin-modal-card__icon--danger]="variant === 'danger'">
+      <span class="material-symbols-outlined">{{ icon }}</span>
+    </div>
+
+    <h3 class="admin-modal-card__title">{{ title }}</h3>
+
+    @if (message) {
+      <p class="admin-modal-card__message">{{ message }}</p>
+    }
+
+    <ng-content></ng-content>
+
+    @if (errorMessage) {
+      <p class="admin-modal-card__error">{{ errorMessage }}</p>
+    }
+
+    <div class="admin-modal-card__actions">
+      <button
+        type="button"
+        class="admin-btn admin-btn--secondary"
+        [disabled]="loading"
+        (click)="cancelled.emit()"
+      >
+        {{ cancelLabel }}
+      </button>
+      <button
+        type="button"
+        class="admin-btn"
+        [class.admin-btn--primary]="variant === 'primary'"
+        [class.admin-btn--danger]="variant === 'danger'"
+        [disabled]="loading"
+        (click)="confirmed.emit()"
+      >
+        @if (loading) {
+          <span class="admin-spinner"></span>
+        }
+        {{ confirmLabel }}
+      </button>
+    </div>
+  </div>
+</div>

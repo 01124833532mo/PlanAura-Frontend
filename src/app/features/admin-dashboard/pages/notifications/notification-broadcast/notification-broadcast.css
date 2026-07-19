@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.broadcast-form {
+  max-width: 560px;
+  padding: var(--admin-space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-space-md);
+}
+
+.broadcast-form__field label {
+  display: block;
+  font-size: var(--admin-text-sm);
+  font-weight: 600;
+  color: var(--admin-text-secondary);
+  margin-bottom: 6px;
+}

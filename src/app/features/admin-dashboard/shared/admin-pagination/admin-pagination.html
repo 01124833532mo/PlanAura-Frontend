@@ -1,0 +1,33 @@
+<div class="admin-pagination">
+  <p class="admin-pagination__summary">
+    @if (totalCount > 0) {
+      Showing <strong>{{ rangeStart }}–{{ rangeEnd }}</strong> of <strong>{{ totalCount }}</strong>
+    } @else {
+      No results
+    }
+  </p>
+
+  <div class="admin-pagination__controls">
+    <button
+      type="button"
+      class="admin-btn admin-btn--ghost admin-btn--sm admin-btn--icon"
+      [disabled]="page <= 1"
+      (click)="goTo(page - 1)"
+      aria-label="Previous page"
+    >
+      <span class="material-symbols-outlined">chevron_left</span>
+    </button>
+
+    <span class="admin-pagination__page">Page {{ page }} of {{ totalPages }}</span>
+
+    <button
+      type="button"
+      class="admin-btn admin-btn--ghost admin-btn--sm admin-btn--icon"
+      [disabled]="page >= totalPages"
+      (click)="goTo(page + 1)"
+      aria-label="Next page"
+    >
+      <span class="material-symbols-outlined">chevron_right</span>
+    </button>
+  </div>
+</div>

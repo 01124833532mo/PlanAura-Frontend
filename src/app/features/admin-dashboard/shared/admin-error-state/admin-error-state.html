@@ -1,0 +1,10 @@
+<div class="admin-error-state">
+  <div class="admin-error-state__icon-wrap">
+    <span class="material-symbols-outlined admin-error-state__icon">error_outline</span>
+  </div>
+  <p class="admin-error-state__message">{{ message }}</p>
+  <button type="button" class="admin-btn admin-btn--secondary admin-btn--sm" (click)="retry.emit()">
+    <span class="material-symbols-outlined" style="font-size: 16px;">refresh</span>
+    {{ retryLabel }}
+  </button>
+</div>

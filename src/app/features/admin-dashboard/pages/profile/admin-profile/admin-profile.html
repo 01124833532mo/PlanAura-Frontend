@@ -1,0 +1,67 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Account</p>
+    <h2 class="admin-page-header__title">My Profile</h2>
+    <p class="admin-page-header__subtitle">Manage your admin account details and password.</p>
+  </div>
+</section>
+
+<div class="profile-grid admin-animate-fade-up admin-stagger-1">
+  <section class="admin-card profile-card">
+    <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Profile Details</h3>
+
+    @if (profileError()?.message) {
+      <div class="admin-inline-alert admin-inline-alert--danger">
+        <span class="material-symbols-outlined">error</span>
+        {{ profileError()?.message }}
+      </div>
+    }
+
+    <div class="profile-card__field">
+      <label>Full name</label>
+      <input type="text" class="admin-input" [(ngModel)]="fullName" [disabled]="savingProfile()" />
+    </div>
+    <div class="profile-card__field">
+      <label>Email</label>
+      <input type="email" class="admin-input" [value]="authService.currentUser()?.email ?? ''" disabled />
+    </div>
+    <div class="profile-card__field">
+      <label>Phone number</label>
+      <input type="tel" class="admin-input" [(ngModel)]="phoneNumber" [disabled]="savingProfile()" />
+    </div>
+
+    <button type="button" class="admin-btn admin-btn--primary" [disabled]="!canSubmitProfile" (click)="submitProfile()">
+      @if (savingProfile()) { <span class="admin-spinner"></span> }
+      Save Changes
+    </button>
+  </section>
+
+  <section class="admin-card profile-card">
+    <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Change Password</h3>
+
+    @if (passwordError()?.message) {
+      <div class="admin-inline-alert admin-inline-alert--danger">
+        <span class="material-symbols-outlined">error</span>
+        {{ passwordError()?.message }}
+      </div>
+    }
+
+    <div class="profile-card__field">
+      <label>Current password</label>
+      <input type="password" class="admin-input" [(ngModel)]="currentPassword" [disabled]="savingPassword()" />
+    </div>
+    <div class="profile-card__field">
+      <label>New password</label>
+      <input type="password" class="admin-input" [(ngModel)]="newPassword" [disabled]="savingPassword()" />
+    </div>
+    <div class="profile-card__field">
+      <label>Confirm new password</label>
+      <input type="password" class="admin-input" [(ngModel)]="confirmNewPassword" [disabled]="savingPassword()" />
+    </div>
+
+    <button type="button" class="admin-btn admin-btn--primary" [disabled]="!canSubmitPassword" (click)="submitPassword()">
+      @if (savingPassword()) { <span class="admin-spinner"></span> }
+      Change Password
+    </button>
+  </section>
+</div>

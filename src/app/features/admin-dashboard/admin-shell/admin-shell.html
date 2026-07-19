@@ -1,0 +1,145 @@
+<div class="admin-app" [class.admin-app--collapsed]="sidebarCollapsed()">
+  <aside class="admin-sidebar" [class.admin-sidebar--open]="mobileNavOpen()">
+    <div class="admin-sidebar__brand">
+      <span class="admin-sidebar__logo material-symbols-outlined" aria-hidden="true">bolt</span>
+      @if (!sidebarCollapsed()) {
+        <span class="admin-sidebar__brand-name">PlanAura <em>Admin</em></span>
+      }
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      @for (section of navSections; track section.label) {
+        <div class="admin-sidebar__section">
+          @if (!sidebarCollapsed()) {
+            <p class="admin-sidebar__section-label">{{ section.label }}</p>
+          }
+          @for (item of section.items; track item.path) {
+            <a
+              class="admin-sidebar__link"
+              [routerLink]="item.path"
+              routerLinkActive="admin-sidebar__link--active"
+              [title]="sidebarCollapsed() ? item.label : ''"
+              (click)="closeMobileNav()"
+            >
+              <span class="admin-sidebar__link-icon material-symbols-outlined">{{ item.icon }}</span>
+              @if (!sidebarCollapsed()) {
+                <span class="admin-sidebar__link-label">{{ item.label }}</span>
+              }
+            </a>
+          }
+        </div>
+      }
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <a
+        class="admin-sidebar__link"
+        routerLink="/admin/profile"
+        routerLinkActive="admin-sidebar__link--active"
+        [title]="sidebarCollapsed() ? 'My Profile' : ''"
+        (click)="closeMobileNav()"
+      >
+        <span class="admin-sidebar__link-icon material-symbols-outlined">account_circle</span>
+        @if (!sidebarCollapsed()) {
+          <span class="admin-sidebar__link-label">My Profile</span>
+        }
+      </a>
+      <button type="button" class="admin-sidebar__link admin-sidebar__logout" [title]="sidebarCollapsed() ? 'Log Out' : ''" (click)="logout()">
+        <span class="admin-sidebar__link-icon material-symbols-outlined">logout</span>
+        @if (!sidebarCollapsed()) {
+          <span class="admin-sidebar__link-label">Log Out</span>
+        }
+      </button>
+    </div>
+
+    <button
+      type="button"
+      class="admin-sidebar__collapse-toggle"
+      (click)="toggleSidebar()"
+      aria-label="Toggle sidebar"
+    >
+      <span class="material-symbols-outlined">{{ sidebarCollapsed() ? 'chevron_right' : 'chevron_left' }}</span>
+    </button>
+  </aside>
+
+  @if (mobileNavOpen()) {
+    <div class="admin-sidebar-backdrop" (click)="closeMobileNav()"></div>
+  }
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <button
+        type="button"
+        class="admin-topbar__menu-btn"
+        (click)="toggleMobileNav()"
+        aria-label="Open navigation"
+      >
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+
+      <h1 class="admin-topbar__title">{{ pageTitle() }}</h1>
+
+      <div class="admin-topbar__search" [class.admin-topbar__search--open]="searchOpen()">
+        <span class="material-symbols-outlined admin-topbar__search-icon">search</span>
+        <input
+          type="text"
+          class="admin-topbar__search-input"
+          placeholder="Quick jump to a section..."
+          [(ngModel)]="searchQuery"
+          (focus)="onSearchFocus()"
+        />
+        @if (searchOpen() && searchQuery().trim()) {
+          <div class="admin-topbar__search-results">
+            @if (searchResults().length === 0) {
+              <p class="admin-topbar__search-empty">No matching sections.</p>
+            } @else {
+              @for (result of searchResults(); track result.path) {
+                <button type="button" class="admin-topbar__search-result" (click)="goToSearchResult(result.path)">
+                  <span class="material-symbols-outlined">{{ result.icon }}</span>
+                  {{ result.label }}
+                </button>
+              }
+            }
+          </div>
+        }
+      </div>
+
+      <div class="admin-topbar__actions">
+        <div class="admin-topbar__notif-wrap">
+          <button
+            type="button"
+            class="admin-topbar__icon-btn"
+            (click)="toggleNotifications()"
+            aria-label="Notifications"
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          @if (notifOpen()) {
+            <div class="admin-topbar__notif-panel">
+              <div class="admin-topbar__notif-header">Notifications</div>
+              <div class="admin-topbar__notif-empty">
+                <span class="material-symbols-outlined">notifications_none</span>
+                <p>You're all caught up.</p>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (currentUser(); as user) {
+          <div class="admin-topbar__user">
+            <span class="admin-topbar__user-avatar">{{ user.fullName.charAt(0) }}</span>
+            <span class="admin-topbar__user-name">{{ user.fullName }}</span>
+          </div>
+        }
+      </div>
+    </header>
+
+    @if (searchOpen() || notifOpen()) {
+      <div class="admin-overlay-backdrop" (click)="closeOverlays()"></div>
+    }
+
+    <main class="admin-content admin-animate-fade-up">
+      <router-outlet />
+    </main>
+  </div>
+</div>

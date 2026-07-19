@@ -5,7 +5,7 @@
       <div>
         <h4 class="text-headline-sm">{{ details?.vendorName ?? 'Vendor details' }}</h4>
         @if (details?.businessName) {
-          <p class="text-body-md verif-details__subtitle">{{ details!.businessName }}</p>
+          <p class="verif-details__subtitle">{{ details!.businessName }}</p>
         }
       </div>
     </div>
@@ -23,20 +23,22 @@
     }
   </div>
 
-  <ui-alert-banner [message]="error?.message ?? null" [details]="error?.fieldErrors ?? []" />
+  @if (error?.message) {
+    <p class="admin-modal-card__error">{{ error?.message }}</p>
+  }
 
   @if (loading) {
     <div class="verif-details__state">
       <span class="material-symbols-outlined verif-details__state-icon skeleton-icon">hourglass_top</span>
-      <p class="text-body-md">Loading vendor details...</p>
+      <p>Loading vendor details...</p>
     </div>
   } @else if (details) {
     @if (details.verificationStatus === 'rejected' && details.rejectionReason) {
-      <ui-alert-banner variant="error" [message]="'Previously rejected: ' + details.rejectionReason" />
+      <p class="admin-modal-card__error">Previously rejected: {{ details.rejectionReason }}</p>
     }
 
     <section class="verif-section animate-fade-up stagger-1">
-      <h5 class="text-label-md verif-section__title">
+      <h5 class="verif-section__title">
         <span class="material-symbols-outlined">person</span>
         Vendor Information
       </h5>
@@ -90,7 +92,7 @@
     </section>
 
     <section class="verif-section animate-fade-up stagger-2">
-      <h5 class="text-label-md verif-section__title">
+      <h5 class="verif-section__title">
         <span class="material-symbols-outlined">verified_user</span>
         Verification Documents
       </h5>
@@ -120,7 +122,7 @@
     </section>
 
     <section class="verif-section animate-fade-up stagger-3">
-      <h5 class="text-label-md verif-section__title">
+      <h5 class="verif-section__title">
         <span class="material-symbols-outlined">photo_library</span>
         Portfolio
       </h5>
@@ -155,6 +157,6 @@
   }
 
   <div class="verif-details__actions">
-    <ui-button variant="outline" (click)="closed.emit()">Close</ui-button>
+    <button type="button" class="admin-btn admin-btn--secondary" (click)="closed.emit()">Close</button>
   </div>
 </div>

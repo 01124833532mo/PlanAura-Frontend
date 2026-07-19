@@ -1,34 +1,175 @@
-<section class="admin-dashboard-placeholder">
-  <div class="admin-dashboard-placeholder__blob admin-dashboard-placeholder__blob--one" aria-hidden="true"></div>
-  <div class="admin-dashboard-placeholder__blob admin-dashboard-placeholder__blob--two" aria-hidden="true"></div>
-
-  <div class="admin-dashboard-placeholder__card card-luxe animate-blur-reveal">
-    <span class="admin-dashboard-placeholder__eyebrow text-label-md animate-fade-up">Admin Panel</span>
-
-    <div class="admin-dashboard-placeholder__icon animate-scale-in stagger-1" aria-hidden="true">
-      <span class="material-symbols-outlined">admin_panel_settings</span>
-    </div>
-
-    <h1 class="admin-dashboard-placeholder__title animate-fade-up stagger-2">Admin Dashboard</h1>
-    <p class="admin-dashboard-placeholder__subtitle text-body-md animate-fade-up stagger-3">
-      Welcome back. Vendor approvals, user management and platform insights are being crafted
-      and will appear here soon.
-    </p>
-
-    <div class="admin-dashboard-placeholder__divider" aria-hidden="true"></div>
-
-    <div class="vendor-nav__footer animate-fade-up stagger-4">
-      <button class="vendor-nav__action" type="button" (click)="goToVendorVerifications()">
-        <span class="material-symbols-outlined">shield_person</span>
-        <span class="text-label-md">Review Vendor Verifications</span>
-      </button>
-    </div>
-
-    <div class="vendor-nav__footer animate-fade-up stagger-5">
-      <button class="vendor-nav__logout" type="button" (click)="logout()">
-        <span class="material-symbols-outlined">logout</span>
-        <span class="text-label-md">Log Out</span>
-      </button>
-    </div>
+<section class="admin-welcome admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">{{ greeting }}</p>
+    <h2 class="admin-welcome__title">
+      Welcome back, {{ authService.currentUser()?.fullName ?? 'Admin' }}
+    </h2>
+    <p class="admin-welcome__subtitle">Here's what's happening across PlanAura today.</p>
   </div>
 </section>
+
+<section class="admin-stat-grid admin-animate-fade-up admin-stagger-1">
+  <admin-stat-card
+    label="Total Revenue"
+    [value]="statistics() ? (statistics()!.totalRevenue | number: '1.0-0') + ' EGP' : '—'"
+    icon="payments"
+    accent="success"
+    [loading]="statsLoading()"
+  />
+  <admin-stat-card
+    label="Revenue This Month"
+    [value]="statistics() ? (statistics()!.revenueThisMonth | number: '1.0-0') + ' EGP' : '—'"
+    icon="trending_up"
+    accent="indigo"
+    [loading]="statsLoading()"
+  />
+  <admin-stat-card
+    label="Total Vendors"
+    [value]="statistics()?.totalVendors ?? '—'"
+    icon="storefront"
+    accent="purple"
+    [trend]="statistics() ? '+' + statistics()!.newVendorsThisWeek + ' this week' : null"
+    trendDirection="up"
+    [loading]="statsLoading()"
+  />
+  <admin-stat-card
+    label="Total Clients"
+    [value]="statistics()?.totalClients ?? '—'"
+    icon="group"
+    accent="cyan"
+    [trend]="statistics() ? '+' + statistics()!.newClientsThisWeek + ' this week' : null"
+    trendDirection="up"
+    [loading]="statsLoading()"
+  />
+  <admin-stat-card
+    label="Total Bookings"
+    [value]="statistics()?.totalBookingRequests ?? '—'"
+    icon="event_note"
+    accent="indigo"
+    [loading]="statsLoading()"
+  />
+  <admin-stat-card
+    label="Open Disputes"
+    [value]="statistics()?.openDisputes ?? '—'"
+    icon="gavel"
+    accent="danger"
+    [loading]="statsLoading()"
+  />
+</section>
+
+<div class="admin-dashboard-grid admin-animate-fade-up admin-stagger-2">
+  <section class="admin-card admin-panel">
+    <div class="admin-panel__header">
+      <h3 class="admin-panel__title">Recent Activity</h3>
+    </div>
+
+    @if (activityLoading()) {
+      <div class="admin-panel__loading"><span class="admin-spinner admin-spinner--dark"></span></div>
+    } @else if (activityTimeline.length === 0) {
+      <admin-empty-state icon="history" title="No recent activity" />
+    } @else {
+      <div class="admin-panel__scroll">
+        <admin-timeline [entries]="activityTimeline" />
+      </div>
+    }
+  </section>
+
+  <section class="admin-card admin-panel">
+    <div class="admin-panel__header">
+      <h3 class="admin-panel__title">Pending Vendor Approvals</h3>
+      <a routerLink="/admin/vendor-verifications" class="admin-panel__link">View all</a>
+    </div>
+
+    @if (pendingLoading()) {
+      <div class="admin-panel__loading"><span class="admin-spinner admin-spinner--dark"></span></div>
+    } @else if (pendingVendors().length === 0) {
+      <admin-empty-state icon="task_alt" title="No pending approvals" message="All vendor applications are up to date." />
+    } @else {
+      <ul class="admin-mini-list">
+        @for (vendor of pendingVendors(); track vendor.vendorId) {
+          <li class="admin-mini-list__item">
+            <div>
+              <p class="admin-mini-list__title">{{ vendor.businessName }}</p>
+              <p class="admin-mini-list__subtitle">{{ vendor.vendorName }} · {{ vendor.categoryName ?? 'Uncategorized' }}</p>
+            </div>
+            <a [routerLink]="['/admin/vendor-verifications', vendor.vendorId]" class="admin-btn admin-btn--secondary admin-btn--sm">
+              Review
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>
+
+<div class="admin-dashboard-grid admin-animate-fade-up admin-stagger-3">
+  <section class="admin-card admin-panel">
+    <div class="admin-panel__header">
+      <h3 class="admin-panel__title">Recent Bookings</h3>
+      <a routerLink="/admin/bookings" class="admin-panel__link">View all</a>
+    </div>
+
+    @if (recentBookingsLoading()) {
+      <div class="admin-panel__loading"><span class="admin-spinner admin-spinner--dark"></span></div>
+    } @else if (recentBookings().length === 0) {
+      <admin-empty-state icon="event_busy" title="No bookings yet" />
+    } @else {
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Vendor</th>
+              <th>Event Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (booking of recentBookings(); track booking.id) {
+              <tr class="is-clickable" [routerLink]="['/admin/bookings', booking.id]">
+                <td>{{ booking.clientName }}</td>
+                <td>{{ booking.vendorName }}</td>
+                <td>{{ booking.eventDate | date: 'mediumDate' }}</td>
+                <td><admin-badge [label]="mapBookingStatus(booking.status).label" [tone]="mapBookingStatus(booking.status).tone" /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <section class="admin-card admin-panel">
+    <div class="admin-panel__header">
+      <h3 class="admin-panel__title">Recent Vendors</h3>
+      <a routerLink="/admin/vendors" class="admin-panel__link">View all</a>
+    </div>
+
+    @if (recentVendorsLoading()) {
+      <div class="admin-panel__loading"><span class="admin-spinner admin-spinner--dark"></span></div>
+    } @else if (recentVendors().length === 0) {
+      <admin-empty-state icon="storefront" title="No vendors yet" />
+    } @else {
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Business</th>
+              <th>City</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (vendor of recentVendors(); track vendor.vendorId) {
+              <tr class="is-clickable" [routerLink]="['/admin/vendors', vendor.vendorId]">
+                <td>{{ vendor.businessName }}</td>
+                <td>{{ vendor.city ?? '—' }}</td>
+                <td><admin-badge [label]="mapVendorStatus(vendor.verificationStatus).label" [tone]="mapVendorStatus(vendor.verificationStatus).tone" /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

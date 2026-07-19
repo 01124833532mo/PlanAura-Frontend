@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--admin-space-sm);
+  margin-top: var(--admin-space-lg);
+  padding-top: var(--admin-space-lg);
+  border-top: 1px solid var(--admin-border);
+}
+
+.admin-pagination__summary {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-text-muted);
+  margin: 0;
+}
+.admin-pagination__summary strong {
+  color: var(--admin-text-primary);
+  font-weight: 650;
+}
+
+.admin-pagination__controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-pagination__page {
+  font-size: var(--admin-text-sm);
+  font-weight: 600;
+  color: var(--admin-text-secondary);
+  white-space: nowrap;
+  padding: 0 6px;
+}

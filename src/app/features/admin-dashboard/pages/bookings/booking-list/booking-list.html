@@ -1,0 +1,94 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Booking Management</p>
+    <h2 class="admin-page-header__title">Bookings</h2>
+    <p class="admin-page-header__subtitle">Every booking request placed on the platform.</p>
+  </div>
+</section>
+
+<div class="admin-card admin-animate-fade-up admin-stagger-1">
+  <div class="admin-table-toolbar">
+    <admin-search-bar placeholder="Search by client or vendor name..." (search)="onSearch($event)" />
+    <select class="admin-select" (change)="onStatusChange($any($event.target).value)">
+      @for (opt of statusOptions; track opt.label) {
+        <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+      }
+    </select>
+  </div>
+
+  @if (loading()) {
+    <admin-skeleton-rows [rows]="6" [columns]="6" />
+  } @else if (error()) {
+    <admin-error-state [message]="error()!.message" (retry)="load()" />
+  } @else if (bookings().length === 0) {
+    <admin-empty-state icon="event_busy" title="No bookings found" message="Try adjusting your search or filters." />
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Vendor</th>
+            <th>Package</th>
+            <th>Event Date</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Dispute</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (booking of bookings(); track booking.id) {
+            <tr class="is-clickable" (click)="openDetail(booking)">
+              <td>{{ booking.clientName }}</td>
+              <td>{{ booking.vendorName }}</td>
+              <td>{{ booking.packageName ?? '—' }}</td>
+              <td>{{ booking.eventDate | date: 'mediumDate' }}</td>
+              <td>{{ booking.agreedPrice ? (booking.agreedPrice | number: '1.0-0') + ' EGP' : '—' }}</td>
+              <td><admin-badge [label]="mapBookingStatus(booking.status).label" [tone]="mapBookingStatus(booking.status).tone" /></td>
+              <td><admin-badge [label]="mapBookingPaymentStatus(booking.paymentStatus).label" [tone]="mapBookingPaymentStatus(booking.paymentStatus).tone" /></td>
+              <td>
+                @if (booking.disputeStatus) {
+                  <admin-badge [label]="mapDisputeStatus(booking.disputeStatus).label" [tone]="mapDisputeStatus(booking.disputeStatus).tone" />
+                } @else {
+                  —
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <admin-pagination [page]="filter().page ?? 1" [pageSize]="filter().pageSize ?? 20" [totalCount]="totalCount()" (pageChange)="onPageChange($event)" />
+  }
+</div>
+
+@if (selectedBooking(); as booking) {
+  <div class="admin-modal-backdrop" (click)="closeDetail()">
+    <div class="admin-modal-card admin-modal-card--wide admin-animate-scale-in" style="text-align: left;" (click)="$event.stopPropagation()">
+      <h3 class="admin-modal-card__title" style="text-align: left;">Booking #{{ booking.id }}</h3>
+      <p class="admin-modal-card__message" style="text-align: left;">{{ booking.clientName }} × {{ booking.vendorName }}</p>
+
+      <div class="admin-field-grid" style="margin-top: var(--admin-space-md);">
+        <div class="admin-field"><span class="admin-field__label">Package</span><span class="admin-field__value">{{ booking.packageName ?? '—' }}</span></div>
+        <div class="admin-field"><span class="admin-field__label">Event Date</span><span class="admin-field__value">{{ booking.eventDate | date: 'mediumDate' }}</span></div>
+        <div class="admin-field"><span class="admin-field__label">Agreed Price</span><span class="admin-field__value">{{ booking.agreedPrice ? (booking.agreedPrice | number: '1.0-0') + ' EGP' : '—' }}</span></div>
+        <div class="admin-field"><span class="admin-field__label">Created</span><span class="admin-field__value">{{ booking.createdAt | date: 'medium' }}</span></div>
+        <div class="admin-field"><span class="admin-field__label">Status</span><span class="admin-field__value"><admin-badge [label]="mapBookingStatus(booking.status).label" [tone]="mapBookingStatus(booking.status).tone" /></span></div>
+        <div class="admin-field"><span class="admin-field__label">Payment</span><span class="admin-field__value"><admin-badge [label]="mapBookingPaymentStatus(booking.paymentStatus).label" [tone]="mapBookingPaymentStatus(booking.paymentStatus).tone" /></span></div>
+      </div>
+
+      @if (booking.disputeStatus === DisputeStatus.Open || booking.disputeStatus === DisputeStatus.Resolved) {
+        <a [routerLink]="['/admin/disputes', booking.id]" class="admin-btn admin-btn--secondary" style="margin-top: var(--admin-space-md); width: 100%;">
+          <span class="material-symbols-outlined" style="font-size: 18px;">gavel</span>
+          View Dispute Details
+        </a>
+      }
+
+      <div class="admin-modal-card__actions">
+        <button type="button" class="admin-btn admin-btn--secondary" style="flex: 1;" (click)="closeDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+}

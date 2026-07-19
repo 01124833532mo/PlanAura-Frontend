@@ -1,0 +1,109 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Platform</p>
+    <h2 class="admin-page-header__title">Admin Accounts</h2>
+    <p class="admin-page-header__subtitle">Everyone with administrative access to PlanAura.</p>
+  </div>
+  <button type="button" class="admin-btn admin-btn--primary" (click)="openCreate()">
+    <span class="material-symbols-outlined" style="font-size: 18px;">person_add</span>
+    New Admin
+  </button>
+</section>
+
+<div class="admin-card admin-animate-fade-up admin-stagger-1">
+  @if (loading()) {
+    <admin-skeleton-rows [rows]="5" [columns]="5" />
+  } @else if (error()) {
+    <admin-error-state [message]="error()!.message" (retry)="load()" />
+  } @else if (accounts().length === 0) {
+    <admin-empty-state icon="admin_panel_settings" title="No admin accounts" />
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Last Login</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (account of accounts(); track account.userId) {
+            <tr>
+              <td>{{ account.fullName }}</td>
+              <td>{{ account.email }}</td>
+              <td>{{ account.lastLoginAt ? (account.lastLoginAt | date: 'medium') : 'Never' }}</td>
+              <td><admin-badge [label]="mapAccountActive(account.isActive).label" [tone]="mapAccountActive(account.isActive).tone" /></td>
+              <td>
+                @if (account.isActive) {
+                  <button type="button" class="admin-btn admin-btn--secondary admin-btn--sm" (click)="openSuspend(account)">Suspend</button>
+                } @else {
+                  <button type="button" class="admin-btn admin-btn--secondary admin-btn--sm" (click)="openReactivate(account)">Reactivate</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (formOpen()) {
+  <div class="admin-modal-backdrop" (click)="closeForm()">
+    <div class="admin-modal-card admin-modal-card--wide admin-animate-scale-in" style="text-align: left;" (click)="$event.stopPropagation()">
+      <h3 class="admin-modal-card__title" style="text-align: left;">New Admin Account</h3>
+
+      @if (saveError()?.message) {
+        <p class="admin-modal-card__error">{{ saveError()?.message }}</p>
+      }
+
+      <div style="margin-top: var(--admin-space-md); display: flex; flex-direction: column; gap: var(--admin-space-md);">
+        <div>
+          <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">Full name</label>
+          <input type="text" class="admin-input" [(ngModel)]="form.fullName" [disabled]="saving()" />
+        </div>
+        <div>
+          <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">Email</label>
+          <input type="email" class="admin-input" [(ngModel)]="form.email" [disabled]="saving()" />
+        </div>
+        <div>
+          <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">Phone (optional)</label>
+          <input type="tel" class="admin-input" [(ngModel)]="form.phoneNumber" [disabled]="saving()" />
+        </div>
+        <div>
+          <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">Password</label>
+          <input type="password" class="admin-input" [(ngModel)]="form.password" [disabled]="saving()" />
+        </div>
+        <div>
+          <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">Confirm password</label>
+          <input type="password" class="admin-input" [(ngModel)]="form.confirmPassword" [disabled]="saving()" />
+        </div>
+      </div>
+
+      <div class="admin-modal-card__actions">
+        <button type="button" class="admin-btn admin-btn--secondary" [disabled]="saving()" (click)="closeForm()">Cancel</button>
+        <button type="button" class="admin-btn admin-btn--primary" [disabled]="!canSubmit" (click)="submitForm()">
+          @if (saving()) { <span class="admin-spinner"></span> }
+          Create
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (confirmAction(); as action) {
+  <admin-confirm-dialog
+    [icon]="action.type === 'suspend' ? 'block' : 'check_circle'"
+    [title]="(action.type === 'suspend' ? 'Suspend' : 'Reactivate') + ' this admin?'"
+    [message]="action.account.fullName"
+    [confirmLabel]="action.type === 'suspend' ? 'Suspend' : 'Reactivate'"
+    [variant]="action.type === 'suspend' ? 'danger' : 'primary'"
+    [loading]="actionLoading()"
+    [errorMessage]="actionError()?.message ?? null"
+    (confirmed)="confirmActionSubmit()"
+    (cancelled)="cancelAction()"
+  />
+}

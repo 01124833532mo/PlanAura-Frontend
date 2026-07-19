@@ -1,0 +1,16 @@
+<ol class="admin-timeline">
+  @for (entry of entries; track $index) {
+    <li class="admin-timeline__item">
+      <span class="admin-timeline__dot" [class]="'admin-timeline__dot--' + (entry.tone ?? 'indigo')">
+        <span class="material-symbols-outlined">{{ entry.icon ?? 'radio_button_checked' }}</span>
+      </span>
+      <div class="admin-timeline__content">
+        <p class="admin-timeline__title">{{ entry.title }}</p>
+        @if (entry.subtitle) {
+          <p class="admin-timeline__subtitle">{{ entry.subtitle }}</p>
+        }
+        <p class="admin-timeline__time">{{ entry.timestamp | date: 'medium' }}</p>
+      </div>
+    </li>
+  }
+</ol>

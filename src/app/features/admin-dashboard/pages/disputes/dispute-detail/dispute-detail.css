@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+.admin-detail-grid__main {
+  min-width: 0;
+}

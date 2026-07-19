@@ -18,6 +18,19 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
+    // Same reasoning — admin-viewed vendor/client/dispute ids are dynamic/unbounded.
+    path: 'admin/vendors/:id',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'admin/clients/:id',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'admin/disputes/:id',
+    renderMode: RenderMode.Server,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender
   }

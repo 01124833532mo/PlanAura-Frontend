@@ -1,0 +1,26 @@
+<div class="stat-card admin-card admin-animate-fade-up" [class]="'stat-card--' + accent">
+  <div class="stat-card__icon">
+    <span class="material-symbols-outlined">{{ icon }}</span>
+  </div>
+
+  <div class="stat-card__body">
+    <p class="stat-card__label">{{ label }}</p>
+
+    @if (loading) {
+      <div class="admin-skeleton stat-card__skeleton"></div>
+    } @else {
+      <p class="stat-card__value">{{ value }}</p>
+    }
+
+    @if (trend) {
+      <p class="stat-card__trend" [class]="'stat-card__trend--' + trendDirection">
+        @if (trendDirection === 'up') {
+          <span class="material-symbols-outlined">trending_up</span>
+        } @else if (trendDirection === 'down') {
+          <span class="material-symbols-outlined">trending_down</span>
+        }
+        {{ trend }}
+      </p>
+    }
+  </div>
+</div>

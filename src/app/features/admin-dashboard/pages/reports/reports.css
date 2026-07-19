@@ -1,0 +1,6 @@
+:host {
+  display: block;
+}
+
+/* Layout now comes from the global .admin-section / .admin-section-grid /
+   .admin-stat-grid utility classes in admin-theme.css. */

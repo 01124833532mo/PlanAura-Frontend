@@ -106,6 +106,8 @@ export interface VendorVerificationPortfolioMedia {
 /** Mirrors Planura.Core.Application.Models.VendorVerification.VendorDetailsDto. */
 export interface VendorVerificationDetails {
   vendorId: number;
+  /** The underlying ApplicationUser id - needed for suspend/reactivate calls. */
+  userId: number;
   vendorName: string;
   email: string | null;
   phoneNumber: string | null;
@@ -116,9 +118,14 @@ export interface VendorVerificationDetails {
   city: string | null;
   address: string | null;
   verificationStatus: string;
-  submittedAt: string;
+  submittedAt: string | null;
   reviewedAt: string | null;
   rejectionReason: string | null;
+  /** Set once a Verified vendor has been promoted to Trusted. */
+  trustedSince: string | null;
+  avgRating: number;
+  totalReviews: number;
+  totalCompletedBookings: number;
   documents: VendorVerificationDocument[];
   portfolioMedia: VendorVerificationPortfolioMedia[];
 }

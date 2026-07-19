@@ -1,0 +1,75 @@
+:host {
+  display: contents;
+}
+
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 15, 26, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--admin-space-md);
+  z-index: 1000;
+}
+
+.admin-modal-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--admin-surface);
+  border-radius: var(--admin-radius-xl);
+  box-shadow: var(--admin-shadow-lg);
+  padding: var(--admin-space-xl);
+  text-align: center;
+}
+
+.admin-modal-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--admin-radius-full);
+  background: var(--admin-indigo-100);
+  color: var(--admin-indigo-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--admin-space-md);
+}
+.admin-modal-card__icon--danger {
+  background: var(--admin-danger-100);
+  color: var(--admin-danger-600);
+}
+.admin-modal-card__icon .material-symbols-outlined {
+  font-size: 26px;
+}
+
+.admin-modal-card__title {
+  font-size: var(--admin-text-lg);
+  font-weight: 700;
+  color: var(--admin-text-primary);
+  margin: 0 0 8px;
+}
+
+.admin-modal-card__message {
+  font-size: var(--admin-text-base);
+  color: var(--admin-text-secondary);
+  margin: 0 0 var(--admin-space-md);
+}
+
+.admin-modal-card__error {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-danger-600);
+  background: var(--admin-danger-100);
+  border-radius: var(--admin-radius-sm);
+  padding: 8px 12px;
+  margin: var(--admin-space-sm) 0 0;
+}
+
+.admin-modal-card__actions {
+  display: flex;
+  gap: var(--admin-space-sm);
+  margin-top: var(--admin-space-lg);
+}
+.admin-modal-card__actions .admin-btn {
+  flex: 1;
+}

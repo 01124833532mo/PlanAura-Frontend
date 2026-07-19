@@ -1,8 +1,5 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, inject, signal } from '@angular/core';
-import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
-import { Button } from '../../../../shared/ui/button/button';
-import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
   PendingVendorVerification,
@@ -10,6 +7,10 @@ import {
 } from '../../../../core/interfaces/vendor-verification.model';
 import { VendorType } from '../../../../core/interfaces/vendor.model';
 import { VendorVerificationService } from '../../../../core/services/vendor-verification.service';
+import { AdminBadge } from '../../shared/admin-badge/admin-badge';
+import { AdminConfirmDialog } from '../../shared/admin-confirm-dialog/admin-confirm-dialog';
+import { AdminEmptyState } from '../../shared/admin-empty-state/admin-empty-state';
+import { mapVendorStatus } from '../../shared/status-maps';
 import { RejectVendorDialog } from '../reject-vendor-dialog/reject-vendor-dialog';
 import { VendorVerificationDetailsView } from '../vendor-verification-details/vendor-verification-details';
 
@@ -23,9 +24,9 @@ import { VendorVerificationDetailsView } from '../vendor-verification-details/ve
   selector: 'app-vendor-verification-list',
   standalone: true,
   imports: [
-    AlertBanner,
-    Button,
-    ConfirmDialog,
+    AdminBadge,
+    AdminConfirmDialog,
+    AdminEmptyState,
     DatePipe,
     RejectVendorDialog,
     VendorVerificationDetailsView,
@@ -38,6 +39,7 @@ export class VendorVerificationList implements OnDestroy {
   private successTimeout: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly VendorType = VendorType;
+  protected readonly mapVendorStatus = mapVendorStatus;
 
   protected readonly requests = signal<PendingVendorVerification[]>([]);
   protected readonly loading = signal(false);

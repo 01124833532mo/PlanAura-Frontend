@@ -4,12 +4,14 @@ import { Observable, tap } from 'rxjs';
 import { API_BASE_URL } from '../config/app-config';
 import {
   AuthResponse,
+  ChangePasswordRequest,
   CurrentUser,
   LoginRequest,
   RegisterClientRequest,
   ROLE_ADMIN,
   ROLE_CLIENT,
   ROLE_VENDOR,
+  UpdateProfileRequest,
 } from '../interfaces/auth.model';
 import { VendorRegistrationPayload } from '../interfaces/vendor.model';
 import { TokenStorageService } from './token-storage.service';
@@ -123,6 +125,18 @@ export class AuthService {
     return this.http
       .get<CurrentUser>(`${API_BASE_URL}/auth/me`)
       .pipe(tap((user) => this.currentUserSignal.set(user)));
+  }
+
+  /** PUT /api/auth/me */
+  updateProfile(request: UpdateProfileRequest): Observable<CurrentUser> {
+    return this.http
+      .put<CurrentUser>(`${API_BASE_URL}/auth/me`, request)
+      .pipe(tap((user) => this.currentUserSignal.set(user)));
+  }
+
+  /** POST /api/auth/change-password */
+  changePassword(request: ChangePasswordRequest): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${API_BASE_URL}/auth/change-password`, request);
   }
 
   logout(): void {

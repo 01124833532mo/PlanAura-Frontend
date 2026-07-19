@@ -1,0 +1,56 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Client Management</p>
+    <h2 class="admin-page-header__title">Clients</h2>
+    <p class="admin-page-header__subtitle">Every client account registered on PlanAura.</p>
+  </div>
+</section>
+
+<div class="admin-status-tabs admin-animate-fade-up">
+  <button type="button" class="admin-status-tab" [class.admin-status-tab--active]="filter().isAccountActive === undefined" (click)="onActiveFilter(undefined)">All</button>
+  <button type="button" class="admin-status-tab" [class.admin-status-tab--active]="filter().isAccountActive === true" (click)="onActiveFilter(true)">Active</button>
+  <button type="button" class="admin-status-tab" [class.admin-status-tab--active]="filter().isAccountActive === false" (click)="onActiveFilter(false)">Suspended</button>
+</div>
+
+<div class="admin-card admin-animate-fade-up admin-stagger-1">
+  <div class="admin-table-toolbar">
+    <admin-search-bar placeholder="Search by name or email..." (search)="onSearch($event)" />
+  </div>
+
+  @if (loading()) {
+    <admin-skeleton-rows [rows]="6" [columns]="5" />
+  } @else if (error()) {
+    <admin-error-state [message]="error()!.message" (retry)="load()" />
+  } @else if (clients().length === 0) {
+    <admin-empty-state icon="group" title="No clients found" message="Try adjusting your search or filters." />
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>City</th>
+            <th>Bookings</th>
+            <th>Status</th>
+            <th>Joined</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (client of clients(); track client.clientId) {
+            <tr class="is-clickable" [routerLink]="['/admin/clients', client.clientId]">
+              <td>{{ client.fullName }}</td>
+              <td>{{ client.email ?? '—' }}</td>
+              <td>{{ client.city ?? '—' }}</td>
+              <td>{{ client.bookingCount }}</td>
+              <td><admin-badge [label]="mapAccountActive(client.isAccountActive).label" [tone]="mapAccountActive(client.isAccountActive).tone" /></td>
+              <td>{{ client.createdAt | date: 'mediumDate' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <admin-pagination [page]="filter().page ?? 1" [pageSize]="filter().pageSize ?? 20" [totalCount]="totalCount()" (pageChange)="onPageChange($event)" />
+  }
+</div>

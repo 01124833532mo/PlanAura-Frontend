@@ -1,0 +1,46 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Platform</p>
+    <h2 class="admin-page-header__title">Broadcast Notification</h2>
+    <p class="admin-page-header__subtitle">Send a notification to every client, every vendor, or both.</p>
+  </div>
+</section>
+
+<div class="admin-card admin-animate-fade-up admin-stagger-1 broadcast-form">
+  @if (error()?.message) {
+    <div class="admin-inline-alert admin-inline-alert--danger">
+      <span class="material-symbols-outlined">error</span>
+      {{ error()?.message }}
+    </div>
+  }
+
+  <div class="broadcast-form__field">
+    <label>Send to</label>
+    <div class="admin-status-tabs" style="margin: 0;">
+      <button type="button" class="admin-status-tab" [class.admin-status-tab--active]="role === 'all'" (click)="role = 'all'">Everyone</button>
+      <button type="button" class="admin-status-tab" [class.admin-status-tab--active]="role === 'client'" (click)="role = 'client'">Clients</button>
+      <button type="button" class="admin-status-tab" [class.admin-status-tab--active]="role === 'vendor'" (click)="role = 'vendor'">Vendors</button>
+    </div>
+  </div>
+
+  <div class="broadcast-form__field">
+    <label for="notif-type">Type</label>
+    <input id="notif-type" type="text" class="admin-input" placeholder="e.g. announcement, maintenance, promo" [(ngModel)]="type" [disabled]="sending()" />
+  </div>
+
+  <div class="broadcast-form__field">
+    <label for="notif-title">Title</label>
+    <input id="notif-title" type="text" class="admin-input" maxlength="200" placeholder="Notification title" [(ngModel)]="title" [disabled]="sending()" />
+  </div>
+
+  <div class="broadcast-form__field">
+    <label for="notif-body">Message (optional)</label>
+    <textarea id="notif-body" class="admin-input" rows="4" maxlength="1000" style="resize: vertical; min-height: 100px;" placeholder="Additional details..." [(ngModel)]="body" [disabled]="sending()"></textarea>
+  </div>
+
+  <button type="button" class="admin-btn admin-btn--primary" [disabled]="!canSubmit" (click)="submit()">
+    @if (sending()) { <span class="admin-spinner"></span> }
+    <span class="material-symbols-outlined" style="font-size: 18px;">campaign</span>
+    Send Broadcast
+  </button>
+</div>

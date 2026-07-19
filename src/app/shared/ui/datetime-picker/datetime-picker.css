@@ -1,0 +1,278 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+/* Trigger */
+.dtp__trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: var(--color-soft-beige);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-xl);
+  font-family: var(--font-family-base);
+  font-size: var(--font-body-md-size);
+  color: var(--color-charcoal);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color var(--dur-fast) var(--ease-smooth),
+    border-color var(--dur-fast) var(--ease-smooth),
+    box-shadow var(--dur-fast) var(--ease-smooth);
+}
+
+.dtp__trigger:hover:not(:disabled) {
+  background: var(--color-surface-container);
+}
+
+.dtp__trigger--open {
+  background: var(--color-surface-container-lowest);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+.dtp__trigger--invalid {
+  border-color: var(--color-error);
+}
+
+.dtp__trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dtp__trigger-icon {
+  font-size: 1.25rem;
+  color: var(--color-rose-gold);
+  flex-shrink: 0;
+}
+
+.dtp__trigger-value {
+  flex: 1;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dtp__trigger-placeholder {
+  flex: 1;
+  color: var(--color-secondary);
+}
+
+.dtp__trigger-caret {
+  font-size: 1.25rem;
+  color: var(--color-secondary);
+  flex-shrink: 0;
+}
+
+/* Panel */
+.dtp__panel {
+  margin-top: 0.5rem;
+  padding: 0.85rem;
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg, 0 10px 30px rgb(0 0 0 / 0.12));
+}
+
+.dtp__cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.dtp__month {
+  font-size: var(--font-label-lg-size, 0.95rem);
+  font-weight: 700;
+  color: var(--color-charcoal);
+}
+
+.dtp__nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-charcoal);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-smooth);
+}
+
+.dtp__nav-btn:hover {
+  background: var(--color-soft-beige);
+}
+
+.dtp__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 0.15rem;
+}
+
+.dtp__weekday {
+  text-align: center;
+  padding: 0.25rem 0;
+  font-size: var(--font-label-sm-size);
+  font-weight: 700;
+  color: var(--color-secondary);
+}
+
+.dtp__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.dtp__day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: 600;
+  color: var(--color-charcoal);
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-smooth),
+    color var(--dur-fast) var(--ease-smooth);
+}
+
+.dtp__day:hover {
+  background: var(--color-soft-beige);
+}
+
+.dtp__day--outside {
+  color: var(--color-outline-variant);
+}
+
+.dtp__day--today {
+  box-shadow: inset 0 0 0 1.5px var(--color-primary);
+}
+
+.dtp__day--selected,
+.dtp__day--selected:hover {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* Time row */
+.dtp__time {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-subtle-border);
+}
+
+.dtp__time-icon {
+  font-size: 1.2rem;
+  color: var(--color-rose-gold);
+  margin-right: 0.15rem;
+}
+
+.dtp__select {
+  padding: 0.5rem 0.6rem;
+  background: var(--color-soft-beige);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-base);
+  font-size: var(--font-body-md-size);
+  font-weight: 600;
+  color: var(--color-charcoal);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-smooth);
+}
+
+.dtp__select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.dtp__time-colon {
+  font-weight: 700;
+  color: var(--color-secondary);
+}
+
+.dtp__ampm {
+  display: inline-flex;
+  margin-left: auto;
+  border: 1.5px solid var(--color-subtle-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.dtp__ampm-btn {
+  padding: 0.45rem 0.85rem;
+  border: none;
+  background: transparent;
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: 700;
+  color: var(--color-secondary);
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-smooth),
+    color var(--dur-fast) var(--ease-smooth);
+}
+
+.dtp__ampm-btn--active {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* Footer */
+.dtp__footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--color-subtle-border);
+}
+
+.dtp__link {
+  padding: 0.4rem 0.6rem;
+  border: none;
+  background: transparent;
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: 600;
+  color: var(--color-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background var(--dur-fast) var(--ease-smooth);
+}
+
+.dtp__link:hover {
+  background: var(--color-soft-beige);
+  color: var(--color-charcoal);
+}
+
+.dtp__done {
+  margin-left: auto;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary, var(--color-primary));
+  color: var(--color-on-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter var(--dur-fast) var(--ease-smooth);
+}
+
+.dtp__done:hover {
+  filter: brightness(1.05);
+}

@@ -379,31 +379,53 @@
                 </div>
                 <span class="vp-rating-summary__count">{{ profile.totalReviews }} reviews</span>
               </div>
-              <p class="vp-rating-summary__note">
-                <span class="material-symbols-outlined">info</span>
-                Individual review details are coming soon — sample reviews shown below for preview.
-              </p>
             </div>
 
-            <div class="vp-reviews-list">
-              @for (review of placeholderReviews; track review.author) {
-                <div class="vp-review-card">
-                  <div class="vp-review-card__top">
-                    <span class="vp-review-card__avatar">{{ review.author.charAt(0) }}</span>
-                    <div class="vp-review-card__identity">
-                      <span class="vp-review-card__author">{{ review.author }}</span>
-                      <div class="vp-review-card__stars" aria-hidden="true">
-                        @for (star of [1, 2, 3, 4, 5]; track star) {
-                          <span class="material-symbols-outlined" [class.vp-star--filled]="star <= review.rating">star</span>
+            @if (reviewsLoading()) {
+              <p class="text-body-md">Loading reviews...</p>
+            } @else if (reviews().length === 0) {
+              <div class="vp-empty">
+                <span class="material-symbols-outlined vp-empty__icon" aria-hidden="true">rate_review</span>
+                <p class="text-body-md">No reviews yet. They'll appear here once clients rate your work.</p>
+              </div>
+            } @else {
+              <div class="vp-reviews-list">
+                @for (review of reviews(); track review.id) {
+                  <div class="vp-review-card">
+                    <div class="vp-review-card__top">
+                      <span class="vp-review-card__avatar">
+                        @if (review.clientAvatarUrl) {
+                          <img [src]="review.clientAvatarUrl" [alt]="review.clientName" />
+                        } @else {
+                          {{ review.clientName.charAt(0) }}
                         }
+                      </span>
+                      <div class="vp-review-card__identity">
+                        <span class="vp-review-card__author">{{ review.clientName }}</span>
+                        <div class="vp-review-card__stars" aria-hidden="true">
+                          @for (star of [1, 2, 3, 4, 5]; track star) {
+                            <span class="material-symbols-outlined" [class.vp-star--filled]="star <= review.rating">star</span>
+                          }
+                        </div>
                       </div>
+                      <span class="vp-review-card__date">{{ review.createdAt | date: 'mediumDate' }}</span>
                     </div>
-                    <span class="vp-review-card__date">{{ review.date }}</span>
+                    @if (review.comment) {
+                      <p class="vp-review-card__comment">{{ review.comment }}</p>
+                    }
+                    @if (review.vendorResponse) {
+                      <div class="vp-review-card__response">
+                        <span class="vp-review-card__response-label">
+                          <span class="material-symbols-outlined">storefront</span>
+                          Your reply
+                        </span>
+                        <p>{{ review.vendorResponse }}</p>
+                      </div>
+                    }
                   </div>
-                  <p class="vp-review-card__comment">{{ review.comment }}</p>
-                </div>
-              }
-            </div>
+                }
+              </div>
+            }
           </section>
         }
 

@@ -39,6 +39,14 @@
     </a>
     <a
       class="vendor-nav__link"
+      routerLink="/vendor/dashboard/reviews"
+      routerLinkActive="vendor-nav__link--active"
+    >
+      <span class="material-symbols-outlined vendor-nav__link-icon">reviews</span>
+      <span class="text-label-md">Reviews</span>
+    </a>
+    <a
+      class="vendor-nav__link"
       routerLink="/vendor/dashboard/profile"
       routerLinkActive="vendor-nav__link--active"
     >
@@ -62,7 +70,13 @@
     @if (vendorProfileState.profile(); as profile) {
       <div class="vendor-topbar__profile">
         <span class="text-body-md vendor-topbar__name">{{ profile.businessName }}</span>
-        <span class="vendor-topbar__avatar">{{ profile.businessName.charAt(0) }}</span>
+        <span class="vendor-topbar__avatar">
+          @if (profile.logoUrl) {
+            <img [src]="profile.logoUrl" [alt]="profile.businessName" />
+          } @else {
+            {{ profile.businessName.charAt(0) }}
+          }
+        </span>
       </div>
     }
   </header>

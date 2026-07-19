@@ -9,6 +9,8 @@ import { SelectField, SelectOption } from '../../../shared/ui/select-field/selec
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { AppError } from '../../../core/interfaces/api-response.model';
 import { PortfolioMediaItem } from '../../../core/interfaces/portfolio.model';
+import { Review } from '../../../core/interfaces/review.model';
+import { ReviewService } from '../../../core/services/review.service';
 import { UpdateVendorProfilePayload } from '../../../core/interfaces/vendor-profile.model';
 import { ServiceCategory, VendorType } from '../../../core/interfaces/vendor.model';
 import { AvailabilityStatus, VendorAvailability } from '../../../core/interfaces/vendor-availability.model';
@@ -38,14 +40,6 @@ interface ProfileTab {
   icon: string;
 }
 
-/** A handful of realistic-looking sample reviews to preview the future Reviews tab. */
-interface PlaceholderReview {
-  author: string;
-  rating: number;
-  date: string;
-  comment: string;
-}
-
 /**
  * Lets the authenticated vendor view and edit their own profile and manage
  * their portfolio images. Ownership is enforced server-side (VendorController
@@ -56,11 +50,9 @@ interface PlaceholderReview {
  * tabbed sections) on top of the same data/APIs as before. Packages and
  * Availability tabs read from the real, already-wired VendorPackageService /
  * VendorAvailabilityService (read-only preview here — full CRUD stays on
- * their existing dedicated pages). There is no reviews feature or endpoint
- * anywhere in the app yet, so the Reviews & Ratings tab shows the real
- * aggregate rating/review count plus clearly-illustrative placeholder review
- * cards, per explicit instruction to use placeholder data where the backend
- * doesn't have it yet.
+ * their existing dedicated pages). The Reviews & Ratings tab reads real data
+ * from ReviewService.getMyReviews (api/reviews/incoming, resolved from the
+ * JWT), alongside the aggregate rating/review count on the profile.
  *
  * Latitude/longitude are part of VendorDto/UpdateVendorProfileDto but are
  * left out of this form: nothing in the app collects them today (not even
@@ -90,6 +82,7 @@ export class Profile implements OnInit {
   private readonly categoryService = inject(ServiceCategoryService);
   private readonly vendorPackageService = inject(VendorPackageService);
   private readonly vendorAvailabilityService = inject(VendorAvailabilityService);
+  private readonly reviewService = inject(ReviewService);
 
   protected readonly vendorProfileState = inject(VendorProfileStateService);
   protected readonly authService = inject(AuthService);
@@ -112,6 +105,9 @@ export class Profile implements OnInit {
 
   protected readonly availability = signal<VendorAvailability[]>([]);
   protected readonly availabilityLoading = signal(false);
+
+  protected readonly reviews = signal<Review[]>([]);
+  protected readonly reviewsLoading = signal(false);
   protected readonly AvailabilityStatus = AvailabilityStatus;
   protected readonly VendorType = VendorType;
 
@@ -129,27 +125,6 @@ export class Profile implements OnInit {
   ];
 
   protected readonly activeTab = signal<ProfileTabId>('about');
-
-  protected readonly placeholderReviews: PlaceholderReview[] = [
-    {
-      author: 'Sarah M.',
-      rating: 5,
-      date: '2 weeks ago',
-      comment: 'Absolutely wonderful to work with — professional, punctual, and the results exceeded our expectations.',
-    },
-    {
-      author: 'Ahmed K.',
-      rating: 5,
-      date: '1 month ago',
-      comment: 'Great communication throughout the whole planning process. Would book again without hesitation.',
-    },
-    {
-      author: 'Layla H.',
-      rating: 4,
-      date: '2 months ago',
-      comment: 'Really happy with the quality of the work. A couple of small delays, but the end result was worth it.',
-    },
-  ];
 
   protected readonly activePackages = computed(() => this.packages().filter((pkg) => pkg.isActive));
 
@@ -208,6 +183,21 @@ export class Profile implements OnInit {
     this.categoryService.getActiveCategories().subscribe({
       next: (categories) => this.categories.set(categories),
       error: () => this.categories.set([]),
+    });
+    this.fetchReviews();
+  }
+
+  private fetchReviews(): void {
+    this.reviewsLoading.set(true);
+    this.reviewService.getMyReviews({ pageSize: 20 }).subscribe({
+      next: (result) => {
+        this.reviews.set(result.items);
+        this.reviewsLoading.set(false);
+      },
+      error: () => {
+        this.reviews.set([]);
+        this.reviewsLoading.set(false);
+      },
     });
   }
 

@@ -1,0 +1,165 @@
+<div class="reviews-page">
+  <div class="reviews-page__header animate-fade-up">
+    <div>
+      <p class="text-label-sm reviews-page__eyebrow">
+        <span class="material-symbols-outlined">reviews</span>
+        Reputation
+      </p>
+      <h3 class="text-headline-sm">Reviews</h3>
+      <p class="text-body-md">See what clients are saying and reply to their feedback.</p>
+    </div>
+  </div>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <!-- Summary card -->
+  @if (summary(); as s) {
+    <div class="card-luxe luxe-shadow summary animate-fade-up stagger-1">
+      <div class="summary__score">
+        <span class="summary__avg">{{ s.avgRating | number: '1.1-1' }}</span>
+        <div class="summary__stars" aria-hidden="true">
+          @for (star of stars; track star) {
+            <span
+              class="material-symbols-outlined summary__star"
+              [class.summary__star--filled]="avgFilled(star)"
+            >star</span>
+          }
+        </div>
+        <span class="summary__count text-label-md">{{ s.totalReviews }} reviews</span>
+      </div>
+
+      <div class="summary__breakdown">
+        @for (star of breakdownRows; track star) {
+          <div class="summary__bar-row">
+            <span class="summary__bar-label text-label-sm">{{ star }}★</span>
+            <div class="summary__bar-track">
+              <div class="summary__bar-fill" [style.width.%]="breakdownPercent(star)"></div>
+            </div>
+            <span class="summary__bar-count text-label-sm">{{ countFor(star) }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Filters -->
+  <div class="reviews-filters animate-fade-up" role="tablist">
+    @for (filter of filters; track filter.value) {
+      <button
+        class="reviews-filter"
+        type="button"
+        role="tab"
+        [class.reviews-filter--active]="activeFilter() === filter.value"
+        [attr.aria-selected]="activeFilter() === filter.value"
+        (click)="selectFilter(filter.value)"
+      >
+        {{ filter.label }}
+      </button>
+    }
+  </div>
+
+  <!-- List -->
+  <div class="card-luxe luxe-shadow reviews-list-wrap animate-fade-up stagger-2">
+    @if (loading()) {
+      <div class="reviews-skeletons" aria-hidden="true">
+        <div class="reviews-skeleton-row skeleton"></div>
+        <div class="reviews-skeleton-row skeleton"></div>
+        <div class="reviews-skeleton-row skeleton"></div>
+      </div>
+    } @else if (reviews().length === 0) {
+      <div class="reviews-page__empty animate-fade-in">
+        <span class="material-symbols-outlined reviews-page__empty-icon" aria-hidden="true">rate_review</span>
+        <p class="text-body-md">No reviews here yet.</p>
+      </div>
+    } @else {
+      @for (review of reviews(); track review.id) {
+        <div class="review-row animate-fade-up">
+          <div class="review-row__avatar">
+            @if (review.clientAvatarUrl) {
+              <img [src]="review.clientAvatarUrl" [alt]="review.clientName" />
+            } @else {
+              <span>{{ initial(review.clientName) }}</span>
+            }
+          </div>
+
+          <div class="review-row__body">
+            <div class="review-row__head">
+              <span class="review-row__name text-body-md">{{ review.clientName }}</span>
+              <span class="review-row__date text-label-sm">{{ review.createdAt | date: 'MMM d, y' }}</span>
+            </div>
+
+            <div class="review-row__stars" aria-hidden="true">
+              @for (star of stars; track star) {
+                <span
+                  class="material-symbols-outlined review-row__star"
+                  [class.review-row__star--filled]="star <= review.rating"
+                >star</span>
+              }
+            </div>
+
+            @if (review.comment) {
+              <p class="text-body-md review-row__comment">{{ review.comment }}</p>
+            }
+
+            <!-- Existing vendor response -->
+            @if (review.vendorResponse && replyingId() !== review.id) {
+              <div class="review-row__response">
+                <p class="text-label-sm review-row__response-label">
+                  <span class="material-symbols-outlined">storefront</span>
+                  Your reply
+                </p>
+                <p class="text-body-md">{{ review.vendorResponse }}</p>
+                <button class="review-row__edit-link" type="button" (click)="openReply(review)">Edit reply</button>
+              </div>
+            }
+
+            <!-- Reply editor -->
+            @if (replyingId() === review.id) {
+              <div class="review-row__reply">
+                <ui-alert-banner [message]="replyError()?.message ?? null" [details]="replyError()?.fieldErrors ?? []" />
+                <textarea
+                  class="review-row__textarea"
+                  rows="3"
+                  maxlength="1000"
+                  placeholder="Write a reply to this review..."
+                  [(ngModel)]="replyText"
+                  [disabled]="replySaving()"
+                ></textarea>
+                <div class="review-row__reply-actions">
+                  <ui-button variant="outline" [fullWidth]="false" [disabled]="replySaving()" (click)="cancelReply()">
+                    Cancel
+                  </ui-button>
+                  <ui-button
+                    [fullWidth]="false"
+                    [loading]="replySaving()"
+                    [disabled]="replyText.trim().length === 0"
+                    (click)="submitReply(review)"
+                  >
+                    Send reply
+                  </ui-button>
+                </div>
+              </div>
+            } @else if (!review.vendorResponse) {
+              <button class="review-row__reply-btn" type="button" (click)="openReply(review)">
+                <span class="material-symbols-outlined">reply</span>
+                Reply
+              </button>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  @if (!loading() && totalPages() > 1) {
+    <div class="reviews-pagination animate-fade-in">
+      <button class="icon-btn" type="button" title="Previous" [disabled]="page() <= 1" (click)="prevPage()">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+      <span class="text-label-md">Page {{ page() }} of {{ totalPages() }}</span>
+      <button class="icon-btn" type="button" title="Next" [disabled]="page() >= totalPages()" (click)="nextPage()">
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+    </div>
+  }
+</div>

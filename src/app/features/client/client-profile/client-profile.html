@@ -198,25 +198,43 @@
         </div>
       </section>
 
-      <section class="cp-card cp-card--soon card-luxe animate-fade-up stagger-5">
+      <section class="cp-card card-luxe animate-fade-up stagger-5">
         <div class="cp-card__header">
           <span class="cp-card__icon material-symbols-outlined" aria-hidden="true">lock</span>
           <h3 class="text-headline-sm">Security</h3>
-          <span class="cp-card__soon-badge">Coming soon</span>
         </div>
 
-        <div class="cp-field">
-          <span class="cp-field__icon material-symbols-outlined" aria-hidden="true">password</span>
-          <div class="cp-field__body">
-            <span class="cp-field__label">Password</span>
-            <span class="cp-field__value cp-field__value--muted">••••••••••</span>
-          </div>
-        </div>
-
-        <button class="cp-card__cta" type="button" disabled title="Password changes are coming soon">
-          <span class="material-symbols-outlined">key</span>
-          Change Password
-        </button>
+        <form class="cp-password-form" [formGroup]="passwordForm" (ngSubmit)="submitPassword()">
+          <ui-alert-banner
+            [message]="passwordError()?.message ?? null"
+            [details]="passwordError()?.fieldErrors ?? []"
+          />
+          <ui-password-field
+            label="Current Password"
+            formControlName="currentPassword"
+            [errorMessage]="
+              passwordForm.get('currentPassword')!.touched &&
+              passwordForm.get('currentPassword')!.invalid
+                ? 'Current password is required.'
+                : null
+            "
+          />
+          <ui-password-field
+            label="New Password"
+            formControlName="password"
+            [errorMessage]="
+              passwordForm.get('password')!.touched && passwordForm.get('password')!.invalid
+                ? 'Password must be at least 8 characters, with an uppercase letter, a lowercase letter, and a digit.'
+                : null
+            "
+          />
+          <ui-password-field
+            label="Confirm New Password"
+            formControlName="confirmPassword"
+            [errorMessage]="passwordMismatch() ? 'Passwords do not match.' : null"
+          />
+          <ui-button type="submit" [loading]="changingPassword()">Change Password</ui-button>
+        </form>
       </section>
 
       <section class="cp-card cp-card--soon card-luxe animate-fade-up stagger-6">

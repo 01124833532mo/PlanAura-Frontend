@@ -4,10 +4,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AlertBanner } from '../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../shared/ui/button/button';
 import { FileDropzone } from '../../../shared/ui/file-dropzone/file-dropzone';
+import { PasswordField } from '../../../shared/ui/password-field/password-field';
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { AppError } from '../../../core/interfaces/api-response.model';
 import { ClientProfile, UpdateClientProfilePayload } from '../../../core/interfaces/client-profile.model';
 import { ClientProfileService } from '../../../core/services/client-profile.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { passwordsMatchValidator } from '../../../shared/validators/password-match.validator';
 import { notifyError, notifySuccess } from '../../../shared/utils/notify';
 
 interface ChecklistItem {
@@ -33,13 +36,14 @@ interface ChecklistItem {
 @Component({
   selector: 'app-client-profile',
   standalone: true,
-  imports: [ReactiveFormsModule, TextField, FileDropzone, Button, AlertBanner, DatePipe],
+  imports: [ReactiveFormsModule, TextField, PasswordField, FileDropzone, Button, AlertBanner, DatePipe],
   templateUrl: './client-profile.html',
   styleUrl: './client-profile.css',
 })
 export class ClientProfileComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly clientProfileService = inject(ClientProfileService);
+  private readonly authService = inject(AuthService);
 
   protected readonly profile = signal<ClientProfile | null>(null);
   protected readonly loading = signal(false);
@@ -56,6 +60,21 @@ export class ClientProfileComponent implements OnInit {
     dateOfBirth: [''],
     avatarFile: this.fb.control<File | null>(null),
   });
+
+  // Change-password form (control names "password"/"confirmPassword" so
+  // passwordsMatchValidator can be reused as-is). Posts to the existing
+  // AuthService.changePassword (POST /api/auth/change-password).
+  protected readonly passwordForm = this.fb.nonNullable.group(
+    {
+      currentPassword: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required],
+    },
+    { validators: passwordsMatchValidator },
+  );
+
+  protected readonly changingPassword = signal(false);
+  protected readonly passwordError = signal<AppError | null>(null);
 
   /** Pure display computation — no persistence, nothing sent to the backend. */
   protected readonly checklist = computed<ChecklistItem[]>(() => {
@@ -136,6 +155,43 @@ export class ClientProfileComponent implements OnInit {
         notifyError('Could not update profile', err.message);
       },
     });
+  }
+
+  protected submitPassword(): void {
+    if (this.passwordForm.invalid) {
+      this.passwordForm.markAllAsTouched();
+      return;
+    }
+
+    const { currentPassword, password, confirmPassword } = this.passwordForm.getRawValue();
+    this.changingPassword.set(true);
+    this.passwordError.set(null);
+
+    this.authService
+      .changePassword({
+        currentPassword,
+        newPassword: password,
+        confirmNewPassword: confirmPassword,
+      })
+      .subscribe({
+        next: () => {
+          this.changingPassword.set(false);
+          this.passwordForm.reset();
+          notifySuccess('Password changed successfully.');
+        },
+        error: (err: AppError) => {
+          this.changingPassword.set(false);
+          this.passwordError.set(err);
+          notifyError('Could not change password', err.message);
+        },
+      });
+  }
+
+  protected passwordMismatch(): boolean {
+    return (
+      this.passwordForm.hasError('passwordMismatch') &&
+      this.passwordForm.get('confirmPassword')!.touched
+    );
   }
 
   private patchFormFromProfile(): void {

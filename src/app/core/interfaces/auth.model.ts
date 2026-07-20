@@ -46,6 +46,32 @@ export interface ChangePasswordRequest {
   confirmNewPassword: string;
 }
 
+/** Mirrors Planura.Core.Application.Models.Auth.ForgetPasswordByEmailDto exactly. */
+export interface ForgetPasswordRequest {
+  email: string;
+}
+
+/**
+ * Mirrors Planura.Core.Application.Models.Auth.ResetCodeConfirmationByEmailDto.
+ * resetCode is an int on the backend — send it as a number, not a string.
+ */
+export interface VerifyResetCodeRequest {
+  email: string;
+  resetCode: number;
+}
+
+/** Mirrors Planura.Core.Application.Models.Auth.ResetPasswordByEmailDto exactly. */
+export interface ResetPasswordRequest {
+  email: string;
+  newPassword: string;
+}
+
+/** Mirrors Planura.Core.Application.Models.Auth.SuccessDto exactly. */
+export interface SuccessResponse {
+  status: string;
+  message: string;
+}
+
 export const ROLE_ADMIN = 'admin';
 export const ROLE_VENDOR = 'vendor';
 export const ROLE_CLIENT = 'client';

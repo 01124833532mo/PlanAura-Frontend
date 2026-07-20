@@ -300,6 +300,12 @@
   padding: var(--space-lg);
 }
 
+.cp-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
 .cp-card__header {
   display: flex;
   align-items: center;

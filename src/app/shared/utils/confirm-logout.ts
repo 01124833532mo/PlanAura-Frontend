@@ -25,7 +25,10 @@ export function confirmLogout(): Promise<boolean> {
     focusCancel: true,
     buttonsStyling: false,
     showClass: { popup: 'animate-scale-in' },
-    hideClass: { popup: '' },
+    // A real hide animation is required, not an empty string: SweetAlert2 waits
+    // for the popup's animationend before removing it from the DOM, so an empty
+    // hideClass leaves the modal on screen forever after confirming + navigating.
+    hideClass: { popup: 'animate-scale-out' },
     customClass: {
       container: 'swal-planura-container',
       popup: 'swal-planura-popup',

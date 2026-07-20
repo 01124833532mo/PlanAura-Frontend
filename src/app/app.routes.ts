@@ -19,6 +19,12 @@ export const routes: Routes = [
       import('./features/auth/auth-page/auth-page').then((m) => m.AuthPage),
   },
   {
+    path: 'auth/forgot-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+  },
+  {
     // Public legal pages — no auth guard, linked from both the signed-out
     // auth page footer and the signed-in home page footer.
     path: 'terms',

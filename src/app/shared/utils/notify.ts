@@ -38,7 +38,9 @@ export function notifyError(title: string, text?: string): void {
     confirmButtonText: 'OK',
     buttonsStyling: false,
     showClass: { popup: 'animate-scale-in' },
-    hideClass: { popup: '' },
+    // See confirm-logout.ts: an empty hideClass can leave the modal stuck in the
+    // DOM because SweetAlert2 waits for an animationend that never fires.
+    hideClass: { popup: 'animate-scale-out' },
     customClass: {
       container: 'swal-planura-container',
       popup: 'swal-planura-popup',

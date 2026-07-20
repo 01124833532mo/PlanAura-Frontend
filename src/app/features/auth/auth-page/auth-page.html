@@ -68,17 +68,11 @@
                   : null
               "
             >
-              <a slot="action" class="auth-shell__link" href="javascript:void(0)">Forgot password?</a>
+              <a slot="action" class="auth-shell__link" routerLink="/auth/forgot-password">Forgot password?</a>
             </ui-password-field>
 
             <div class="auth-shell__cta">
               <ui-button type="submit" [loading]="loading()">Sign In</ui-button>
-              <ui-button variant="outline" type="button" [disabled]="true" title="Not available yet">
-                <span class="auth-shell__google">
-                  <span class="material-symbols-outlined">account_circle</span>
-                  Continue with Google
-                </span>
-              </ui-button>
             </div>
           </form>
         } @else {

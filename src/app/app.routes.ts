@@ -315,16 +315,6 @@ export const routes: Routes = [
           ),
       },
       {
-        // Must come before 'bookings' — otherwise it'd never be reached
-        // (Angular matches path segments in order, and 'bookings' has fewer
-        // segments so it wouldn't itself shadow this, but keeping the more
-        // specific route first mirrors the event-plans ordering above).
-        path: 'bookings/:id/pay',
-        data: { title: 'Checkout' },
-        loadComponent: () =>
-          import('./features/client/booking/booking-pay/booking-pay').then((m) => m.BookingPay),
-      },
-      {
         path: 'bookings',
         data: { title: 'My Bookings' },
         loadComponent: () =>

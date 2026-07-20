@@ -13,8 +13,16 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
-    // Same reasoning — booking ids are dynamic/unbounded.
-    path: 'client/bookings/:id/pay',
+    // Same reasoning — admin vendor/client/dispute ids are dynamic/unbounded.
+    path: 'admin/vendors/:id',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'admin/clients/:id',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'admin/disputes/:id',
     renderMode: RenderMode.Server,
   },
   {

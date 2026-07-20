@@ -1,7 +1,7 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
@@ -10,7 +10,6 @@ import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
-  BookingPaymentStatus,
   BookingRequest,
   BookingStatus,
   DisputeStatus,
@@ -33,7 +32,6 @@ import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
     ConfirmDialog,
     TextField,
     ReactiveFormsModule,
-    RouterLink,
     StatusBadge,
     DatePipe,
     DecimalPipe,
@@ -52,7 +50,6 @@ export class EventPlanDetail implements OnInit {
 
   // Exposed so the template can reference enum members directly.
   protected readonly BookingStatus = BookingStatus;
-  protected readonly BookingPaymentStatus = BookingPaymentStatus;
   protected readonly DisputeStatus = DisputeStatus;
 
   protected readonly plan = signal<EventPlan | null>(null);

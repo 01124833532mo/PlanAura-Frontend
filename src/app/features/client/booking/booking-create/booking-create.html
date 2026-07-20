@@ -23,6 +23,12 @@
         <p class="text-body-md booking-create-page__empty">Loading booking details...</p>
       </div>
     } @else if (pkg(); as p) {
+      <ui-stepper-header
+        class="animate-fade-up"
+        [steps]="wizardStepLabels"
+        [currentIndex]="stepIndex()"
+      />
+
       <div class="booking-create-layout">
         <section class="booking-create-summary card-luxe luxe-shadow animate-fade-up">
           <span class="booking-create-summary__icon material-symbols-outlined" aria-hidden="true">inventory_2</span>
@@ -47,107 +53,153 @@
           }
         </section>
 
-        <form class="booking-create-form card-luxe luxe-shadow animate-fade-up stagger-1" [formGroup]="form" (ngSubmit)="submit()">
-          <div class="booking-create-form__header">
-            <span class="booking-create-form__icon material-symbols-outlined" aria-hidden="true">event</span>
-            <h4 class="text-headline-sm">Choose a date</h4>
-          </div>
+        <form class="booking-create-form card-luxe luxe-shadow animate-fade-up stagger-1" [formGroup]="form" (ngSubmit)="confirmBooking()">
+          @if (currentStep() === 'details') {
+            <div class="booking-create-form__header">
+              <span class="booking-create-form__icon material-symbols-outlined" aria-hidden="true">event</span>
+              <h4 class="text-headline-sm">Choose a date</h4>
+            </div>
 
-          @if (slotError(); as msg) {
-            <ui-alert-banner [message]="msg" />
-          }
+            @if (slotError(); as msg) {
+              <ui-alert-banner [message]="msg" />
+            }
 
-          @if (availableSlots().length === 0) {
-            <p class="text-body-md booking-create-form__empty">
-              This vendor has no available dates right now.
-            </p>
-          } @else {
-            <div class="booking-create-slots">
-              @for (slot of availableSlots(); track slot.id) {
-                <button
-                  class="booking-create-slot"
-                  type="button"
-                  [class.booking-create-slot--active]="selectedSlotId() === slot.id"
-                  (click)="selectSlot(slot.id)"
-                >
-                  <span class="material-symbols-outlined">event</span>
-                  <span>
-                    {{ slot.startAt | date: 'mediumDate' }}, {{ slot.startAt | date: 'shortTime' }}
-                    – {{ slot.endAt | date: 'shortTime' }}
-                  </span>
-                </button>
-              }
+            @if (availableSlots().length === 0) {
+              <p class="text-body-md booking-create-form__empty">
+                This vendor has no available dates right now.
+              </p>
+            } @else {
+              <div class="booking-create-slots">
+                @for (slot of availableSlots(); track slot.id) {
+                  <button
+                    class="booking-create-slot"
+                    type="button"
+                    [class.booking-create-slot--active]="selectedSlotId() === slot.id"
+                    (click)="selectSlot(slot.id)"
+                  >
+                    <span class="material-symbols-outlined">event</span>
+                    <span>
+                      {{ slot.startAt | date: 'mediumDate' }}, {{ slot.startAt | date: 'shortTime' }}
+                      – {{ slot.endAt | date: 'shortTime' }}
+                    </span>
+                  </button>
+                }
+              </div>
+            }
+
+            @if (needsEventPlanPicker()) {
+              <ui-select-field
+                label="Which event plan is this for?"
+                placeholder="Select an event plan"
+                [options]="eventPlanOptions()"
+                formControlName="eventPlanId"
+                [errorMessage]="
+                  form.get('eventPlanId')!.touched && form.get('eventPlanId')!.invalid
+                    ? 'Choose the event plan this booking belongs to.'
+                    : null
+                "
+              />
+            }
+
+            <ui-text-field
+              label="Guest count (optional)"
+              type="number"
+              min="1"
+              formControlName="guestCount"
+              [errorMessage]="guestCountErrorMessage()"
+            />
+
+            <ui-text-field
+              label="Message to vendor (optional)"
+              placeholder="Anything the vendor should know..."
+              formControlName="clientMessage"
+              [multiline]="true"
+            />
+
+            <div class="booking-create-form__actions">
+              <ui-button type="button" [fullWidth]="false" (click)="goToPayment()">
+                Go to Payment
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </ui-button>
             </div>
           }
 
-          @if (needsEventPlanPicker()) {
-            <ui-select-field
-              label="Which event plan is this for?"
-              placeholder="Select an event plan"
-              [options]="eventPlanOptions()"
-              formControlName="eventPlanId"
-              [errorMessage]="
-                form.get('eventPlanId')!.touched && form.get('eventPlanId')!.invalid
-                  ? 'Choose the event plan this booking belongs to.'
-                  : null
-              "
-            />
-          }
-
-          <ui-text-field
-            label="Guest count (optional)"
-            type="number"
-            min="1"
-            formControlName="guestCount"
-            [errorMessage]="guestCountErrorMessage()"
-          />
-
-          <ui-text-field
-            label="Message to vendor (optional)"
-            placeholder="Anything the vendor should know..."
-            formControlName="clientMessage"
-            [multiline]="true"
-          />
-
-          <div class="booking-create-payment">
-            <div class="booking-create-payment__header">
-              <span class="booking-create-payment__icon material-symbols-outlined" aria-hidden="true">credit_card</span>
+          <!--
+            Always rendered once a package is loaded (not @if-removed like the
+            step-1 fields above) so #paymentElementContainer is available in
+            the DOM the moment setupPayment() needs to mount into it — that
+            call fires as soon as the package loads (still during step 1) so
+            Stripe has a head start and is often already ready by the time the
+            user reaches this step. Visibility is toggled via CSS only, the
+            same pattern already used for its own loading/failed sub-states.
+          -->
+          <div
+            class="booking-create-payment-step"
+            [class.booking-create-payment-step--hidden]="currentStep() !== 'payment'"
+          >
+            <div class="booking-create-form__header">
+              <span class="booking-create-form__icon material-symbols-outlined" aria-hidden="true">credit_card</span>
               <h4 class="text-headline-sm">Payment</h4>
             </div>
 
-            @if (mountingPayment()) {
-              <p class="text-body-md booking-create-payment__loading">
-                <span class="material-symbols-outlined skeleton-icon">progress_activity</span>
-                Loading payment form...
-              </p>
-            } @else if (paymentSetupFailed()) {
-              <div class="booking-create-payment__failed">
-                <p class="text-body-md">
-                  <span class="material-symbols-outlined">error</span>
-                  Payment form is taking longer than usual to load.
-                </p>
-                <ui-button variant="outline" [fullWidth]="false" (click)="retryPaymentSetup()">
-                  Retry
-                </ui-button>
+            <div class="booking-create-recap">
+              <div class="booking-create-recap__row">
+                <span class="text-label-sm">Package</span>
+                <span class="text-body-md">{{ p.title }}</span>
               </div>
-            }
-            <div
-              #paymentElementContainer
-              class="booking-create-payment__element"
-              [class.booking-create-payment__element--hidden]="mountingPayment() || paymentSetupFailed()"
-            ></div>
+              <div class="booking-create-recap__row">
+                <span class="text-label-sm">Price</span>
+                <span class="text-body-md">{{ p.currency }} {{ p.basePrice | number: '1.0-2' }}</span>
+              </div>
+              @if (selectedSlot(); as slot) {
+                <div class="booking-create-recap__row">
+                  <span class="text-label-sm">Date</span>
+                  <span class="text-body-md">
+                    {{ slot.startAt | date: 'mediumDate' }}, {{ slot.startAt | date: 'shortTime' }}
+                  </span>
+                </div>
+              }
+            </div>
 
-            <p class="text-label-sm booking-create-payment__disclaimer">
-              <span class="material-symbols-outlined">lock</span>
-              Your card will be authorized now but only charged once the vendor accepts your request.
-            </p>
-          </div>
+            <div class="booking-create-payment">
+              @if (mountingPayment()) {
+                <p class="text-body-md booking-create-payment__loading">
+                  <span class="material-symbols-outlined skeleton-icon">progress_activity</span>
+                  Loading payment form...
+                </p>
+              } @else if (paymentSetupFailed()) {
+                <div class="booking-create-payment__failed">
+                  <p class="text-body-md">
+                    <span class="material-symbols-outlined">error</span>
+                    Payment form is taking longer than usual to load.
+                  </p>
+                  <ui-button variant="outline" [fullWidth]="false" (click)="retryPaymentSetup()">
+                    Retry
+                  </ui-button>
+                </div>
+              }
+              <div
+                #paymentElementContainer
+                class="booking-create-payment__element"
+                [class.booking-create-payment__element--hidden]="mountingPayment() || paymentSetupFailed()"
+              ></div>
 
-          <div class="booking-create-form__actions">
-            <ui-button type="submit" [loading]="submitting()">
-              <span class="material-symbols-outlined">celebration</span>
-              Request Booking
-            </ui-button>
+              <p class="text-label-sm booking-create-payment__disclaimer">
+                <span class="material-symbols-outlined">lock</span>
+                Your card will be authorized now but only charged once the vendor accepts your request.
+              </p>
+            </div>
+
+            <div class="booking-create-form__actions booking-create-form__actions--split">
+              <ui-button variant="outline" type="button" [fullWidth]="false" (click)="backToDetails()">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Back
+              </ui-button>
+              <ui-button type="submit" [loading]="submitting()">
+                <span class="material-symbols-outlined">celebration</span>
+                Confirm &amp; Book
+              </ui-button>
+            </div>
           </div>
         </form>
       </div>

@@ -330,6 +330,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/client/booking/my-bookings/my-bookings').then((m) => m.MyBookings),
       },
+      {
+        path: 'ai-visualizer',
+        data: { title: 'AI Event Visualizer' },
+        loadComponent: () =>
+          import('./features/client/ai-visualizer/ai-visualizer').then(
+            (m) => m.AiVisualizerComponent,
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: 'auth' },

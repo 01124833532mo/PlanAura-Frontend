@@ -149,6 +149,16 @@ export class VendorDetails implements OnInit {
     return this.blockingByPackageId().get(pkg.id) ?? null;
   }
 
+  protected blockingLabel(booking: BookingRequest): string {
+    return booking.status === BookingStatus.Pending
+      ? 'Pending — awaiting vendor'
+      : 'Already booked';
+  }
+
+  protected blockingTone(booking: BookingRequest): 'pending' | 'success' {
+    return booking.status === BookingStatus.Pending ? 'pending' : 'success';
+  }
+
   /** Star counts, 5 down to 1, for the summary rating bars. */
   protected ratingBars(summary: ReviewSummary): { stars: number; count: number; pct: number }[] {
     const counts = [summary.fiveStar, summary.fourStar, summary.threeStar, summary.twoStar, summary.oneStar];

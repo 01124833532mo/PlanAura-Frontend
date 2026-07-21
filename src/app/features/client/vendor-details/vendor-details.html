@@ -154,10 +154,6 @@
                         Up to {{ pkg.maxGuests }} guests
                       </span>
                     }
-                  </td>
-                  <td>{{ pkg.currency }} {{ pkg.basePrice | number: '1.0-2' }}</td>
-                  <td>{{ pkg.maxGuests ?? '—' }}</td>
-                  <td class="package-table__actions">
                     @if (blockingBooking(pkg); as blocking) {
                       <span
                         class="status-badge"
@@ -176,8 +172,8 @@
                         Book this package
                       </button>
                     }
-                  </td>
-                </tr>
+                  </div>
+                </div>
               }
             </div>
           }

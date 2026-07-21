@@ -4,7 +4,7 @@
       <span class="material-symbols-outlined">edit_calendar</span>
       Event plan
     </p>
-    <h3 class="text-headline-sm">New event plan</h3>
+    <h3 class="text-headline-sm">{{ isEditMode ? 'Edit event plan' : 'New event plan' }}</h3>
     <p class="text-body-md">Tell us about your event so vendors can help you plan it.</p>
   </div>
 
@@ -15,102 +15,106 @@
     />
   }
 
-  <form class="event-plan-form card-luxe luxe-shadow animate-fade-up stagger-1" [formGroup]="form" (ngSubmit)="submit()">
-    <div class="event-plan-form__header">
-      <span class="event-plan-form__header-icon material-symbols-outlined" aria-hidden="true">celebration</span>
-      <div class="event-plan-form__header-text">
-        <h4 class="text-headline-sm">Event details</h4>
-        <p class="text-body-md">The basics vendors will see when you request a booking.</p>
+  @if (loading()) {
+    <p class="text-body-md event-plan-form-page__empty">Loading event plan...</p>
+  } @else {
+    <form class="event-plan-form card-luxe luxe-shadow animate-fade-up stagger-1" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="event-plan-form__header">
+        <span class="event-plan-form__header-icon material-symbols-outlined" aria-hidden="true">celebration</span>
+        <div class="event-plan-form__header-text">
+          <h4 class="text-headline-sm">Event details</h4>
+          <p class="text-body-md">The basics vendors will see when you request a booking.</p>
+        </div>
       </div>
-    </div>
 
-    <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+      <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
-    <ui-text-field
-      class="animate-fade-up stagger-1"
-      label="Event title"
-      placeholder="e.g. Amina & Karim's Wedding"
-      formControlName="title"
-      [errorMessage]="
-        form.get('title')!.touched && form.get('title')!.invalid
-          ? 'A title (up to 200 characters) is required.'
-          : null
-      "
-    />
-
-    <div class="event-plan-form__row animate-fade-up stagger-2">
-      <ui-select-field
-        label="Event type"
-        [options]="eventTypeOptions"
-        formControlName="eventType"
-        [errorMessage]="
-          form.get('eventType')!.touched && form.get('eventType')!.invalid
-            ? 'Choose an event type.'
-            : null
-        "
-      />
       <ui-text-field
-        label="Event date"
-        type="date"
-        [min]="todayIso"
-        formControlName="eventDate"
+        class="animate-fade-up stagger-1"
+        label="Event title"
+        placeholder="e.g. Amina & Karim's Wedding"
+        formControlName="title"
         [errorMessage]="
-          form.get('eventDate')!.touched && form.get('eventDate')!.invalid
-            ? 'Choose today or a future date.'
+          form.get('title')!.touched && form.get('title')!.invalid
+            ? 'A title (up to 200 characters) is required.'
             : null
         "
       />
-    </div>
 
-    <ui-text-field
-      class="animate-fade-up stagger-3"
-      label="City"
-      placeholder="e.g. Cairo"
-      formControlName="city"
-      [errorMessage]="
-        form.get('city')!.touched && form.get('city')!.invalid ? 'City is required.' : null
-      "
-    />
+      <div class="event-plan-form__row animate-fade-up stagger-2">
+        <ui-select-field
+          label="Event type"
+          [options]="eventTypeOptions"
+          formControlName="eventType"
+          [errorMessage]="
+            form.get('eventType')!.touched && form.get('eventType')!.invalid
+              ? 'Choose an event type.'
+              : null
+          "
+        />
+        <ui-text-field
+          label="Event date"
+          type="date"
+          [min]="todayIso"
+          formControlName="eventDate"
+          [errorMessage]="
+            form.get('eventDate')!.touched && form.get('eventDate')!.invalid
+              ? 'Choose today or a future date.'
+              : null
+          "
+        />
+      </div>
 
-    <div class="event-plan-form__row animate-fade-up stagger-4">
       <ui-text-field
-        label="Guest count"
-        type="number"
-        min="1"
-        formControlName="guestCount"
+        class="animate-fade-up stagger-3"
+        label="City"
+        placeholder="e.g. Cairo"
+        formControlName="city"
         [errorMessage]="
-          form.get('guestCount')!.touched && form.get('guestCount')!.invalid
-            ? 'Enter at least 1 guest.'
-            : null
+          form.get('city')!.touched && form.get('city')!.invalid ? 'City is required.' : null
         "
       />
+
+      <div class="event-plan-form__row animate-fade-up stagger-4">
+        <ui-text-field
+          label="Guest count"
+          type="number"
+          min="1"
+          formControlName="guestCount"
+          [errorMessage]="
+            form.get('guestCount')!.touched && form.get('guestCount')!.invalid
+              ? 'Enter at least 1 guest.'
+              : null
+          "
+        />
+        <ui-text-field
+          label="Total budget"
+          type="number"
+          min="0"
+          formControlName="budgetTotal"
+          [errorMessage]="
+            form.get('budgetTotal')!.touched && form.get('budgetTotal')!.invalid
+              ? 'Enter a valid budget.'
+              : null
+          "
+        />
+      </div>
+
       <ui-text-field
-        label="Total budget"
-        type="number"
-        min="0"
-        formControlName="budgetTotal"
-        [errorMessage]="
-          form.get('budgetTotal')!.touched && form.get('budgetTotal')!.invalid
-            ? 'Enter a valid budget.'
-            : null
-        "
+        class="animate-fade-up stagger-5"
+        label="Style notes (optional)"
+        placeholder="Colors, themes, must-haves..."
+        formControlName="styleNotes"
+        [multiline]="true"
       />
-    </div>
 
-    <ui-text-field
-      class="animate-fade-up stagger-5"
-      label="Style notes (optional)"
-      placeholder="Colors, themes, must-haves..."
-      formControlName="styleNotes"
-      [multiline]="true"
-    />
-
-    <div class="event-plan-form__actions">
-      <ui-button variant="outline" type="button" (click)="cancel()">Cancel</ui-button>
-      <ui-button type="submit" [loading]="saving()">
-        <span class="material-symbols-outlined">celebration</span>
-        Create plan
-      </ui-button>
-    </div>
-  </form>
+      <div class="event-plan-form__actions">
+        <ui-button variant="outline" type="button" (click)="cancel()">Cancel</ui-button>
+        <ui-button type="submit" [loading]="saving()">
+          <span class="material-symbols-outlined">celebration</span>
+          {{ isEditMode ? 'Save changes' : 'Create plan' }}
+        </ui-button>
+      </div>
+    </form>
+  }
 </div>

@@ -21,3 +21,11 @@ export interface CreateEventPlanRequest {
   budgetTotal: number;
   styleNotes?: string;
 }
+
+/**
+ * Mirrors the backend's UpdateEventPlanDto for PUT /api/event-plans/{id}.
+ * Only eventType is strictly required server-side, but the form always
+ * collects/sends every field regardless of create vs. edit mode, so this
+ * matches CreateEventPlanRequest's shape exactly.
+ */
+export type UpdateEventPlanRequest = CreateEventPlanRequest;

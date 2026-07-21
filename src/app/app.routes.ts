@@ -328,6 +328,14 @@ export const routes: Routes = [
             (m) => m.AiVisualizerComponent,
           ),
       },
+      {
+        path: 'profile',
+        data: { title: 'My Profile' },
+        loadComponent: () =>
+          import('./features/client/client-profile/client-profile').then(
+            (m) => m.ClientProfileComponent,
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: 'auth' },

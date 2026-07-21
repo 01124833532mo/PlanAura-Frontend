@@ -32,6 +32,11 @@
   gap: var(--space-sm);
 }
 
+.event-plan-detail-header__edit-btn {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 .event-plan-detail-header__icon {
   flex-shrink: 0;
   display: inline-flex;

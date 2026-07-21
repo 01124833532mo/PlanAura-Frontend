@@ -11,6 +11,15 @@
           <p class="text-label-sm event-plan-detail-header__eyebrow">{{ p.eventType }}</p>
           <h1 class="text-headline-md">{{ p.title }}</h1>
         </div>
+        <ui-button
+          class="event-plan-detail-header__edit-btn"
+          variant="outline"
+          [fullWidth]="false"
+          (click)="goToEdit()"
+        >
+          <span class="material-symbols-outlined">edit</span>
+          Edit
+        </ui-button>
       </div>
 
       <div class="event-plan-detail-header__grid">

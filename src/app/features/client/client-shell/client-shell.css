@@ -164,7 +164,7 @@
 }
 
 .client-topbar {
-  height: var(--client-topbar-height);
+  height: var(--client-topbar-height, 88px);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -173,6 +173,10 @@
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--color-subtle-border);
+  /* A soft cast shadow (not just a hairline) gives the sticky bar real
+     elevation over the content scrolling beneath it — a flat 1px border
+     alone reads as a plain admin-template divider, not a floating app bar. */
+  box-shadow: 0 4px 16px rgba(36, 31, 28, 0.03);
   position: sticky;
   top: 0;
   z-index: 5;
@@ -180,30 +184,55 @@
 
 .client-topbar__title {
   font-family: var(--font-family-display);
+  font-size: 1.75rem;
+  font-weight: 500;
   color: var(--color-charcoal);
   letter-spacing: -0.01em;
+}
+
+.client-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.client-topbar__divider {
+  width: 1px;
+  height: 24px;
+  background: var(--color-subtle-border);
 }
 
 .client-topbar__profile {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-sm);
+  padding: 6px 14px 6px 6px;
+  /* Wrapped in the same bordered/shadowed chip language as the bell button
+     next to it, instead of name+avatar floating as bare text — the two
+     now read as one deliberate control cluster. */
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-lowest);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
 }
 
 .client-topbar__name {
   color: var(--color-charcoal);
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .client-topbar__avatar {
-  width: 42px;
-  height: 42px;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
   border-radius: var(--radius-full);
   background: var(--gradient-primary);
   color: var(--color-on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.85rem;
   font-weight: 700;
   box-shadow: var(--shadow-glow);
 }

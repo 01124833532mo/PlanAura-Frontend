@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AlertBanner } from '../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../shared/ui/button/button';
+import { DocumentDownload } from '../../../shared/ui/document-download/document-download';
 import { FileDropzone } from '../../../shared/ui/file-dropzone/file-dropzone';
 import { PasswordField } from '../../../shared/ui/password-field/password-field';
 import { SelectField, SelectOption } from '../../../shared/ui/select-field/select-field';
@@ -75,6 +76,7 @@ interface ProfileTab {
     FileDropzone,
     PasswordField,
     Button,
+    DocumentDownload,
     AlertBanner,
   ],
   templateUrl: './profile.html',

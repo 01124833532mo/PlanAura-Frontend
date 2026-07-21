@@ -321,6 +321,14 @@ export const routes: Routes = [
           import('./features/client/booking/my-bookings/my-bookings').then((m) => m.MyBookings),
       },
       {
+        path: 'profile',
+        data: { title: 'My Profile' },
+        loadComponent: () =>
+          import('./features/client/client-profile/client-profile').then(
+            (m) => m.ClientProfileComponent,
+            ),
+      },
+      {
         path: 'ai-visualizer',
         data: { title: 'AI Event Visualizer' },
         loadComponent: () =>

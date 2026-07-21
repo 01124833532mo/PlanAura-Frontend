@@ -19,6 +19,7 @@ export class PasswordField implements ControlValueAccessor {
   @Input() label = 'Password';
   @Input() placeholder = '••••••••';
   @Input() errorMessage: string | null = null;
+  @Input() compact = false;
 
   protected readonly fieldId = `ui-password-field-${nextId++}`;
   protected readonly visible = signal(false);

@@ -59,6 +59,7 @@
   font-family: var(--font-family-base);
   font-size: var(--font-label-md-size);
   font-weight: var(--font-label-md-weight);
+  text-decoration: none;
   cursor: pointer;
   padding: 0.5rem 0.75rem;
   border-radius: var(--radius-md);

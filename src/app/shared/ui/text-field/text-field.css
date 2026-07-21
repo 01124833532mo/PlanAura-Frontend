@@ -67,3 +67,13 @@
   font-size: var(--font-label-sm-size);
   color: var(--color-secondary);
 }
+
+/* Opt-in compact mode — same font sizes (never shrink text), tighter
+   padding/margins for density-sensitive layouts like the auth page. */
+.ui-field__label--compact {
+  margin-bottom: 0.3rem;
+}
+
+.ui-field__input--compact {
+  padding: 0.6rem 0.9rem;
+}

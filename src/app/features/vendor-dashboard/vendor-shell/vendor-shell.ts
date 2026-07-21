@@ -4,11 +4,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { VendorProfileStateService } from '../../../core/services/vendor-profile-state.service';
 import { createActiveRouteTitle } from '../../../shared/utils/active-route-title';
 import { confirmLogout } from '../../../shared/utils/confirm-logout';
+import { NotificationBell } from '../../../shared/ui/notification-bell/notification-bell';
 
 @Component({
   selector: 'app-vendor-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NotificationBell],
   templateUrl: './vendor-shell.html',
   styleUrl: './vendor-shell.css',
 })

@@ -523,6 +523,36 @@
               </div>
             </div>
           </section>
+
+          <section class="vp-panel card-luxe">
+            <div class="vp-panel__header">
+              <span class="vp-panel__icon material-symbols-outlined" aria-hidden="true">handshake</span>
+              <h3 class="text-headline-sm">Partnership Agreement</h3>
+            </div>
+
+            @if (profile.hasPartnershipAgreement) {
+              <div class="vp-fact">
+                <span class="material-symbols-outlined" aria-hidden="true">description</span>
+                <div>
+                  <span class="vp-fact__label">Your Planura Partnership Agreement</span>
+                  <span class="vp-fact__value">
+                    Generated {{ profile.partnershipAgreementGeneratedAt | date: 'mediumDate' }}
+                  </span>
+                </div>
+              </div>
+              <app-document-download
+                [url]="profile.partnershipAgreementUrl"
+                label="Download Partnership Agreement"
+                icon="picture_as_pdf"
+                variant="button"
+              />
+            } @else {
+              <p class="vp-hero__bio vp-hero__bio--empty">
+                Your Partnership Agreement with Planura is generated automatically the first time you accept a
+                booking request, and will appear here once it's ready.
+              </p>
+            }
+          </section>
         }
 
         @case ('security') {

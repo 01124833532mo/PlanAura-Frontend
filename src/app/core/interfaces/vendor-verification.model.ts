@@ -128,6 +128,12 @@ export interface VendorVerificationDetails {
   totalCompletedBookings: number;
   documents: VendorVerificationDocument[];
   portfolioMedia: VendorVerificationPortfolioMedia[];
+  /** True once this vendor's one-time Partnership Agreement with Planura has been generated. */
+  hasPartnershipAgreement: boolean;
+  /** Relative to STATIC_BASE_URL, same convention as documents[].fileUrl above — resolve via VendorVerificationService.resolveFileUrl. */
+  partnershipAgreementId: string | null;
+  partnershipAgreementUrl: string | null;
+  partnershipAgreementGeneratedAt: string | null;
 }
 
 /** Body for POST /api/admin/vendor-verifications/reject (RejectVendorDto). */

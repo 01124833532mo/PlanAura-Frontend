@@ -106,6 +106,13 @@
               </div>
 
               <div class="booking-row__actions">
+                @if (booking.contractDocumentUrl) {
+                  <app-document-download
+                    [url]="booking.contractDocumentUrl"
+                    label="Booking Contract"
+                    icon="description"
+                  />
+                }
                 @if (booking.status === BookingStatus.Pending) {
                   <ui-button
                     variant="outline"

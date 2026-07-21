@@ -58,6 +58,10 @@ export interface BookingRequest {
   disputedAt: string | null;
   resolutionNotes: string | null;
   resolvedAt: string | null;
+  /** Set once the AI-generated Event Booking Contract has been produced (on vendor accept). */
+  contractId: string | null;
+  contractDocumentUrl: string | null;
+  contractGeneratedAt: string | null;
 }
 
 /** Mirrors Planura.Core.Application.Models.BookingRequestFilterDto. No eventPlanId filter exists server-side. */

@@ -56,6 +56,28 @@
       </section>
 
       <section class="admin-card">
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Partnership Agreement</h3>
+        @if (v.hasPartnershipAgreement) {
+          <div class="admin-inline-alert admin-inline-alert--info" style="align-items: center; justify-content: space-between;">
+            <span>
+              <span class="material-symbols-outlined" style="vertical-align: middle;">description</span>
+              Generated {{ v.partnershipAgreementGeneratedAt | date: 'MMM d, y, h:mm a' }}
+            </span>
+            <app-document-download
+              [url]="partnershipAgreementUrl(v)"
+              label="Download Agreement"
+              icon="picture_as_pdf"
+              variant="button"
+            />
+          </div>
+        } @else {
+          <p style="color: var(--admin-text-muted); font-size: var(--admin-text-sm);">
+            No Partnership Agreement has been generated yet. One is generated automatically the first time this vendor accepts a booking.
+          </p>
+        }
+      </section>
+
+      <section class="admin-card">
         <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Verification Documents</h3>
         @if (v.documents.length === 0) {
           <p style="color: var(--admin-text-muted); font-size: var(--admin-text-sm);">No documents uploaded.</p>

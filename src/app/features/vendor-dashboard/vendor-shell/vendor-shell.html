@@ -67,18 +67,22 @@
   <header class="vendor-topbar">
     <h2 class="text-headline-md vendor-topbar__title">{{ pageTitle() }}</h2>
 
-    @if (vendorProfileState.profile(); as profile) {
-      <div class="vendor-topbar__profile">
-        <span class="text-body-md vendor-topbar__name">{{ profile.businessName }}</span>
-        <span class="vendor-topbar__avatar">
-          @if (profile.logoUrl) {
-            <img [src]="profile.logoUrl" [alt]="profile.businessName" />
-          } @else {
-            {{ profile.businessName.charAt(0) }}
-          }
-        </span>
-      </div>
-    }
+    <div class="vendor-topbar__actions">
+      <app-notification-bell />
+
+      @if (vendorProfileState.profile(); as profile) {
+        <div class="vendor-topbar__profile">
+          <span class="text-body-md vendor-topbar__name">{{ profile.businessName }}</span>
+          <span class="vendor-topbar__avatar">
+            @if (profile.logoUrl) {
+              <img [src]="profile.logoUrl" [alt]="profile.businessName" />
+            } @else {
+              {{ profile.businessName.charAt(0) }}
+            }
+          </span>
+        </div>
+      }
+    </div>
   </header>
 
   <div class="vendor-content animate-fade-in">

@@ -1,0 +1,13 @@
+@if (url) {
+  <a
+    class="doc-download"
+    [class.doc-download--button]="variant === 'button'"
+    [href]="url"
+    target="_blank"
+    rel="noopener noreferrer"
+    (click)="stop($event)"
+  >
+    <span class="material-symbols-outlined doc-download__icon" aria-hidden="true">{{ icon }}</span>
+    <span class="doc-download__label">{{ label }}</span>
+  </a>
+}

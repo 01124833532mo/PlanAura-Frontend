@@ -61,6 +61,13 @@
           </div>
 
           <div class="booking-row__actions">
+            @if (booking.contractDocumentUrl) {
+              <app-document-download
+                [url]="booking.contractDocumentUrl"
+                label="Booking Contract"
+                icon="description"
+              />
+            }
             <span class="my-bookings-row__view-link">
               View plan
               <span class="material-symbols-outlined">chevron_right</span>

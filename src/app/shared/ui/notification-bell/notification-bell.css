@@ -1,0 +1,167 @@
+.notif-bell-wrap {
+  position: relative;
+}
+
+.notif-bell-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  /* A borderless button in --color-surface-container-lowest (near-white) sat
+     almost invisibly on the topbar's own near-white glass background — no
+     definition, no affordance, and a jarring mismatch next to the bold
+     gradient avatar beside it. Giving it the same bordered/shadowed chip
+     treatment used for controls elsewhere (vendor filters, dropdowns) makes
+     it read as an intentional button instead of a stray icon. */
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-charcoal);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.notif-bell-btn:hover {
+  background: var(--color-soft-beige);
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.06);
+}
+
+.notif-bell-btn:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(232, 101, 74, 0.16);
+}
+
+.notif-bell-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* A light ring so the badge reads as a clean overlapping dot, not a
+     smudge, against whatever it happens to sit on top of. */
+  border: 2px solid var(--color-surface-container-lowest);
+  box-shadow: 0 1px 3px rgba(232, 101, 74, 0.35);
+}
+
+.notif-bell-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.notif-bell-panel {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  width: 360px;
+  max-height: 480px;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-luxe);
+  z-index: 50;
+  overflow: hidden;
+}
+
+.notif-bell-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--color-subtle-border);
+}
+
+.notif-bell-panel__mark-all {
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notif-bell-panel__body {
+  overflow-y: auto;
+}
+
+.notif-bell-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 2rem 1rem;
+  color: var(--color-secondary);
+  text-align: center;
+}
+
+.notif-item {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--color-subtle-border);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item:hover {
+  background: var(--color-soft-beige);
+}
+
+.notif-item--unread {
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+
+.notif-item__title {
+  display: block;
+  color: var(--color-charcoal);
+}
+
+.notif-item__body {
+  margin: 0.2rem 0 0;
+  color: var(--color-dark-gray);
+}
+
+.notif-item__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.notif-item__time {
+  font-size: 0.72rem;
+  color: var(--color-secondary);
+}
+
+.notif-bell-panel__footer {
+  padding: 0.6rem 1rem;
+  border-top: 1px solid var(--color-subtle-border);
+  text-align: center;
+}
+
+.notif-bell-panel__view-all {
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -13,20 +13,12 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
+    // Same reasoning — the edit route carries the same dynamic id.
+    path: 'client/event-plans/:id/edit',
+    renderMode: RenderMode.Server,
+  },
+  {
     // Same reasoning — admin vendor/client/dispute ids are dynamic/unbounded.
-    path: 'admin/vendors/:id',
-    renderMode: RenderMode.Server,
-  },
-  {
-    path: 'admin/clients/:id',
-    renderMode: RenderMode.Server,
-  },
-  {
-    path: 'admin/disputes/:id',
-    renderMode: RenderMode.Server,
-  },
-  {
-    // Same reasoning — admin-viewed vendor/client/dispute ids are dynamic/unbounded.
     path: 'admin/vendors/:id',
     renderMode: RenderMode.Server,
   },

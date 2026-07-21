@@ -315,10 +315,29 @@ export const routes: Routes = [
           ),
       },
       {
+        // A distinct 3-segment path from 'event-plans/:id' (2 segments), so
+        // there's no ambiguity with the detail route regardless of order —
+        // reuses EventPlanForm, which checks for the :id param itself.
+        path: 'event-plans/:id/edit',
+        data: { title: 'Edit Event Plan' },
+        loadComponent: () =>
+          import('./features/client/event-plan/event-plan-form/event-plan-form').then(
+            (m) => m.EventPlanForm,
+          ),
+      },
+      {
         path: 'bookings',
         data: { title: 'My Bookings' },
         loadComponent: () =>
           import('./features/client/booking/my-bookings/my-bookings').then((m) => m.MyBookings),
+      },
+      {
+        path: 'profile',
+        data: { title: 'My Profile' },
+        loadComponent: () =>
+          import('./features/client/client-profile/client-profile').then(
+            (m) => m.ClientProfileComponent,
+            ),
       },
       {
         path: 'ai-visualizer',

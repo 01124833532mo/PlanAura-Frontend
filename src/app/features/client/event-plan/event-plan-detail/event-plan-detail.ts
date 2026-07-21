@@ -6,6 +6,7 @@ import { catchError, forkJoin, of } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
 import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
+import { DocumentDownload } from '../../../../shared/ui/document-download/document-download';
 import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { AppError } from '../../../../core/interfaces/api-response.model';
@@ -30,6 +31,7 @@ import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
     AlertBanner,
     Button,
     ConfirmDialog,
+    DocumentDownload,
     TextField,
     ReactiveFormsModule,
     StatusBadge,
@@ -242,5 +244,9 @@ export class EventPlanDetail implements OnInit {
 
   protected goToVendors(): void {
     this.router.navigate(['/client/vendors'], { queryParams: { eventPlanId: this.planId } });
+  }
+
+  protected goToEdit(): void {
+    this.router.navigate(['/client/event-plans', this.planId, 'edit']);
   }
 }

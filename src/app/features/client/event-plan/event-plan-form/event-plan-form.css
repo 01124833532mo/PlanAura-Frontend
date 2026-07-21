@@ -11,6 +11,12 @@
   margin-top: 0.25rem;
 }
 
+.event-plan-form-page__empty {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--color-secondary);
+}
+
 .event-plan-form-page__eyebrow {
   display: inline-flex;
   align-items: center;

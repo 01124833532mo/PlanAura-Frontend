@@ -19,6 +19,7 @@ import { adminNotifyError, adminNotifySuccess } from '../../../shared/admin-noti
 import { AdminTimeline, AdminTimelineEntry } from '../../../shared/admin-timeline/admin-timeline';
 import { mapAccountActive, mapVendorStatus } from '../../../shared/status-maps';
 import { RejectVendorDialog } from '../../../vendor-verifications/reject-vendor-dialog/reject-vendor-dialog';
+import { DocumentDownload } from '../../../../../shared/ui/document-download/document-download';
 
 type ConfirmAction = 'approve' | 'suspend' | 'reactivate' | 'trust' | null;
 
@@ -35,6 +36,7 @@ type ConfirmAction = 'approve' | 'suspend' | 'reactivate' | 'trust' | null;
     AdminErrorState,
     AdminTimeline,
     RejectVendorDialog,
+    DocumentDownload,
   ],
   templateUrl: './vendor-detail.html',
   styleUrl: './vendor-detail.css',
@@ -113,6 +115,13 @@ export class VendorDetail implements OnInit {
 
   protected documentUrl(item: VendorVerificationDocument | VendorVerificationPortfolioMedia): string {
     return this.verificationService.resolveFileUrl(item.fileUrl);
+  }
+
+  /** partnershipAgreementUrl comes back relative (same convention as documents[].fileUrl on this DTO). */
+  protected partnershipAgreementUrl(details: VendorVerificationDetails): string | null {
+    return details.partnershipAgreementUrl
+      ? this.verificationService.resolveFileUrl(details.partnershipAgreementUrl)
+      : null;
   }
 
   // ---- Actions ----

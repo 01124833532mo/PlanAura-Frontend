@@ -18,6 +18,7 @@
   <section class="auth-shell__form-side">
     <span class="auth-shell__brand animate-fade-down">Planura</span>
 
+    <div class="auth-shell__center">
     <div class="auth-shell__content">
       @if (signedInUser(); as user) {
         <ui-alert-banner class="animate-fade-in" variant="success" [message]="'Welcome back, ' + user.fullName + '.'" />
@@ -53,6 +54,7 @@
               type="email"
               placeholder="e.g. julian@luxe.com"
               formControlName="email"
+              [compact]="true"
               [errorMessage]="
                 loginForm.get('email')!.touched && loginForm.get('email')!.invalid
                   ? 'A valid email address is required.'
@@ -62,6 +64,7 @@
             <ui-password-field
               label="Password"
               formControlName="password"
+              [compact]="true"
               [errorMessage]="
                 loginForm.get('password')!.touched && loginForm.get('password')!.invalid
                   ? 'Password is required.'
@@ -97,51 +100,64 @@
             </div>
 
             <ui-text-field
-              label="Full Name"
-              placeholder="e.g. Julian Hart"
-              formControlName="fullName"
-              [errorMessage]="
-                registerForm.get('fullName')!.touched && registerForm.get('fullName')!.invalid
-                  ? 'Full name must be between 2 and 150 characters.'
-                  : null
-              "
-            />
-            <ui-text-field
               label="Email Address"
               type="email"
               placeholder="e.g. julian@luxe.com"
               formControlName="email"
+              [compact]="true"
               [errorMessage]="
                 registerForm.get('email')!.touched && registerForm.get('email')!.invalid
                   ? 'A valid email address is required.'
                   : null
               "
             />
-            <ui-text-field
-              label="Phone Number"
-              type="tel"
-              placeholder="e.g. 01012345678"
-              formControlName="phoneNumber"
-              [errorMessage]="
-                registerForm.get('phoneNumber')!.touched && registerForm.get('phoneNumber')!.invalid
-                  ? 'Phone number is required.'
-                  : null
-              "
-            />
-            <ui-password-field
-              label="Password"
-              formControlName="password"
-              [errorMessage]="
-                registerForm.get('password')!.touched && registerForm.get('password')!.invalid
-                  ? 'Password must be at least 8 characters, with an uppercase letter, a lowercase letter, and a digit.'
-                  : null
-              "
-            />
-            <ui-password-field
-              label="Confirm Password"
-              formControlName="confirmPassword"
-              [errorMessage]="passwordMismatch() ? 'Passwords do not match.' : null"
-            />
+
+            <!-- Paired side-by-side to cut two full field-rows of vertical
+                 stacking — a layout change, not a font/padding shortcut. -->
+            <div class="auth-shell__field-row">
+              <ui-text-field
+                label="Full Name"
+                placeholder="e.g. Julian Hart"
+                formControlName="fullName"
+                [compact]="true"
+                [errorMessage]="
+                  registerForm.get('fullName')!.touched && registerForm.get('fullName')!.invalid
+                    ? 'Full name must be between 2 and 150 characters.'
+                    : null
+                "
+              />
+              <ui-text-field
+                label="Phone Number"
+                type="tel"
+                placeholder="e.g. 01012345678"
+                formControlName="phoneNumber"
+                [compact]="true"
+                [errorMessage]="
+                  registerForm.get('phoneNumber')!.touched && registerForm.get('phoneNumber')!.invalid
+                    ? 'Phone number is required.'
+                    : null
+                "
+              />
+            </div>
+
+            <div class="auth-shell__field-row">
+              <ui-password-field
+                label="Password"
+                formControlName="password"
+                [compact]="true"
+                [errorMessage]="
+                  registerForm.get('password')!.touched && registerForm.get('password')!.invalid
+                    ? 'Password must be at least 8 characters, with an uppercase letter, a lowercase letter, and a digit.'
+                    : null
+                "
+              />
+              <ui-password-field
+                label="Confirm Password"
+                formControlName="confirmPassword"
+                [compact]="true"
+                [errorMessage]="passwordMismatch() ? 'Passwords do not match.' : null"
+              />
+            </div>
 
             <div class="auth-shell__cta">
               <ui-button type="submit" [loading]="loading()">{{ ctaLabel() }}</ui-button>
@@ -157,6 +173,7 @@
         <a routerLink="/terms">Terms of Service</a> and
         <a routerLink="/privacy">Privacy Policy</a>.
       </p>
+    </div>
     </div>
   </section>
 </main>

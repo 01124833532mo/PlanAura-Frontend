@@ -88,6 +88,14 @@
             }
             <ui-status-badge [status]="req.status" />
 
+            @if (req.contractDocumentUrl) {
+              <app-document-download
+                [url]="req.contractDocumentUrl"
+                label="Contract"
+                icon="description"
+              />
+            }
+
             @if (req.status === BookingStatus.Pending) {
               <div class="request-row__actions" (click)="$event.stopPropagation()">
                 <ui-button

@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ServiceCategoryService } from '../../core/services/service-category.service';
@@ -46,7 +47,7 @@ const DEFAULT_CATEGORY_ICON = 'celebration';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, VendorCard],
+  imports: [RouterLink, VendorCard, FormsModule],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -64,6 +65,13 @@ export class Home implements OnInit {
   // here so the tile can fall back to the icon treatment instead of showing
   // the browser's broken-image glyph.
   protected readonly failedCategoryImages = signal<ReadonlySet<number>>(new Set());
+
+  // Hero search — free-text "what are you planning" resolves against loaded
+  // category names (best-effort match); city is passed straight through.
+  // Neither is required: submitting blank still takes the user to the full
+  // browse page with real filters, so the hero never dead-ends.
+  protected readonly heroSearchTerm = signal('');
+  protected readonly heroCity = signal('');
 
   ngOnInit(): void {
     this.categoryService.getActiveCategories().subscribe({
@@ -83,6 +91,24 @@ export class Home implements OnInit {
 
   protected onCategoryImageError(categoryId: number): void {
     this.failedCategoryImages.update((current) => new Set(current).add(categoryId));
+  }
+
+  protected searchVendors(): void {
+    const term = this.heroSearchTerm().trim().toLowerCase();
+    const city = this.heroCity().trim();
+    const matchedCategory = term
+      ? this.categories().find((c) => c.nameEn.toLowerCase().includes(term))
+      : undefined;
+
+    const queryParams: Record<string, string> = {};
+    if (matchedCategory) {
+      queryParams['category'] = matchedCategory.slug;
+    }
+    if (city) {
+      queryParams['city'] = city;
+    }
+
+    this.router.navigate(['/client/vendors'], { queryParams });
   }
 
   protected goToDashboard(): void {

@@ -93,6 +93,31 @@
 
     <section class="verif-section animate-fade-up stagger-2">
       <h5 class="verif-section__title">
+        <span class="material-symbols-outlined">handshake</span>
+        Partnership Agreement
+      </h5>
+      @if (details.hasPartnershipAgreement) {
+        <div class="verif-details__field">
+          <dt class="text-label-sm"><span class="material-symbols-outlined">event_available</span>Generated</dt>
+          <dd class="text-body-md">
+            {{ details.partnershipAgreementGeneratedAt | date: 'MMM d, y, h:mm a' }}
+            &nbsp;&middot;&nbsp;
+            <app-document-download
+              [url]="partnershipAgreementUrl()"
+              label="Download Agreement"
+              icon="picture_as_pdf"
+            />
+          </dd>
+        </div>
+      } @else {
+        <p class="text-body-md verif-details__muted">
+          No Partnership Agreement generated yet — one is created automatically the first time this vendor accepts a booking.
+        </p>
+      }
+    </section>
+
+    <section class="verif-section animate-fade-up stagger-2">
+      <h5 class="verif-section__title">
         <span class="material-symbols-outlined">verified_user</span>
         Verification Documents
       </h5>

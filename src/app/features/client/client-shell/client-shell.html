@@ -71,12 +71,18 @@
   <header class="client-topbar">
     <h2 class="text-headline-md client-topbar__title">{{ pageTitle() }}</h2>
 
-    @if (currentUser(); as user) {
-      <div class="client-topbar__profile">
-        <span class="text-body-md client-topbar__name">{{ user.fullName }}</span>
-        <span class="client-topbar__avatar">{{ user.fullName.charAt(0) }}</span>
-      </div>
-    }
+    <div class="client-topbar__actions">
+      <app-notification-bell />
+
+      @if (currentUser(); as user) {
+        <span class="client-topbar__divider" aria-hidden="true"></span>
+
+        <div class="client-topbar__profile">
+          <span class="client-topbar__name">{{ user.fullName }}</span>
+          <span class="client-topbar__avatar">{{ user.fullName.charAt(0) }}</span>
+        </div>
+      }
+    </div>
   </header>
 
   <div class="client-content animate-fade-in">

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
+import { DocumentDownload } from '../../../../shared/ui/document-download/document-download';
 import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import { BookingRequest } from '../../../../core/interfaces/booking-request.model';
@@ -24,7 +25,7 @@ import { VendorService } from '../../../../core/services/vendor.service';
 @Component({
   selector: 'app-my-bookings',
   standalone: true,
-  imports: [AlertBanner, Button, StatusBadge, DatePipe, DecimalPipe],
+  imports: [AlertBanner, Button, DocumentDownload, StatusBadge, DatePipe, DecimalPipe],
   templateUrl: './my-bookings.html',
   styleUrl: './my-bookings.css',
 })

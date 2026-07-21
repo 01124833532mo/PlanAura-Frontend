@@ -1,7 +1,16 @@
-import { Component, HostListener, computed, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import {
+  AppNotification,
+  NotificationType,
+  PartnershipAgreementReviewData,
+  parseNotificationData,
+} from '../../../core/interfaces/notification.model';
+import { NotificationService } from '../../../core/services/notification.service';
+import { DocumentDownload } from '../../../shared/ui/document-download/document-download';
 import { createActiveRouteTitle } from '../../../shared/utils/active-route-title';
 import { confirmLogout } from '../../../shared/utils/confirm-logout';
 
@@ -25,13 +34,14 @@ interface AdminNavSection {
 @Component({
   selector: 'app-admin-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, FormsModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, DocumentDownload],
   templateUrl: './admin-shell.html',
   styleUrl: './admin-shell.css',
 })
-export class AdminShell {
+export class AdminShell implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly notificationService = inject(NotificationService);
 
   protected readonly currentUser = this.authService.currentUser;
   protected readonly pageTitle = createActiveRouteTitle('Overview');
@@ -41,6 +51,14 @@ export class AdminShell {
   protected readonly searchQuery = signal('');
   protected readonly searchOpen = signal(false);
   protected readonly notifOpen = signal(false);
+
+  protected readonly NotificationType = NotificationType;
+  protected readonly notifications = this.notificationService.notifications;
+  protected readonly unreadNotifCount = this.notificationService.unreadCount;
+
+  ngOnInit(): void {
+    this.notificationService.loadOnce();
+  }
 
   protected readonly navSections: AdminNavSection[] = [
     {
@@ -107,6 +125,32 @@ export class AdminShell {
   protected toggleNotifications(): void {
     this.notifOpen.update((v) => !v);
     this.searchOpen.set(false);
+    if (this.notifOpen()) {
+      this.notificationService.refresh();
+    }
+  }
+
+  protected onNotificationClick(notification: AppNotification): void {
+    if (!notification.isRead) {
+      this.notificationService.markAsRead(notification.id).subscribe();
+    }
+  }
+
+  protected markAllNotificationsRead(): void {
+    this.notificationService.markAllAsRead().subscribe();
+  }
+
+  /** Extracts the review payload for a partnership-agreement-pending-review admin notification. */
+  protected partnershipReviewData(notification: AppNotification): PartnershipAgreementReviewData | null {
+    if (notification.type !== NotificationType.PartnershipAgreementPendingReview) {
+      return null;
+    }
+    return parseNotificationData<PartnershipAgreementReviewData>(notification);
+  }
+
+  protected openVendorProfile(vendorId: number): void {
+    this.notifOpen.set(false);
+    this.router.navigate(['/admin/vendors', vendorId]);
   }
 
   @HostListener('document:keydown.escape')

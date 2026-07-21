@@ -35,7 +35,25 @@
                 @if (message.sender === 'bot') {
                   <span class="chatbot-message__avatar material-symbols-outlined" aria-hidden="true">smart_toy</span>
                 }
-                <div class="chatbot-message__bubble">{{ message.text }}</div>
+                <div class="chatbot-message__bubble" [class.chatbot-message__bubble--failed]="message.failed">
+                  {{ message.text }}
+                  @if (message.failed) {
+                    <button type="button" class="chatbot-message__retry" (click)="retryLastMessage()">
+                      <span class="material-symbols-outlined">refresh</span>
+                      Retry
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+            @if (sending()) {
+              <div class="chatbot-message animate-fade-up">
+                <span class="chatbot-message__avatar material-symbols-outlined" aria-hidden="true">smart_toy</span>
+                <div class="chatbot-message__bubble chatbot-message__bubble--typing">
+                  <span class="chatbot-typing-dot"></span>
+                  <span class="chatbot-typing-dot"></span>
+                  <span class="chatbot-typing-dot"></span>
+                </div>
               </div>
             }
             <div #scrollAnchor class="chatbot-panel__scroll-anchor"></div>
@@ -46,24 +64,21 @@
               #msgInput
               class="chatbot-panel__input"
               type="text"
-              placeholder="Type your message..."
+              placeholder="Ask about vendors, budget, or your event..."
               autocomplete="off"
+              [disabled]="sending()"
               (keydown.enter)="sendMessage(msgInput)"
             />
             <button
               class="chatbot-panel__send"
               type="button"
               aria-label="Send message"
+              [disabled]="sending()"
               (click)="sendMessage(msgInput)"
             >
               <span class="material-symbols-outlined">send</span>
             </button>
           </div>
-
-          <p class="chatbot-panel__disclaimer">
-            <span class="material-symbols-outlined">info</span>
-            Preview only — Planura AI Assistant isn't connected yet.
-          </p>
         </div>
       }
     </section>

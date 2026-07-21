@@ -1,0 +1,34 @@
+.doc-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary, #e8654a);
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.doc-download:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.doc-download__icon {
+  font-size: 1.1rem;
+}
+
+.doc-download--button {
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--gradient-primary, #e8654a);
+  color: var(--color-on-primary, #fff);
+  text-decoration: none;
+}
+
+.doc-download--button:hover {
+  opacity: 0.92;
+  text-decoration: none;
+}

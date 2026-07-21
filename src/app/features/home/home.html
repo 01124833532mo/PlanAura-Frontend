@@ -5,6 +5,10 @@
       Planura
     </span>
     <nav class="home-topbar__actions">
+      <a class="home-topbar__link" routerLink="/client/vendors">
+        <span class="material-symbols-outlined">storefront</span>
+        Browse Vendors
+      </a>
       <button class="home-topbar__link" type="button" (click)="goToDashboard()">
         <span class="material-symbols-outlined">dashboard</span>
         Dashboard
@@ -33,21 +37,37 @@
           Discover trusted vendors and bring your vision to life, all in one place.
         </p>
 
-        <form class="home-hero__search glass-panel animate-fade-up stagger-3" (submit)="$event.preventDefault()">
+        <form
+          class="home-hero__search glass-panel animate-fade-up stagger-3"
+          (submit)="$event.preventDefault(); searchVendors()"
+        >
           <label class="home-hero__search-field">
             <span class="material-symbols-outlined">search</span>
-            <input type="text" placeholder="What are you planning? (e.g. Wedding, Birthday)" />
+            <input
+              type="text"
+              placeholder="What are you planning? (e.g. Wedding, Birthday)"
+              [ngModel]="heroSearchTerm()"
+              (ngModelChange)="heroSearchTerm.set($event)"
+              name="heroSearchTerm"
+              list="home-category-suggestions"
+            />
+            <datalist id="home-category-suggestions">
+              @for (category of categories(); track category.id) {
+                <option [value]="category.nameEn"></option>
+              }
+            </datalist>
           </label>
           <label class="home-hero__search-field">
             <span class="material-symbols-outlined">location_on</span>
-            <input type="text" placeholder="City" />
+            <input
+              type="text"
+              placeholder="City"
+              [ngModel]="heroCity()"
+              (ngModelChange)="heroCity.set($event)"
+              name="heroCity"
+            />
           </label>
-          <button
-            class="btn-gold-gradient home-hero__search-btn"
-            type="submit"
-            disabled
-            title="Vendor search launches in Slice 2"
-          >
+          <button class="btn-gold-gradient home-hero__search-btn" type="submit">
             <span class="material-symbols-outlined">search</span>
             Search
           </button>
@@ -293,9 +313,8 @@
         <p class="text-body-md">The all-in-one platform for planning every kind of celebration.</p>
       </div>
       <nav class="home-footer__links" aria-label="Footer">
-        <a href="javascript:void(0)">About</a>
-        <a href="javascript:void(0)">Vendors</a>
-        <a href="javascript:void(0)">Contact</a>
+        <a routerLink="/client/vendors">Browse Vendors</a>
+        <a routerLink="/client/event-plans">Event Plans</a>
         <a routerLink="/terms">Terms</a>
         <a routerLink="/privacy">Privacy</a>
       </nav>

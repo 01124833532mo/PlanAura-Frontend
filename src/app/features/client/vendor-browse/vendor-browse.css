@@ -1,175 +1,494 @@
+/* .client-content (the shared shell wrapper every client page sits inside)
+   already applies max-width, centering, and var(--margin-desktop) padding on
+   all sides — this page must not redeclare any of that, or the padding
+   compounds and the hero ends up floating in ~150px of dead space before a
+   single word of content appears. This page owns only its internal rhythm:
+   one consistent gap between major sections, on the 8px grid. */
 .browse-page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-lg);
+  width: 100%;
 }
 
-.browse-page::before {
-  opacity: 0.6;
+/* ============ Hero — premium marketplace opener, no background box ============ */
+/* No extra padding here either — the parent's padding is the only offset
+   from the topbar, and the section gap above handles everything else. */
+
+.browse-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  max-width: 720px;
 }
 
-/* ==========================================================================
-   Page header
-   ========================================================================== */
-
-.browse-page__eyebrow {
+.browse-hero__eyebrow {
+  margin: 0;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--space-sm);
   color: var(--color-primary);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 700;
-  margin-bottom: 0.35rem;
-}
-
-.browse-page__eyebrow .material-symbols-outlined {
-  font-size: 16px;
-}
-
-.browse-page__header p.text-body-md {
-  color: var(--color-secondary);
-  margin-top: 0.35rem;
-}
-
-/* ==========================================================================
-   Horizontal filter bar
-   ========================================================================== */
-
-.browse-filterbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  align-self: flex-end;
-  width: fit-content;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  position: sticky;
-  top: var(--client-topbar-height, 80px);
-  z-index: 4;
-}
-
-.browse-filterbar__field {
-  flex: 1 1 130px;
-  min-width: 110px;
-}
-
-.browse-filterbar__field--price {
-  display: flex;
-  gap: var(--space-sm);
-  flex: 1 1 180px;
-  min-width: 160px;
-}
-
-.browse-filterbar__field--price > * {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.browse-filterbar__ratings {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  flex: 1 1 170px;
-  min-width: 150px;
-}
-
-.browse-filterbar__rating-buttons {
-  display: flex;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-  padding-bottom: 0.6rem;
-}
-
-.browse-filterbar__reset {
-  flex: 0 0 auto;
-}
-
-.browse-rating-btn {
-  border: 1px solid var(--color-subtle-border);
-  background: var(--color-surface-container-lowest);
-  color: var(--color-secondary);
-  border-radius: var(--radius-full);
-  padding: 0.3rem 0.65rem;
-  font-family: var(--font-family-base);
-  font-size: var(--font-label-sm-size);
-  cursor: pointer;
-}
-
-.browse-rating-btn:hover {
-  background: var(--color-soft-beige);
-}
-
-.browse-rating-btn--active {
-  background: var(--color-primary-container);
-  border-color: var(--color-primary-container);
-  color: var(--color-on-primary);
+  letter-spacing: 0.12em;
+  font-size: 12px;
   font-weight: 700;
 }
 
-.browse-main__empty {
-  padding: var(--space-xl);
-  text-align: center;
+.browse-hero__eyebrow-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+.browse-hero__title {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: clamp(2.15rem, 3.6vw, 3.1rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  color: var(--color-charcoal);
+}
+
+.browse-hero__subtitle {
+  margin: 0;
+  max-width: 560px;
+  font-size: 1.05rem;
+  line-height: 1.5;
   color: var(--color-secondary);
 }
 
-.browse-main__empty-card {
-  padding: var(--space-xl);
-  text-align: center;
+.browse-hero__search {
+  /* Extra breathing room above — this is the first interactive element on
+     the page, so it gets a clearly bigger gap than the tight text cluster
+     above it (eyebrow/title/subtitle use var(--space-sm) between each other). */
+  margin-top: var(--space-sm);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 460px;
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-full);
+  padding: var(--space-xs) var(--space-xs) var(--space-xs) var(--space-md);
+  box-shadow: 0 2px 10px rgba(36, 31, 28, 0.06);
+  transition: box-shadow var(--dur-fast) var(--ease-smooth), border-color var(--dur-fast) var(--ease-smooth);
 }
 
-.browse-main__empty-icon {
+.browse-hero__search:focus-within {
+  border-color: var(--color-charcoal);
+  box-shadow: 0 6px 22px rgba(36, 31, 28, 0.12);
+}
+
+.browse-hero__search-icon {
+  flex-shrink: 0;
+  font-size: 20px;
+  color: var(--color-secondary);
+}
+
+.browse-hero__search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-family-base);
+  font-size: 0.95rem;
+  color: var(--color-charcoal);
+}
+
+.browse-hero__search-input::placeholder {
+  color: var(--color-secondary);
+}
+
+.browse-hero__search-btn {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 40px;
+  height: 40px;
+  border: none;
   border-radius: var(--radius-full);
-  background: var(--gradient-primary-soft);
+  background: var(--color-primary);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-fast) var(--ease-smooth);
+}
+
+.browse-hero__search-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(232, 101, 74, 0.35);
+}
+
+.browse-hero__search-btn .material-symbols-outlined {
+  font-size: 19px;
+}
+
+/* ============ Filter bar — independent premium dropdown chips ============ */
+/* Each filter is its own bordered/shadowed control (Linear/Stripe-dashboard
+   style) rather than a single merged segmented bar — every trigger and every
+   dropdown panel below shares one consistent "premium SaaS control" recipe. */
+
+.filter-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  /* .filter-toolbar is a flex item of .browse-page (a flex column), and so is
+     .browse-grid below it. Both carry `animate-fade-up`, whose fill-mode:both
+     freezes a `transform` on the element after the entrance animation ends —
+     that silently creates a stacking context. Without an explicit z-index
+     here, the later-painted vendor-card stacking contexts win and visually
+     swallow this bar's absolutely-positioned dropdown panels (z-index: 30
+     only matters *within* this element's own context). An explicit z-index
+     on a flex item is honored without needing `position` at all. */
+  position: relative;
+  z-index: 20;
+}
+
+.filter-segment {
+  position: relative;
+}
+
+.filter-segment__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  height: 48px;
+  padding: 0 var(--space-md);
+  background: var(--color-surface-container-lowest);
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  cursor: pointer;
+  transition: border-color 0.16s var(--ease-smooth), box-shadow 0.16s var(--ease-smooth), background 0.16s var(--ease-smooth);
+}
+
+.filter-segment__trigger:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.06);
+}
+
+.filter-segment--open .filter-segment__trigger {
+  border-color: var(--color-charcoal);
+  box-shadow: 0 2px 10px rgba(16, 24, 40, 0.08);
+}
+
+/* No browser-default blue ring anywhere — a deliberate brand-tinted ring instead. */
+.filter-segment__trigger:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(232, 101, 74, 0.16);
+}
+
+.filter-segment__icon {
+  flex-shrink: 0;
+  font-size: 19px;
+  color: var(--color-secondary);
+}
+
+.filter-segment__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.filter-segment__label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-secondary);
+}
+
+.filter-segment__value {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-charcoal);
+}
+
+.filter-segment__chevron {
+  flex-shrink: 0;
+  margin-left: 0.1rem;
+  font-size: 18px;
+  color: var(--color-secondary);
+  transition: transform 0.16s var(--ease-smooth);
+}
+
+.filter-segment--open .filter-segment__chevron {
+  transform: rotate(180deg);
+}
+
+.filter-toolbar__clear {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: var(--color-surface-container-lowest);
+  color: var(--color-charcoal);
+  cursor: pointer;
+  transition: background 0.16s var(--ease-smooth), border-color 0.16s var(--ease-smooth), color 0.16s var(--ease-smooth);
+}
+
+.filter-toolbar__clear:hover {
+  background: var(--color-charcoal);
+  border-color: var(--color-charcoal);
+  color: #ffffff;
+}
+
+.filter-toolbar__clear:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(232, 101, 74, 0.16);
+}
+
+.filter-toolbar__clear .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* ---- Dropdown panels — rounded, shadowed, fade + slight-scale open ---- */
+
+.filter-segment__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 240px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(16, 24, 40, 0.12), 0 4px 8px rgba(16, 24, 40, 0.04);
+  padding: var(--space-sm);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.97);
+  transform-origin: top left;
+  transition: opacity 0.16s var(--ease-out-expo), transform 0.16s var(--ease-out-expo), visibility 0.16s;
+  z-index: 30;
+}
+
+.filter-segment--open .filter-segment__panel {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  height: 44px;
+  box-sizing: border-box;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  padding: 0 0.75rem;
+  font-family: var(--font-family-base);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-charcoal);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.14s var(--ease-smooth);
+}
+
+.dropdown-option:hover {
+  background: rgba(232, 101, 74, 0.08);
+}
+
+.dropdown-option--selected {
+  background: rgba(232, 101, 74, 0.1);
+  font-weight: 600;
+}
+
+.dropdown-option--selected:hover {
+  background: rgba(232, 101, 74, 0.14);
+}
+
+.dropdown-option:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgba(232, 101, 74, 0.35);
+}
+
+.dropdown-option .material-symbols-outlined {
+  font-size: 17px;
   color: var(--color-primary);
-  font-size: 1.75rem;
+}
+
+.dropdown-option__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.dropdown-option__rating .material-symbols-outlined {
+  font-size: 15px;
+  color: var(--color-charcoal);
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Price panel */
+
+.filter-segment__panel--price {
+  min-width: 260px;
+  padding: var(--space-md);
+}
+
+.dropdown-price-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.dropdown-price-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  border: 1.5px solid var(--color-subtle-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--dur-fast) var(--ease-smooth);
+}
+
+.dropdown-price-field:focus-within {
+  border-color: var(--color-charcoal);
+}
+
+.dropdown-price-field span {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-secondary);
+}
+
+.dropdown-price-field input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-family-base);
+  font-size: 0.9rem;
+  color: var(--color-charcoal);
+  width: 100%;
+}
+
+.dropdown-price-sep {
+  color: var(--color-secondary);
+  margin-top: var(--space-md);
+}
+
+.dropdown-panel__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-subtle-border);
+}
+
+.dropdown-panel__link {
+  border: none;
+  background: none;
+  color: var(--color-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--space-xs);
+}
+
+.dropdown-panel__link:hover {
+  color: var(--color-charcoal);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.dropdown-panel__done {
+  border: none;
+  background: var(--color-charcoal);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: opacity var(--dur-fast) var(--ease-smooth);
+}
+
+.dropdown-panel__done:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 900px) {
+  .filter-toolbar {
+    width: 100%;
+  }
+
+  .filter-segment__value {
+    max-width: 96px;
+  }
+}
+
+/* ============ Results grid — breathes on the plain page background ============ */
+
+.browse-empty {
+  padding: var(--space-2xl) var(--space-md);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.browse-empty__icon {
+  font-size: 2.5rem;
+  color: var(--color-outline-variant);
+  margin-bottom: var(--space-sm);
+}
+
+.browse-empty__title {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: 1.25rem;
+  color: var(--color-charcoal);
+}
+
+.browse-empty__text {
+  margin: 0 0 0.75rem;
+  color: var(--color-secondary);
 }
 
 .browse-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  align-items: stretch;
-  gap: var(--gutter);
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--space-lg) var(--gutter);
 }
 
 .browse-grid__skeleton {
-  height: 260px;
-  border-radius: var(--radius-xl);
-}
-
-.browse-grid ui-vendor-card:nth-child(1) {
-  animation-delay: 60ms;
-}
-.browse-grid ui-vendor-card:nth-child(2) {
-  animation-delay: 120ms;
-}
-.browse-grid ui-vendor-card:nth-child(3) {
-  animation-delay: 180ms;
-}
-.browse-grid ui-vendor-card:nth-child(4) {
-  animation-delay: 240ms;
-}
-.browse-grid ui-vendor-card:nth-child(5) {
-  animation-delay: 300ms;
-}
-.browse-grid ui-vendor-card:nth-child(n + 6) {
-  animation-delay: 360ms;
+  aspect-ratio: 1 / 1.35;
+  border-radius: var(--radius-lg);
 }
 
 .browse-pagination {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
+  gap: var(--space-sm);
   margin-top: var(--space-md);
 }
 
@@ -191,19 +510,15 @@
 }
 
 .browse-pagination__page--active {
-  background: var(--color-primary-container);
-  color: var(--color-on-primary);
+  background: var(--color-charcoal);
+  color: #ffffff;
   font-weight: 700;
 }
 
-@media (max-width: 700px) {
-  .browse-filterbar {
-    align-self: stretch;
-    width: auto;
-    padding: var(--space-md);
-  }
-
-  .browse-filterbar__reset {
-    flex: 1 1 100%;
+@media (max-width: 640px) {
+  /* No padding override needed — .client-content already switches to
+     var(--margin-mobile) padding at this breakpoint (client-shell.css). */
+  .browse-hero__search {
+    max-width: 100%;
   }
 }

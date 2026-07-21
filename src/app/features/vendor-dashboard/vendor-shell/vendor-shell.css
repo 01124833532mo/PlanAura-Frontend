@@ -161,6 +161,12 @@
   letter-spacing: -0.01em;
 }
 
+.vendor-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .vendor-topbar__profile {
   display: flex;
   align-items: center;

@@ -1,64 +1,70 @@
-<div class="card-luxe luxe-shadow hover-lift vendor-card">
+<a
+  class="vendor-card"
+  [routerLink]="['/client/vendors', vendor.id]"
+  [queryParams]="eventPlanId ? { eventPlanId } : {}"
+>
   <div class="vendor-card__media">
     @if (vendor.logoUrl) {
-      <img [src]="vendor.logoUrl" [alt]="vendor.businessName" class="vendor-card__image" />
+      <img [src]="vendor.logoUrl" [alt]="vendor.businessName" class="vendor-card__image" loading="lazy" />
     } @else {
       <div class="vendor-card__image-placeholder">
         <span class="material-symbols-outlined">storefront</span>
       </div>
     }
-    <div class="vendor-card__media-scrim"></div>
-    <span
-      class="vendor-card__verification"
-      [class.vendor-card__verification--trusted]="vendor.verificationStatus === 'Trusted'"
+
+    <button
+      type="button"
+      class="vendor-card__favorite"
+      [class.vendor-card__favorite--active]="isFavorite()"
+      [attr.aria-pressed]="isFavorite()"
+      aria-label="Save vendor"
+      (click)="toggleFavorite($event)"
     >
-      <span class="material-symbols-outlined">verified</span>
-      {{ vendor.verificationStatus }}
-    </span>
+      <span class="material-symbols-outlined">{{ isFavorite() ? 'favorite' : 'favorite_border' }}</span>
+    </button>
+
+    @if (vendor.verificationStatus === 'Trusted') {
+      <span class="vendor-card__trust">
+        <span class="material-symbols-outlined">verified</span>
+        Trusted
+      </span>
+    }
   </div>
 
   <div class="vendor-card__body">
-    @if (vendor.category) {
-      <span class="text-label-sm vendor-card__category">{{ vendor.category }}</span>
-    }
-    <h4 class="text-headline-sm vendor-card__title">{{ vendor.businessName }}</h4>
-
-    <div class="vendor-card__meta">
+    <div class="vendor-card__title-row">
+      <h4 class="vendor-card__title">{{ vendor.businessName }}</h4>
       @if (vendor.reviewCount > 0) {
         <span class="vendor-card__rating">
           <span class="material-symbols-outlined">star</span>
           {{ vendor.avgRating | number: '1.1-1' }}
-          <span class="vendor-card__review-count">({{ vendor.reviewCount }})</span>
         </span>
+      }
+    </div>
+
+    <p class="vendor-card__subtitle">
+      @if (vendor.category) {
+        {{ vendor.category }}
+      }
+      @if (vendor.category && vendor.city) {
+        <span aria-hidden="true"> · </span>
       }
       @if (vendor.city) {
-        <span class="text-body-md vendor-card__city">
-          <span class="material-symbols-outlined">location_on</span>
-          {{ vendor.city }}
-        </span>
+        {{ vendor.city }}
       }
-    </div>
+    </p>
 
-    @if (vendor.shortDescription) {
-      <p class="text-body-md vendor-card__description">{{ vendor.shortDescription }}</p>
+    @if (vendor.reviewCount > 0) {
+      <p class="vendor-card__reviews">{{ vendor.reviewCount }} review{{ vendor.reviewCount === 1 ? '' : 's' }}</p>
     }
 
-    <div class="vendor-card__footer">
+    <p class="vendor-card__price">
       @if (vendor.startingPrice !== null) {
-        <span class="vendor-card__price">
-          <span class="vendor-card__price-label">Starting at</span>
-          <span class="vendor-card__price-value">
-            {{ fallbackCurrency }} {{ vendor.startingPrice | number: '1.0-0' }}
-          </span>
-        </span>
+        <span class="vendor-card__price-value">{{ fallbackCurrency }} {{ vendor.startingPrice | number: '1.0-0' }}</span>
+        <span class="vendor-card__price-label">starting price</span>
+      } @else {
+        <span class="vendor-card__price-label">Contact for pricing</span>
       }
-      <a
-        class="btn-gold-gradient vendor-card__cta"
-        [routerLink]="['/client/vendors', vendor.id]"
-        [queryParams]="eventPlanId ? { eventPlanId } : {}"
-      >
-        View Details
-      </a>
-    </div>
+    </p>
   </div>
-</div>
+</a>

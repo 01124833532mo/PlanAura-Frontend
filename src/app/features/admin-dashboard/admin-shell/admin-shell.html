@@ -113,14 +113,71 @@
             aria-label="Notifications"
           >
             <span class="material-symbols-outlined">notifications</span>
+            @if (unreadNotifCount() > 0) {
+              <span class="admin-topbar__notif-badge">{{ unreadNotifCount() > 9 ? '9+' : unreadNotifCount() }}</span>
+            }
           </button>
           @if (notifOpen()) {
             <div class="admin-topbar__notif-panel">
-              <div class="admin-topbar__notif-header">Notifications</div>
-              <div class="admin-topbar__notif-empty">
-                <span class="material-symbols-outlined">notifications_none</span>
-                <p>You're all caught up.</p>
+              <div class="admin-topbar__notif-header">
+                <span>Notifications</span>
+                @if (unreadNotifCount() > 0) {
+                  <button type="button" class="admin-topbar__notif-mark-all" (click)="markAllNotificationsRead()">
+                    Mark all as read
+                  </button>
+                }
               </div>
+
+              @if (notifications().length === 0) {
+                <div class="admin-topbar__notif-empty">
+                  <span class="material-symbols-outlined">notifications_none</span>
+                  <p>You're all caught up.</p>
+                </div>
+              } @else {
+                <div class="admin-topbar__notif-list">
+                  @for (notification of notifications(); track notification.id) {
+                    <div
+                      class="admin-topbar__notif-item"
+                      [class.admin-topbar__notif-item--unread]="!notification.isRead"
+                      (click)="onNotificationClick(notification)"
+                    >
+                      <p class="admin-topbar__notif-title">{{ notification.title }}</p>
+                      @if (notification.body) {
+                        <p class="admin-topbar__notif-body">{{ notification.body }}</p>
+                      }
+
+                      @if (partnershipReviewData(notification); as review) {
+                        <div class="admin-topbar__notif-review">
+                          <div class="admin-topbar__notif-review-row">
+                            <span class="material-symbols-outlined">storefront</span>
+                            {{ review.vendorName }} (Vendor #{{ review.vendorId }})
+                          </div>
+                          <div class="admin-topbar__notif-review-row">
+                            <span class="material-symbols-outlined">event</span>
+                            Booking #{{ review.bookingId }} &middot; {{ review.generatedAt | date: 'MMM d, y, h:mm a' }}
+                          </div>
+                          <div class="admin-topbar__notif-review-actions">
+                            <button
+                              type="button"
+                              class="admin-btn admin-btn--secondary admin-topbar__notif-action-btn"
+                              (click)="openVendorProfile(review.vendorId); $event.stopPropagation()"
+                            >
+                              Open Vendor Profile
+                            </button>
+                            <app-document-download
+                              [url]="review.agreementUrl"
+                              label="Download Agreement"
+                              icon="picture_as_pdf"
+                            />
+                          </div>
+                        </div>
+                      }
+
+                      <span class="admin-topbar__notif-time">{{ notification.createdAt | date: 'MMM d, h:mm a' }}</span>
+                    </div>
+                  }
+                </div>
+              }
             </div>
           }
         </div>

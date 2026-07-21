@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
@@ -17,13 +17,14 @@ import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
   templateUrl: './event-plan-form.html',
   styleUrl: './event-plan-form.css',
 })
-export class EventPlanForm {
+export class EventPlanForm implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly eventPlanService = inject(EventPlanService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   protected readonly saving = signal(false);
+  protected readonly loading = signal(false);
   protected readonly error = signal<AppError | null>(null);
 
   // Set when booking-create redirected here because the client had no event
@@ -32,6 +33,12 @@ export class EventPlanForm {
   protected readonly fromBooking = this.route.snapshot.queryParamMap.get('from') === 'booking';
   private readonly bookingVendorId = this.route.snapshot.queryParamMap.get('vendorId');
   private readonly bookingPackageId = this.route.snapshot.queryParamMap.get('packageId');
+
+  // Present only on the /edit route — same component/form for both modes.
+  private readonly editingId = this.route.snapshot.paramMap.get('id')
+    ? Number(this.route.snapshot.paramMap.get('id'))
+    : null;
+  protected readonly isEditMode = this.editingId !== null;
 
   protected readonly eventTypeOptions: SelectOption[] = [
     { value: 'Wedding', label: 'Wedding' },
@@ -58,6 +65,38 @@ export class EventPlanForm {
     styleNotes: [''],
   });
 
+  ngOnInit(): void {
+    if (this.editingId === null) {
+      return;
+    }
+
+    this.loading.set(true);
+    this.eventPlanService.getEventPlan(this.editingId).subscribe({
+      next: (plan) => {
+        this.form.patchValue({
+          title: plan.title,
+          eventType: plan.eventType,
+          // Backend may return a full ISO datetime; <input type="date"> needs exactly yyyy-MM-dd.
+          eventDate: plan.eventDate.slice(0, 10),
+          city: plan.city,
+          guestCount: String(plan.guestCount),
+          budgetTotal: String(plan.budgetTotal),
+          styleNotes: plan.styleNotes ?? '',
+        });
+        this.loading.set(false);
+      },
+      error: (err: AppError) => {
+        this.loading.set(false);
+        if (err.status === 404) {
+          notifyError("Event plan not found", "It may have been deleted, or doesn't belong to you.");
+          this.router.navigateByUrl('/client/event-plans');
+          return;
+        }
+        this.error.set(err);
+      },
+    });
+  }
+
   protected submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -65,46 +104,72 @@ export class EventPlanForm {
     }
 
     const raw = this.form.getRawValue();
+    const dto = {
+      title: raw.title,
+      eventType: raw.eventType,
+      eventDate: raw.eventDate,
+      city: raw.city,
+      guestCount: Number(raw.guestCount),
+      budgetTotal: Number(raw.budgetTotal),
+      styleNotes: raw.styleNotes.trim() || undefined,
+    };
+
     this.saving.set(true);
     this.error.set(null);
 
-    this.eventPlanService
-      .createEventPlan({
-        title: raw.title,
-        eventType: raw.eventType,
-        eventDate: raw.eventDate,
-        city: raw.city,
-        guestCount: Number(raw.guestCount),
-        budgetTotal: Number(raw.budgetTotal),
-        styleNotes: raw.styleNotes.trim() || undefined,
-      })
-      .subscribe({
-        next: (createdPlan) => {
+    if (this.editingId !== null) {
+      const editingId = this.editingId;
+      this.eventPlanService.updateEventPlan(editingId, dto).subscribe({
+        next: () => {
           this.saving.set(false);
-          notifySuccess('Event plan created.');
-
-          if (this.fromBooking && this.bookingVendorId && this.bookingPackageId) {
-            this.router.navigate(['/client/booking/new'], {
-              queryParams: {
-                vendorId: this.bookingVendorId,
-                packageId: this.bookingPackageId,
-                eventPlanId: createdPlan.id,
-              },
-            });
-            return;
-          }
-
-          this.router.navigateByUrl('/client/event-plans');
+          notifySuccess('Event plan updated.');
+          this.router.navigate(['/client/event-plans', editingId]);
         },
         error: (err: AppError) => {
-          this.error.set(err);
           this.saving.set(false);
-          notifyError('Could not create event plan', err.message);
+          if (err.status === 404) {
+            notifyError("Event plan not found", "It may have been deleted, or doesn't belong to you.");
+            this.router.navigateByUrl('/client/event-plans');
+            return;
+          }
+          this.error.set(err);
+          notifyError('Could not update event plan', err.message);
         },
       });
+      return;
+    }
+
+    this.eventPlanService.createEventPlan(dto).subscribe({
+      next: (createdPlan) => {
+        this.saving.set(false);
+        notifySuccess('Event plan created.');
+
+        if (this.fromBooking && this.bookingVendorId && this.bookingPackageId) {
+          this.router.navigate(['/client/booking/new'], {
+            queryParams: {
+              vendorId: this.bookingVendorId,
+              packageId: this.bookingPackageId,
+              eventPlanId: createdPlan.id,
+            },
+          });
+          return;
+        }
+
+        this.router.navigateByUrl('/client/event-plans');
+      },
+      error: (err: AppError) => {
+        this.error.set(err);
+        this.saving.set(false);
+        notifyError('Could not create event plan', err.message);
+      },
+    });
   }
 
   protected cancel(): void {
+    if (this.editingId !== null) {
+      this.router.navigate(['/client/event-plans', this.editingId]);
+      return;
+    }
     this.router.navigateByUrl('/client/event-plans');
   }
 }

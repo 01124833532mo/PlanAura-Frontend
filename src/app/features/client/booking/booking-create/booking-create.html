@@ -162,6 +162,13 @@
             </div>
 
             <div class="booking-create-payment">
+              @if (paymentLoadError()) {
+                <!-- Friendly message only; the raw Stripe reason is logged to the
+                     console for developers (see setupPayment's loaderror handler). -->
+                <ui-alert-banner
+                  message="This payment form could not be loaded, so booking is unavailable right now. Please contact support."
+                />
+              }
               @if (mountingPayment()) {
                 <p class="text-body-md booking-create-payment__loading">
                   <span class="material-symbols-outlined skeleton-icon">progress_activity</span>
@@ -178,10 +185,17 @@
                   </ui-button>
                 </div>
               }
+              <!--
+                Only hidden on an actual failure — NOT while mountingPayment().
+                Stripe's Payment Element must be laid out (not display:none) at
+                mount time or its iframe renders collapsed to 0 height and never
+                recovers; the "Loading payment form..." line above already covers
+                the brief mount, so the empty element box underneath it is fine.
+              -->
               <div
                 #paymentElementContainer
                 class="booking-create-payment__element"
-                [class.booking-create-payment__element--hidden]="mountingPayment() || paymentSetupFailed()"
+                [class.booking-create-payment__element--hidden]="paymentSetupFailed()"
               ></div>
 
               <p class="text-label-sm booking-create-payment__disclaimer">

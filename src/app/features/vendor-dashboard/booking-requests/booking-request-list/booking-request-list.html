@@ -68,7 +68,7 @@
                   </span>
                 }
                 <span class="request-row__chip">
-                  <span class="material-symbols-outlined">person</span>Client #{{ req.clientId }}
+                  <span class="material-symbols-outlined">person</span>{{ req.clientName ?? ('Client #' + req.clientId) }}
                 </span>
               </div>
               @if (req.clientMessage) {

@@ -89,6 +89,11 @@
   font-weight: 700;
 }
 
+.details-grid__row--history dt,
+.details-grid__row--history dd {
+  font-weight: 700;
+}
+
 .details-dialog__message {
   padding: 0.85rem 1rem;
   border-radius: var(--radius-lg);

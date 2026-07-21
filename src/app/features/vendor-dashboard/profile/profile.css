@@ -306,6 +306,17 @@
   padding: var(--space-lg);
 }
 
+.vp-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 440px;
+}
+
+.vp-password-form__actions {
+  margin-top: var(--space-xs);
+}
+
 .vp-panel__header {
   display: flex;
   align-items: center;

@@ -1,0 +1,78 @@
+<div class="aiv-page">
+  <section class="aiv-hero card-luxe animate-blur-reveal">
+    <span class="aiv-hero__icon material-symbols-outlined" aria-hidden="true">auto_awesome</span>
+    <div>
+      <h1 class="text-headline-md">AI Event Visualizer</h1>
+      <p class="text-body-md aiv-hero__subtitle">
+        Upload a photo of your empty venue, describe your dream setup, and let AI show you what it could look like.
+      </p>
+    </div>
+  </section>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <section class="aiv-form card-luxe animate-fade-up stagger-1">
+    <ui-file-dropzone
+      label="Photo of the empty space"
+      hint="PNG or JPG, up to 2 MB"
+      [formControl]="imageControl"
+      (clientValidationError)="onClientValidationError($event)"
+    />
+
+    <ui-text-field
+      label="Describe your dream event setup"
+      placeholder="e.g. A modern wedding setup with white roses, fairy lights, and a luxury stage."
+      [multiline]="true"
+      [formControl]="promptControl"
+      hint="{{ promptControl.value.length }}/{{ maxPromptLength }} characters"
+      [errorMessage]="
+        promptControl.touched && promptControl.invalid
+          ? (promptControl.value.length === 0
+              ? 'A description of the desired event setup is required.'
+              : 'The prompt must be ' + maxPromptLength + ' characters or fewer.')
+          : null
+      "
+    />
+
+    <div class="aiv-form__actions">
+      <ui-button [fullWidth]="false" [disabled]="!canVisualize()" [loading]="loading()" (click)="visualize()">
+        Visualize My Event
+      </ui-button>
+      @if (originalImageUrl() || generatedImageUrl()) {
+        <ui-button variant="outline" [fullWidth]="false" [disabled]="loading()" (click)="startOver()">
+          Start Over
+        </ui-button>
+      }
+    </div>
+  </section>
+
+  @if (originalImageUrl()) {
+    <section class="aiv-results animate-fade-up stagger-2">
+      <div class="aiv-results__panel card-luxe">
+        <h3 class="text-headline-sm">Original Space</h3>
+        <div class="aiv-results__image-wrap">
+          <img class="aiv-results__image" [src]="originalImageUrl()" alt="Uploaded photo of the empty space" />
+        </div>
+      </div>
+
+      <div class="aiv-results__panel card-luxe">
+        <h3 class="text-headline-sm">AI Visualization</h3>
+        <div class="aiv-results__image-wrap">
+          @if (loading()) {
+            <div class="aiv-results__loading">
+              <span class="aiv-results__spinner" aria-hidden="true"></span>
+              <p class="text-body-md">Generating your event visualization&hellip;</p>
+            </div>
+          } @else if (generatedImageUrl(); as generated) {
+            <img class="aiv-results__image" [src]="generated" alt="AI-generated visualization of the styled event" />
+          } @else {
+            <div class="aiv-results__placeholder">
+              <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
+              <p class="text-body-md">Your visualization will appear here.</p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }
+</div>

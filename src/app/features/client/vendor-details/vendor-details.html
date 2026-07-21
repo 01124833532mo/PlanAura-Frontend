@@ -154,17 +154,30 @@
                         Up to {{ pkg.maxGuests }} guests
                       </span>
                     }
-
-                    @if (blockingBooking(pkg); as blocker) {
-                      <ui-status-badge [status]="blocker.status" />
+                  </td>
+                  <td>{{ pkg.currency }} {{ pkg.basePrice | number: '1.0-2' }}</td>
+                  <td>{{ pkg.maxGuests ?? '—' }}</td>
+                  <td class="package-table__actions">
+                    @if (blockingBooking(pkg); as blocking) {
+                      <span
+                        class="status-badge"
+                        [class.status-badge--pending]="blockingTone(blocking) === 'pending'"
+                        [class.status-badge--success]="blockingTone(blocking) === 'success'"
+                      >
+                        {{ blockingLabel(blocking) }}
+                      </span>
                     } @else {
-                      <button class="btn-gold-gradient vendor-package-card__cta" type="button" (click)="bookPackage(pkg)">
+                      <button
+                        class="btn-gold-gradient"
+                        type="button"
+                        (click)="bookPackage(pkg)"
+                      >
                         <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
                         Book this package
                       </button>
                     }
-                  </div>
-                </div>
+                  </td>
+                </tr>
               }
             </div>
           }

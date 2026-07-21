@@ -17,6 +17,7 @@ import type { Stripe, StripeElements, StripePaymentElement } from '@stripe/strip
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
 import { SelectField, SelectOption } from '../../../../shared/ui/select-field/select-field';
+import { StepperHeader } from '../../../../shared/ui/stepper-header/stepper-header';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { STRIPE_PUBLISHABLE_KEY } from '../../../../core/config/app-config';
 import { AppError } from '../../../../core/interfaces/api-response.model';
@@ -49,10 +50,23 @@ import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
  */
 const STRIPE_LOAD_TIMEOUT_MS = 15000;
 
+/** Two visual steps over the same form/submission — the booking is still only ever created in step 2's confirmBooking(). */
+type WizardStep = 'details' | 'payment';
+const WIZARD_STEP_LABELS = ['Details', 'Payment'];
+
 @Component({
   selector: 'app-booking-create',
   standalone: true,
-  imports: [ReactiveFormsModule, TextField, SelectField, Button, AlertBanner, DecimalPipe, DatePipe],
+  imports: [
+    ReactiveFormsModule,
+    TextField,
+    SelectField,
+    Button,
+    AlertBanner,
+    StepperHeader,
+    DecimalPipe,
+    DatePipe,
+  ],
   templateUrl: './booking-create.html',
   styleUrl: './booking-create.css',
 })
@@ -84,6 +98,10 @@ export class BookingCreate implements OnInit, OnDestroy {
   protected readonly selectedSlotId = signal<number | null>(null);
   protected readonly setupError = signal<string | null>(null);
 
+  protected readonly currentStep = signal<WizardStep>('details');
+  protected readonly wizardStepLabels = WIZARD_STEP_LABELS;
+  protected readonly stepIndex = computed(() => (this.currentStep() === 'details' ? 0 : 1));
+
   /** True while Stripe.js/Elements is loading — the payment section stays present but visually hidden. */
   protected readonly mountingPayment = signal(true);
   /** True if Stripe.js failed to load or didn't respond within STRIPE_LOAD_TIMEOUT_MS — shows a retry affordance instead of hanging silently. */
@@ -99,6 +117,11 @@ export class BookingCreate implements OnInit, OnDestroy {
 
   protected readonly availableSlots = computed(() =>
     this.slots().filter((slot) => slot.status === AvailabilityStatus.Available),
+  );
+
+  /** The full slot object for the payment-step's read-only recap — availableSlots only carries the id via selectedSlotId. */
+  protected readonly selectedSlot = computed(
+    () => this.slots().find((slot) => slot.id === this.selectedSlotId()) ?? null,
   );
 
   protected readonly form = this.fb.group({
@@ -296,17 +319,52 @@ export class BookingCreate implements OnInit, OnDestroy {
     this.router.navigateByUrl('/client/vendors');
   }
 
-  protected async submit(): Promise<void> {
+  /** Shared by both the Step 1 -> Step 2 advance and confirmBooking()'s own defensive re-check — same checks either way, just triggered from two places. */
+  private validateBookingDetails(): boolean {
     const slotId = this.selectedSlotId();
     if (!slotId) {
       this.slotError.set('Please choose an available date first.');
-      return;
+      return false;
     }
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      return false;
+    }
+
+    const raw = this.form.getRawValue();
+    const guestCount = raw.guestCount.trim() === '' ? undefined : Number(raw.guestCount);
+    const maxGuests = this.pkg()?.maxGuests;
+
+    if (maxGuests != null && guestCount !== undefined && guestCount > maxGuests) {
+      this.form.controls.guestCount.setErrors({ exceedsMax: true });
+      this.form.controls.guestCount.markAsTouched();
+      return false;
+    }
+
+    return true;
+  }
+
+  protected goToPayment(): void {
+    if (!this.validateBookingDetails()) {
       return;
     }
+    this.currentStep.set('payment');
+  }
+
+  protected backToDetails(): void {
+    this.currentStep.set('details');
+  }
+
+  protected async confirmBooking(): Promise<void> {
+    // Defensive re-check — the UI shouldn't let anyone reach step 2 without
+    // passing this already, but don't rely on step-gating alone.
+    if (!this.validateBookingDetails()) {
+      this.currentStep.set('details');
+      return;
+    }
+
+    const slotId = this.selectedSlotId()!;
 
     if (!this.stripe || !this.elements) {
       this.error.set({
@@ -321,13 +379,6 @@ export class BookingCreate implements OnInit, OnDestroy {
 
     const raw = this.form.getRawValue();
     const guestCount = raw.guestCount.trim() === '' ? undefined : Number(raw.guestCount);
-    const maxGuests = this.pkg()?.maxGuests;
-
-    if (maxGuests != null && guestCount !== undefined && guestCount > maxGuests) {
-      this.form.controls.guestCount.setErrors({ exceedsMax: true });
-      this.form.controls.guestCount.markAsTouched();
-      return;
-    }
 
     const eventPlanId = this.eventPlanIdFromQuery ?? raw.eventPlanId;
     if (!eventPlanId) {
@@ -355,9 +406,9 @@ export class BookingCreate implements OnInit, OnDestroy {
       return;
     }
 
-    // Deferred Stripe flow: submit() validates/collects the card fields,
-    // createPaymentMethod() tokenizes them into a pm_... id — neither step
-    // confirms a PaymentIntent, since none exists yet on our side.
+    // Deferred Stripe flow: elements.submit() validates/collects the card
+    // fields, createPaymentMethod() tokenizes them into a pm_... id —
+    // neither step confirms a PaymentIntent, since none exists yet on our side.
     const { error: submitError } = await this.elements.submit();
     if (submitError) {
       this.error.set({
@@ -405,6 +456,7 @@ export class BookingCreate implements OnInit, OnDestroy {
           this.slotError.set("This slot was just booked by someone else — please pick another.");
           this.selectedSlotId.set(null);
           this.refreshSlots();
+          this.currentStep.set('details');
           return;
         }
 

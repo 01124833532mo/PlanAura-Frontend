@@ -19,6 +19,12 @@ export const routes: Routes = [
       import('./features/auth/auth-page/auth-page').then((m) => m.AuthPage),
   },
   {
+    path: 'auth/forgot-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+  },
+  {
     // Public legal pages — no auth guard, linked from both the signed-out
     // auth page footer and the signed-in home page footer.
     path: 'terms',
@@ -309,16 +315,6 @@ export const routes: Routes = [
           ),
       },
       {
-        // Must come before 'bookings' — otherwise it'd never be reached
-        // (Angular matches path segments in order, and 'bookings' has fewer
-        // segments so it wouldn't itself shadow this, but keeping the more
-        // specific route first mirrors the event-plans ordering above).
-        path: 'bookings/:id/pay',
-        data: { title: 'Checkout' },
-        loadComponent: () =>
-          import('./features/client/booking/booking-pay/booking-pay').then((m) => m.BookingPay),
-      },
-      {
         path: 'bookings',
         data: { title: 'My Bookings' },
         loadComponent: () =>
@@ -330,6 +326,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/client/client-profile/client-profile').then(
             (m) => m.ClientProfileComponent,
+            ),
+      },
+      {
+        path: 'ai-visualizer',
+        data: { title: 'AI Event Visualizer' },
+        loadComponent: () =>
+          import('./features/client/ai-visualizer/ai-visualizer').then(
+            (m) => m.AiVisualizerComponent,
           ),
       },
     ],

@@ -6,12 +6,16 @@ import {
   AuthResponse,
   ChangePasswordRequest,
   CurrentUser,
+  ForgetPasswordRequest,
   LoginRequest,
   RegisterClientRequest,
+  ResetPasswordRequest,
   ROLE_ADMIN,
   ROLE_CLIENT,
   ROLE_VENDOR,
+  SuccessResponse,
   UpdateProfileRequest,
+  VerifyResetCodeRequest,
 } from '../interfaces/auth.model';
 import { VendorRegistrationPayload } from '../interfaces/vendor.model';
 import { TokenStorageService } from './token-storage.service';
@@ -137,6 +141,26 @@ export class AuthService {
   /** POST /api/auth/change-password */
   changePassword(request: ChangePasswordRequest): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${API_BASE_URL}/auth/change-password`, request);
+  }
+
+  /** POST /api/auth/forget-password — emails the user a 6-digit reset code (valid 15 min). */
+  forgetPassword(request: ForgetPasswordRequest): Observable<SuccessResponse> {
+    return this.http.post<SuccessResponse>(`${API_BASE_URL}/auth/forget-password`, request);
+  }
+
+  /** POST /api/auth/verify-code — resetCode must be a number (backend DTO is int). */
+  verifyResetCode(request: VerifyResetCodeRequest): Observable<SuccessResponse> {
+    return this.http.post<SuccessResponse>(`${API_BASE_URL}/auth/verify-code`, request);
+  }
+
+  /**
+   * POST /api/auth/reset-password. The backend returns a full AuthResponse (a
+   * fresh JWT), but we deliberately do NOT pipe it through handleAuthResponse:
+   * the reset flow sends the user back to the sign-in page to log in with their
+   * new password, so we never persist this token or flip isAuthenticated.
+   */
+  resetPassword(request: ResetPasswordRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${API_BASE_URL}/auth/reset-password`, request);
   }
 
   logout(): void {

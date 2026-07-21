@@ -554,6 +554,51 @@
             }
           </section>
         }
+
+        @case ('security') {
+          <section class="vp-panel card-luxe">
+            <div class="vp-panel__header">
+              <span class="vp-panel__icon material-symbols-outlined" aria-hidden="true">lock</span>
+              <h3 class="text-headline-sm">Change Password</h3>
+            </div>
+
+            <form class="vp-password-form" [formGroup]="passwordForm" (ngSubmit)="submitPassword()">
+              <ui-alert-banner
+                [message]="passwordError()?.message ?? null"
+                [details]="passwordError()?.fieldErrors ?? []"
+              />
+              <ui-password-field
+                label="Current Password"
+                formControlName="currentPassword"
+                [errorMessage]="
+                  passwordForm.get('currentPassword')!.touched &&
+                  passwordForm.get('currentPassword')!.invalid
+                    ? 'Current password is required.'
+                    : null
+                "
+              />
+              <ui-password-field
+                label="New Password"
+                formControlName="password"
+                [errorMessage]="
+                  passwordForm.get('password')!.touched && passwordForm.get('password')!.invalid
+                    ? 'Password must be at least 8 characters, with an uppercase letter, a lowercase letter, and a digit.'
+                    : null
+                "
+              />
+              <ui-password-field
+                label="Confirm New Password"
+                formControlName="confirmPassword"
+                [errorMessage]="passwordMismatch() ? 'Passwords do not match.' : null"
+              />
+              <div class="vp-password-form__actions">
+                <ui-button type="submit" [loading]="changingPassword()" [fullWidth]="false">
+                  Change Password
+                </ui-button>
+              </div>
+            </form>
+          </section>
+        }
       }
     </div>
   }

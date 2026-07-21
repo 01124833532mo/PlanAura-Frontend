@@ -322,6 +322,17 @@ a {
   }
 }
 
+@keyframes scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
 @keyframes blur-reveal {
   from {
     opacity: 0;
@@ -384,6 +395,10 @@ a {
 
 .animate-scale-in {
   animation: scale-in var(--dur-base) var(--ease-spring) both;
+}
+
+.animate-scale-out {
+  animation: scale-out var(--dur-fast) var(--ease-smooth) both;
 }
 
 .animate-blur-reveal {

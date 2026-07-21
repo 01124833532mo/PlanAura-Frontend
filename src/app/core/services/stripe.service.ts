@@ -21,7 +21,19 @@ export class StripeService {
 
     if (!this.stripePromise || this.loadedKey !== publishableKey) {
       this.loadedKey = publishableKey;
-      this.stripePromise = loadStripe(publishableKey);
+      // Not user-facing — just a real number to look at instead of
+      // guessing whether a report of "slow payment form" is network
+      // latency to Stripe's CDN or something else. Timed from the actual
+      // loadStripe() call, not from whichever caller happened to trigger
+      // it first (that could be the eager app-startup call, or, for a
+      // second/repeat call with the same key, is skipped entirely since
+      // the cached promise below is reused).
+      const startedAt = performance.now();
+      this.stripePromise = loadStripe(publishableKey).then((stripe) => {
+        const elapsedMs = Math.round(performance.now() - startedAt);
+        console.info(`[StripeService] Stripe.js loaded in ${elapsedMs}ms`);
+        return stripe;
+      });
     }
 
     return this.stripePromise;

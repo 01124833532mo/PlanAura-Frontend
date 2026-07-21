@@ -1,109 +1,271 @@
-<div class="vendor-details-page bg-mesh">
+<div class="vendor-details-page">
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
   @if (loading()) {
-    <div class="skeleton vendor-details-page__skeleton"></div>
+    <div class="vendor-details-page__skeletons">
+      <div class="skeleton vendor-details-page__skeleton-cover"></div>
+      <div class="skeleton vendor-details-page__skeleton-line vendor-details-page__skeleton-line--wide"></div>
+      <div class="skeleton vendor-details-page__skeleton-line"></div>
+    </div>
   } @else if (vendor(); as v) {
-    <header class="vendor-details-header card-luxe luxe-shadow animate-blur-reveal">
-      <div class="vendor-details-header__media">
-        @if (v.logoUrl) {
-          <img [src]="v.logoUrl" [alt]="v.businessName" [title]="v.businessName" title="Vendor logo" class="vendor-details-header__logo" />
+    <button type="button" class="vendor-details-back" (click)="goBack()">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Back to vendors
+    </button>
+
+    <!-- ============ Cover hero ============ -->
+    <header class="vendor-details-hero card-luxe luxe-shadow animate-blur-reveal">
+      <div class="vendor-details-hero__cover">
+        @if (v.coverImageUrl) {
+          <img [src]="v.coverImageUrl" [alt]="v.businessName" class="vendor-details-hero__cover-img" />
         } @else {
-          <div class="vendor-details-header__logo-placeholder">
-            <span class="material-symbols-outlined">storefront</span>
-          </div>
+          <div class="vendor-details-hero__cover-fallback bg-mesh" aria-hidden="true"></div>
         }
+        <div class="vendor-details-hero__scrim"></div>
       </div>
 
-      <div class="vendor-details-header__body">
-        <div class="vendor-details-header__top">
-          @if (v.categoryName) {
-            <span class="text-label-sm vendor-details-header__category">{{ v.categoryName }}</span>
+      <div class="vendor-details-hero__body">
+        <div class="vendor-details-hero__avatar">
+          @if (v.logoUrl) {
+            <img [src]="v.logoUrl" [alt]="v.businessName" />
+          } @else {
+            <span class="material-symbols-outlined">storefront</span>
           }
-          <span
-            class="vendor-details-header__verification"
-            [class.vendor-details-header__verification--trusted]="v.verificationStatus === 'trusted'"
-          >
-            <span class="material-symbols-outlined">verified</span>
-            {{ formatStatus(v.verificationStatus) }}
-          </span>
         </div>
 
-        <h1 class="text-headline-md">{{ v.businessName }}</h1>
+        <div class="vendor-details-hero__info">
+          <div class="vendor-details-hero__top">
+            @if (v.categoryName) {
+              <span class="text-label-sm vendor-details-hero__category">{{ v.categoryName }}</span>
+            }
+            <span
+              class="vendor-details-hero__verification"
+              [class.vendor-details-hero__verification--trusted]="v.verificationStatus === 'trusted'"
+            >
+              <span class="material-symbols-outlined">verified</span>
+              {{ formatStatus(v.verificationStatus) }}
+            </span>
+          </div>
 
-        <div class="vendor-details-header__meta">
-          @if (v.totalReviews > 0) {
-            <span class="vendor-details-header__rating">
-              <span class="material-symbols-outlined">star</span>
-              {{ v.avgRating | number: '1.1-1' }}
-              <span class="vendor-details-header__review-count">
-                ({{ v.totalReviews }} reviews)
+          <h1 class="text-headline-md">{{ v.businessName }}</h1>
+
+          <div class="vendor-details-hero__meta">
+            @if (v.totalReviews > 0) {
+              <span class="vendor-details-hero__rating">
+                <span class="material-symbols-outlined">star</span>
+                {{ v.avgRating | number: '1.1-1' }}
+                <span class="vendor-details-hero__review-count">({{ v.totalReviews }} reviews)</span>
               </span>
-            </span>
-          }
-          @if (v.city) {
-            <span class="text-body-md vendor-details-header__city">
-              <span class="material-symbols-outlined">location_on</span>
-              {{ v.city }}
-            </span>
+            }
+            @if (v.city) {
+              <span class="text-body-md vendor-details-hero__city">
+                <span class="material-symbols-outlined">location_on</span>
+                {{ v.city }}
+              </span>
+            }
+            @if (v.totalCompletedBookings > 0) {
+              <span class="text-body-md vendor-details-hero__completed">
+                <span class="material-symbols-outlined">celebration</span>
+                {{ v.totalCompletedBookings }} events completed
+              </span>
+            }
+          </div>
+
+          @if (v.businessDescription) {
+            <p class="text-body-md vendor-details-hero__description">{{ v.businessDescription }}</p>
           }
         </div>
-
-        @if (v.businessDescription) {
-          <p class="text-body-md vendor-details-header__description">{{ v.businessDescription }}</p>
-        }
       </div>
     </header>
 
-    <section class="vendor-details-section animate-fade-up stagger-1">
-      <h3 class="text-headline-sm vendor-details-section__heading">
-        <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
-        Packages
-      </h3>
+      <div class="vendor-details-layout__main">
+        <!-- ============ Portfolio ============ -->
+        <section class="vendor-details-section animate-fade-up stagger-1">
+          <h3 class="text-headline-sm vendor-details-section__heading">
+            <span class="material-symbols-outlined" aria-hidden="true">photo_library</span>
+            Portfolio
+          </h3>
 
-      @if (packages().length === 0) {
-        <div class="card-luxe luxe-shadow vendor-details-page__empty-card">
-          <span class="material-symbols-outlined vendor-details-page__empty-icon" aria-hidden="true">inventory_2</span>
-          <p class="text-body-md">This vendor hasn't published any packages yet.</p>
-        </div>
-      } @else {
-        <div class="card-luxe luxe-shadow package-table-wrap">
-          <table class="package-table">
-            <thead>
-              <tr>
-                <th>Package</th>
-                <th>Price</th>
-                <th>Max guests</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (pkg of packages(); track pkg.id) {
-                <tr>
-                  <td>
-                    <span class="text-body-md package-table__title">{{ pkg.title }}</span>
-                    @if (pkg.description) {
-                      <p class="text-label-sm package-table__desc">{{ pkg.description }}</p>
-                    }
-                  </td>
-                  <td>{{ pkg.currency }} {{ pkg.basePrice | number: '1.0-2' }}</td>
-                  <td>{{ pkg.maxGuests ?? '—' }}</td>
-                  <td class="package-table__actions">
-                    <button
-                      class="btn-gold-gradient"
-                      type="button"
-                      (click)="bookPackage(pkg)"
-                    >
-                      <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
-                      Book this package
-                    </button>
-                  </td>
-                </tr>
+          @if (portfolioLoading()) {
+            <div class="vendor-details-gallery">
+              @for (i of [1, 2, 3, 4]; track i) {
+                <div class="skeleton vendor-details-gallery__skeleton"></div>
               }
-            </tbody>
-          </table>
-        </div>
-      }
-    </section>
+            </div>
+          } @else if (portfolio().length === 0) {
+            <div class="card-luxe luxe-shadow vendor-details-page__empty-card">
+              <span class="material-symbols-outlined vendor-details-page__empty-icon" aria-hidden="true">photo_library</span>
+              <p class="text-body-md">This vendor hasn't added portfolio photos yet.</p>
+            </div>
+          } @else {
+            <div class="vendor-details-gallery">
+              @for (item of portfolio(); track item.id; let i = $index) {
+                <button
+                  type="button"
+                  class="vendor-details-gallery__item hover-lift"
+                  [class.vendor-details-gallery__item--wide]="i === 0"
+                  (click)="openLightbox(i)"
+                >
+                  <img [src]="item.fileUrl" [alt]="item.title ?? v.businessName" loading="lazy" />
+                </button>
+              }
+            </div>
+          }
+        </section>
+
+        <!-- ============ Packages ============ -->
+        <section class="vendor-details-section animate-fade-up stagger-2">
+          <h3 class="text-headline-sm vendor-details-section__heading">
+            <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
+            Packages
+          </h3>
+
+          @if (packages().length === 0) {
+            <div class="card-luxe luxe-shadow vendor-details-page__empty-card">
+              <span class="material-symbols-outlined vendor-details-page__empty-icon" aria-hidden="true">inventory_2</span>
+              <p class="text-body-md">This vendor hasn't published any packages yet.</p>
+            </div>
+          } @else {
+            <div class="vendor-package-grid">
+              @for (pkg of packages(); track pkg.id) {
+                <div class="card-luxe luxe-shadow vendor-package-card" [class.vendor-package-card--blocked]="blockingBooking(pkg)">
+                  <div class="vendor-package-card__header">
+                    <h4 class="vendor-package-card__title">{{ pkg.title }}</h4>
+                    <span class="vendor-package-card__price">
+                      {{ pkg.currency }} {{ pkg.basePrice | number: '1.0-2' }}
+                    </span>
+                  </div>
+
+                  @if (pkg.description) {
+                    <p class="text-body-md vendor-package-card__description">{{ pkg.description }}</p>
+                  }
+
+                  @if (pkg.includes) {
+                    <p class="text-label-sm vendor-package-card__includes">
+                      <span class="material-symbols-outlined">check_circle</span>
+                      {{ pkg.includes }}
+                    </p>
+                  }
+
+                  <div class="vendor-package-card__footer">
+                    @if (pkg.maxGuests) {
+                      <span class="vendor-package-card__guests">
+                        <span class="material-symbols-outlined">group</span>
+                        Up to {{ pkg.maxGuests }} guests
+                      </span>
+                    }
+
+                    @if (blockingBooking(pkg); as blocker) {
+                      <ui-status-badge [status]="blocker.status" />
+                    } @else {
+                      <button class="btn-gold-gradient vendor-package-card__cta" type="button" (click)="bookPackage(pkg)">
+                        <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
+                        Book this package
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </section>
+
+        <!-- ============ Reviews ============ -->
+        <section class="vendor-details-section animate-fade-up stagger-3">
+          <h3 class="text-headline-sm vendor-details-section__heading">
+            <span class="material-symbols-outlined" aria-hidden="true">reviews</span>
+            Reviews
+          </h3>
+
+          @if (reviewsLoading()) {
+            <div class="skeleton vendor-details-reviews__skeleton"></div>
+          } @else if (reviews().length === 0) {
+            <div class="card-luxe luxe-shadow vendor-details-page__empty-card">
+              <span class="material-symbols-outlined vendor-details-page__empty-icon" aria-hidden="true">reviews</span>
+              <p class="text-body-md">No reviews yet — be the first to book and share your experience.</p>
+            </div>
+          } @else {
+            <div class="vendor-reviews">
+              @if (reviewSummary(); as summary) {
+                <div class="card-luxe luxe-shadow vendor-reviews__summary">
+                  <div class="vendor-reviews__summary-score">
+                    <span class="vendor-reviews__summary-number">{{ summary.avgRating | number: '1.1-1' }}</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="text-label-sm">{{ summary.totalReviews }} reviews</span>
+                  </div>
+                  <div class="vendor-reviews__summary-bars">
+                    @for (bar of ratingBars(summary); track bar.stars) {
+                      <div class="vendor-reviews__bar-row">
+                        <span class="text-label-sm">{{ bar.stars }}★</span>
+                        <div class="vendor-reviews__bar-track">
+                          <div class="vendor-reviews__bar-fill" [style.width.%]="bar.pct"></div>
+                        </div>
+                        <span class="text-label-sm vendor-reviews__bar-count">{{ bar.count }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <div class="vendor-reviews__list">
+                @for (review of reviews(); track review.id) {
+                  <div class="card-luxe luxe-shadow vendor-review-card">
+                    <div class="vendor-review-card__header">
+                      <span class="vendor-review-card__avatar">
+                        @if (review.clientAvatarUrl) {
+                          <img [src]="review.clientAvatarUrl" [alt]="review.clientName" />
+                        } @else {
+                          {{ review.clientName.charAt(0) }}
+                        }
+                      </span>
+                      <div class="vendor-review-card__meta">
+                        <strong>{{ review.clientName }}</strong>
+                        <span class="vendor-review-card__stars">
+                          @for (i of [1, 2, 3, 4, 5]; track i) {
+                            <span class="material-symbols-outlined" [class.vendor-review-card__star--filled]="i <= review.rating">star</span>
+                          }
+                        </span>
+                      </div>
+                    </div>
+                    @if (review.comment) {
+                      <p class="text-body-md vendor-review-card__comment">{{ review.comment }}</p>
+                    }
+                    @if (review.vendorResponse) {
+                      <div class="vendor-review-card__response">
+                        <span class="text-label-sm vendor-review-card__response-label">Response from {{ v.businessName }}</span>
+                        <p class="text-body-md">{{ review.vendorResponse }}</p>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </section>
+      </div>
   }
 </div>
+
+@if (lightboxIndex() !== null) {
+  <div class="modal-backdrop vendor-lightbox" (click)="closeLightbox()">
+    <button type="button" class="vendor-lightbox__close" (click)="closeLightbox()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    @if (portfolio().length > 1) {
+      <button type="button" class="vendor-lightbox__nav vendor-lightbox__nav--prev" (click)="prevImage(); $event.stopPropagation()">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+    }
+    <img
+      class="vendor-lightbox__image animate-scale-in"
+      [src]="portfolio()[lightboxIndex()!].fileUrl"
+      [alt]="portfolio()[lightboxIndex()!].title ?? ''"
+      (click)="$event.stopPropagation()"
+    />
+    @if (portfolio().length > 1) {
+      <button type="button" class="vendor-lightbox__nav vendor-lightbox__nav--next" (click)="nextImage(); $event.stopPropagation()">
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+    }
+  </div>
+}

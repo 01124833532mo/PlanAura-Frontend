@@ -22,6 +22,27 @@
       <ui-status-badge [status]="booking.status" />
     </div>
 
+    @if (booking.contractDocumentUrl || vendorProfileState.profile()?.partnershipAgreementUrl) {
+      <div class="details-dialog__documents">
+        @if (booking.contractDocumentUrl) {
+          <app-document-download
+            [url]="booking.contractDocumentUrl"
+            label="Event Booking Contract"
+            icon="description"
+            variant="button"
+          />
+        }
+        @if (vendorProfileState.profile()?.partnershipAgreementUrl; as agreementUrl) {
+          <app-document-download
+            [url]="agreementUrl"
+            label="Partnership Agreement"
+            icon="handshake"
+            variant="button"
+          />
+        }
+      </div>
+    }
+
     <dl class="details-grid">
       @if (packageTitle) {
         <div class="details-grid__row">

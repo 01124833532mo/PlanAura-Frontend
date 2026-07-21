@@ -19,6 +19,11 @@ export interface VendorProfile {
   totalReviews: number;
   totalCompletedBookings: number;
   createdAt: string;
+  /** True once this vendor's one-time Partnership Agreement with Planura has been generated. */
+  hasPartnershipAgreement: boolean;
+  partnershipAgreementId: string | null;
+  partnershipAgreementUrl: string | null;
+  partnershipAgreementGeneratedAt: string | null;
 }
 
 /** Mirrors Planura.Core.Application.Models.Vendor.UpdateVendorProfileDto exactly. */

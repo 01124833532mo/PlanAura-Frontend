@@ -3,11 +3,12 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { AuthService } from '../../../core/services/auth.service';
 import { createActiveRouteTitle } from '../../../shared/utils/active-route-title';
 import { confirmLogout } from '../../../shared/utils/confirm-logout';
+import { NotificationBell } from '../../../shared/ui/notification-bell/notification-bell';
 
 @Component({
   selector: 'app-client-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NotificationBell],
   templateUrl: './client-shell.html',
   styleUrl: './client-shell.css',
 })

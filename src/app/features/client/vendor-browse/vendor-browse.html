@@ -1,107 +1,277 @@
-<div class="browse-page bg-mesh">
-  <aside class="browse-sidebar card-luxe luxe-shadow animate-fade-up">
-    <h4 class="text-headline-sm browse-sidebar__heading">
-      <span class="material-symbols-outlined" aria-hidden="true">tune</span>
-      Filters
-    </h4>
+<div class="browse-page">
+  <!-- ============ Hero ============ -->
+  <header class="browse-hero animate-fade-up">
+    <p class="browse-hero__eyebrow"><span class="browse-hero__eyebrow-dot" aria-hidden="true"></span>Marketplace</p>
+    <h1 class="browse-hero__title">Find the right team for your event</h1>
+    <p class="browse-hero__subtitle">
+      @if (loading()) {
+        Searching our network of vetted partners...
+      } @else {
+        {{ totalCount() }} vetted partner{{ totalCount() === 1 ? '' : 's' }} across every category, ready to help you
+        plan something memorable.
+      }
+    </p>
 
-    <ui-select-field
-      label="Category"
-      placeholder="All categories"
-      [options]="categoryOptions()"
-      [formControl]="filterForm.controls.category"
-    />
-
-    <ui-text-field label="City" placeholder="e.g. Cairo" [formControl]="filterForm.controls.city" />
-
-    <div class="browse-filterbar__field browse-filterbar__field--price">
-      <ui-text-field
-        label="Min price"
-        type="number"
-        min="0"
-        placeholder="0"
-        [compact]="true"
-        [formControl]="filterForm.controls.minPrice"
+    <div class="browse-hero__search">
+      <span class="material-symbols-outlined browse-hero__search-icon" aria-hidden="true">location_on</span>
+      <input
+        type="text"
+        class="browse-hero__search-input"
+        placeholder="Search by city — e.g. Cairo, Alexandria, Giza"
+        aria-label="Search by city"
+        [formControl]="filterForm.controls.city"
+        (keydown.enter)="searchNow()"
       />
-      <ui-text-field
-        label="Max price"
-        type="number"
-        min="0"
-        placeholder="Any"
-        [compact]="true"
-        [formControl]="filterForm.controls.maxPrice"
-      />
+      <button type="button" class="browse-hero__search-btn" aria-label="Search" (click)="searchNow()">
+        <span class="material-symbols-outlined">search</span>
+      </button>
     </div>
+  </header>
 
-    <div class="browse-filterbar__field browse-filterbar__ratings">
-      <span class="text-label-sm">Minimum rating</span>
-      <div class="browse-filterbar__rating-buttons">
-        @for (rating of ratingOptions; track rating) {
+  <!-- ============ Filter bar — independent premium dropdown chips ============ -->
+  <div class="filter-toolbar animate-fade-up stagger-1">
+    <!-- Category -->
+    <div
+      class="filter-segment"
+      [class.filter-segment--open]="openDropdown() === 'category'"
+      (focusout)="onSegmentFocusOut($event, 'category')"
+    >
+      <button
+        type="button"
+        id="category-trigger"
+        class="filter-segment__trigger"
+        aria-haspopup="listbox"
+        [attr.aria-expanded]="openDropdown() === 'category'"
+        aria-controls="category-listbox"
+        (click)="toggleDropdown('category')"
+        (keydown)="onTriggerKeydown($event, 'category')"
+      >
+        <span class="material-symbols-outlined filter-segment__icon" aria-hidden="true">category</span>
+        <span class="filter-segment__text">
+          <span class="filter-segment__label">Category</span>
+          <span class="filter-segment__value">{{ categoryLabel() }}</span>
+        </span>
+        <span class="material-symbols-outlined filter-segment__chevron" aria-hidden="true">expand_more</span>
+      </button>
+
+      <div
+        id="category-listbox"
+        class="filter-segment__panel filter-segment__panel--list"
+        role="listbox"
+        aria-label="Category"
+        (keydown)="onListboxKeydown($event)"
+      >
+        <button
+          type="button"
+          class="dropdown-option"
+          role="option"
+          [attr.aria-selected]="filterForm.value.category === null"
+          [class.dropdown-option--selected]="filterForm.value.category === null"
+          (click)="selectCategory(null)"
+        >
+          <span>Any category</span>
+          @if (filterForm.value.category === null) {
+            <span class="material-symbols-outlined" aria-hidden="true">check</span>
+          }
+        </button>
+        @for (option of categoryOptions(); track option.value) {
           <button
-            class="browse-rating-btn"
             type="button"
-            [class.browse-rating-btn--active]="minRating() === rating"
-            (click)="selectRating(rating)"
+            class="dropdown-option"
+            role="option"
+            [attr.aria-selected]="filterForm.value.category === option.value"
+            [class.dropdown-option--selected]="filterForm.value.category === option.value"
+            (click)="selectCategory(option.value)"
           >
-            {{ rating | number: '1.1-1' }}+
+            <span>{{ option.label }}</span>
+            @if (filterForm.value.category === option.value) {
+              <span class="material-symbols-outlined" aria-hidden="true">check</span>
+            }
           </button>
         }
       </div>
     </div>
 
-    <ui-button variant="outline" [fullWidth]="true" (click)="resetFilters()">
-      Reset filters
-    </ui-button>
-  </aside>
+    <!-- Price -->
+    <div
+      class="filter-segment"
+      [class.filter-segment--open]="openDropdown() === 'price'"
+      (focusout)="onSegmentFocusOut($event, 'price')"
+    >
+      <button
+        type="button"
+        id="price-trigger"
+        class="filter-segment__trigger"
+        aria-haspopup="true"
+        [attr.aria-expanded]="openDropdown() === 'price'"
+        aria-controls="price-panel"
+        (click)="toggleDropdown('price')"
+        (keydown)="onTriggerKeydown($event, 'price')"
+      >
+        <span class="material-symbols-outlined filter-segment__icon" aria-hidden="true">payments</span>
+        <span class="filter-segment__text">
+          <span class="filter-segment__label">Price</span>
+          <span class="filter-segment__value">{{ priceLabel() }}</span>
+        </span>
+        <span class="material-symbols-outlined filter-segment__chevron" aria-hidden="true">expand_more</span>
+      </button>
 
-  <div class="browse-main">
-    <div class="browse-header animate-fade-up">
-      <p class="text-body-md">
-        @if (loading()) {
-          Searching...
-        } @else {
-          Discover {{ totalCount() }} premium partner{{ totalCount() === 1 ? '' : 's' }}
-        }
-      </p>
-      <ui-select-field
-        label="Sort by"
-        [compact]="true"
-        [options]="sortOptions"
-        [formControl]="filterForm.controls.sortBy"
-      />
+      <div
+        id="price-panel"
+        class="filter-segment__panel filter-segment__panel--price"
+        role="group"
+        aria-label="Price range"
+        [formGroup]="filterForm"
+      >
+        <div class="dropdown-price-row">
+          <label class="dropdown-price-field">
+            <span>Min</span>
+            <input type="number" min="0" placeholder="0" formControlName="minPrice" />
+          </label>
+          <span class="dropdown-price-sep" aria-hidden="true">–</span>
+          <label class="dropdown-price-field">
+            <span>Max</span>
+            <input type="number" min="0" placeholder="Any" formControlName="maxPrice" />
+          </label>
+        </div>
+        <div class="dropdown-panel__actions">
+          <button type="button" class="dropdown-panel__link" (click)="clearPrice()">Clear</button>
+          <button type="button" class="dropdown-panel__done" (click)="closeDropdown()">Done</button>
+        </div>
+      </div>
     </div>
 
-    <ui-button
-      class="browse-filterbar__reset"
-      variant="ghost"
-      [fullWidth]="false"
-      (click)="resetFilters()"
+    <!-- Rating -->
+    <div
+      class="filter-segment"
+      [class.filter-segment--open]="openDropdown() === 'rating'"
+      (focusout)="onSegmentFocusOut($event, 'rating')"
     >
-      Reset filters
-    </ui-button>
+      <button
+        type="button"
+        id="rating-trigger"
+        class="filter-segment__trigger"
+        aria-haspopup="listbox"
+        [attr.aria-expanded]="openDropdown() === 'rating'"
+        aria-controls="rating-listbox"
+        (click)="toggleDropdown('rating')"
+        (keydown)="onTriggerKeydown($event, 'rating')"
+      >
+        <span class="material-symbols-outlined filter-segment__icon" aria-hidden="true">star</span>
+        <span class="filter-segment__text">
+          <span class="filter-segment__label">Rating</span>
+          <span class="filter-segment__value">{{ ratingLabel() }}</span>
+        </span>
+        <span class="material-symbols-outlined filter-segment__chevron" aria-hidden="true">expand_more</span>
+      </button>
+
+      <div
+        id="rating-listbox"
+        class="filter-segment__panel filter-segment__panel--rating"
+        role="listbox"
+        aria-label="Minimum rating"
+        (keydown)="onListboxKeydown($event)"
+      >
+        @for (rating of ratingOptions; track rating) {
+          <button
+            type="button"
+            class="dropdown-option"
+            role="option"
+            [attr.aria-selected]="minRating() === rating"
+            [class.dropdown-option--selected]="minRating() === rating"
+            (click)="selectRating(rating)"
+          >
+            <span class="dropdown-option__rating">
+              <span class="material-symbols-outlined" aria-hidden="true">star</span>
+              {{ rating | number: '1.1-1' }}+
+            </span>
+            @if (minRating() === rating) {
+              <span class="material-symbols-outlined" aria-hidden="true">check</span>
+            }
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Sort -->
+    <div
+      class="filter-segment"
+      [class.filter-segment--open]="openDropdown() === 'sort'"
+      (focusout)="onSegmentFocusOut($event, 'sort')"
+    >
+      <button
+        type="button"
+        id="sort-trigger"
+        class="filter-segment__trigger"
+        aria-haspopup="listbox"
+        [attr.aria-expanded]="openDropdown() === 'sort'"
+        aria-controls="sort-listbox"
+        (click)="toggleDropdown('sort')"
+        (keydown)="onTriggerKeydown($event, 'sort')"
+      >
+        <span class="material-symbols-outlined filter-segment__icon" aria-hidden="true">swap_vert</span>
+        <span class="filter-segment__text">
+          <span class="filter-segment__label">Sort</span>
+          <span class="filter-segment__value">{{ sortLabel() }}</span>
+        </span>
+        <span class="material-symbols-outlined filter-segment__chevron" aria-hidden="true">expand_more</span>
+      </button>
+
+      <div
+        id="sort-listbox"
+        class="filter-segment__panel filter-segment__panel--list"
+        role="listbox"
+        aria-label="Sort by"
+        (keydown)="onListboxKeydown($event)"
+      >
+        @for (option of sortOptions; track option.value) {
+          <button
+            type="button"
+            class="dropdown-option"
+            role="option"
+            [attr.aria-selected]="filterForm.value.sortBy === option.value"
+            [class.dropdown-option--selected]="filterForm.value.sortBy === option.value"
+            (click)="selectSort(option.value)"
+          >
+            <span>{{ option.label }}</span>
+            @if (filterForm.value.sortBy === option.value) {
+              <span class="material-symbols-outlined" aria-hidden="true">check</span>
+            }
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (hasActiveFilters()) {
+      <button type="button" class="filter-toolbar__clear" aria-label="Clear all filters" (click)="resetFilters()">
+        <span class="material-symbols-outlined" aria-hidden="true">close</span>
+      </button>
+    }
   </div>
 
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
-    @if (loading()) {
-      <div class="browse-grid">
-        <div class="skeleton browse-grid__skeleton"></div>
-        <div class="skeleton browse-grid__skeleton"></div>
-        <div class="skeleton browse-grid__skeleton"></div>
-        <div class="skeleton browse-grid__skeleton"></div>
-      </div>
-    } @else if (vendors().length === 0) {
-      <div class="card-luxe luxe-shadow browse-main__empty-card animate-scale-in">
-        <span class="material-symbols-outlined browse-main__empty-icon" aria-hidden="true">search_off</span>
-        <p class="text-body-md">No vendors match your filters.</p>
-        <ui-button [fullWidth]="false" (click)="resetFilters()">Reset filters</ui-button>
-      </div>
-    } @else {
-      <div class="browse-grid">
-        @for (vendor of vendors(); track vendor.id) {
-          <ui-vendor-card class="animate-fade-up" [vendor]="vendor" [eventPlanId]="eventPlanId()" />
-        }
-      </div>
+  <!-- ============ Results ============ -->
+  @if (loading()) {
+    <div class="browse-grid">
+      <div class="skeleton browse-grid__skeleton"></div>
+      <div class="skeleton browse-grid__skeleton"></div>
+      <div class="skeleton browse-grid__skeleton"></div>
+      <div class="skeleton browse-grid__skeleton"></div>
+    </div>
+  } @else if (vendors().length === 0) {
+    <div class="browse-empty animate-scale-in">
+      <span class="material-symbols-outlined browse-empty__icon" aria-hidden="true">search_off</span>
+      <h3 class="browse-empty__title">No vendors match your filters</h3>
+      <p class="browse-empty__text">Try widening your search or clearing a filter.</p>
+      <ui-button [fullWidth]="false" (click)="resetFilters()">Clear filters</ui-button>
+    </div>
+  } @else {
+    <div class="browse-grid">
+      @for (vendor of vendors(); track vendor.id) {
+        <ui-vendor-card class="animate-fade-up" [vendor]="vendor" [eventPlanId]="eventPlanId()" />
+      }
+    </div>
 
     @if (totalPages() > 1) {
       <nav class="browse-pagination">

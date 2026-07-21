@@ -9,6 +9,7 @@ import {
 } from '../../../../core/interfaces/vendor-verification.model';
 import { VendorType } from '../../../../core/interfaces/vendor.model';
 import { VendorVerificationService } from '../../../../core/services/vendor-verification.service';
+import { DocumentDownload } from '../../../../shared/ui/document-download/document-download';
 
 /**
  * Read-only "View Details" panel for a vendor verification request: vendor
@@ -19,7 +20,7 @@ import { VendorVerificationService } from '../../../../core/services/vendor-veri
 @Component({
   selector: 'app-vendor-verification-details',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, DocumentDownload],
   templateUrl: './vendor-verification-details.html',
   styleUrl: './vendor-verification-details.css',
 })
@@ -40,6 +41,12 @@ export class VendorVerificationDetailsView {
 
   protected documentUrl(doc: VendorVerificationDocument | VendorVerificationPortfolioMedia): string {
     return this.verificationService.resolveFileUrl(doc.fileUrl);
+  }
+
+  /** partnershipAgreementUrl comes back relative (same convention as documents[].fileUrl on this DTO). */
+  protected partnershipAgreementUrl(): string | null {
+    const url = this.details?.partnershipAgreementUrl;
+    return url ? this.verificationService.resolveFileUrl(url) : null;
   }
 
   protected formatFileSize(bytes: number | null): string | null {

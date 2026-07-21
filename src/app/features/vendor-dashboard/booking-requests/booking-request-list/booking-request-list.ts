@@ -3,6 +3,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { catchError, forkJoin, of } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
+import { DocumentDownload } from '../../../../shared/ui/document-download/document-download';
 import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
@@ -12,6 +13,8 @@ import {
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
 import { VendorBookingRequestService } from '../../../../core/services/vendor-booking-request.service';
 import { VendorPackageService } from '../../../../core/services/vendor-package.service';
+import { VendorProfileStateService } from '../../../../core/services/vendor-profile-state.service';
+import { notifySuccess } from '../../../../shared/utils/notify';
 import { DashboardStats } from '../../dashboard-stats/dashboard-stats';
 import { BookingRequestDetails } from '../booking-request-details/booking-request-details';
 import { RejectBookingDialog } from '../reject-booking-dialog/reject-booking-dialog';
@@ -27,6 +30,7 @@ interface StatusFilter {
   imports: [
     AlertBanner,
     Button,
+    DocumentDownload,
     StatusBadge,
     RejectBookingDialog,
     BookingRequestDetails,
@@ -40,6 +44,7 @@ interface StatusFilter {
 export class BookingRequestList implements OnInit {
   private readonly bookingService = inject(VendorBookingRequestService);
   private readonly packageService = inject(VendorPackageService);
+  private readonly vendorProfileState = inject(VendorProfileStateService);
 
   // Exposed so the template can reference enum members directly.
   protected readonly BookingStatus = BookingStatus;
@@ -194,6 +199,11 @@ export class BookingRequestList implements OnInit {
         this.actioningId.set(null);
         this.detailsTarget.set(null);
         this.load();
+        // Refreshes the cached vendor profile so a first-time Partnership
+        // Agreement (generated server-side as part of accepting) shows up
+        // immediately in the topbar/profile without a manual page reload.
+        this.vendorProfileState.refresh();
+        notifySuccess('Booking confirmed. Your Event Booking Contract has been generated.');
       },
       error: (err: AppError) => {
         this.error.set(err);

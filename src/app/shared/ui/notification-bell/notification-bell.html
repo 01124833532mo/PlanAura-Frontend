@@ -1,0 +1,63 @@
+<div class="notif-bell-wrap">
+  <button type="button" class="notif-bell-btn" (click)="toggle()" aria-label="Notifications">
+    <span class="material-symbols-outlined">notifications</span>
+    @if (unreadCount() > 0) {
+      <span class="notif-bell-badge">{{ unreadCount() > 9 ? '9+' : unreadCount() }}</span>
+    }
+  </button>
+
+  @if (open()) {
+    <div class="notif-bell-backdrop" (click)="close()"></div>
+    <div class="notif-bell-panel">
+      <div class="notif-bell-panel__header">
+        <span class="text-label-md">Notifications</span>
+        @if (unreadCount() > 0) {
+          <button type="button" class="notif-bell-panel__mark-all" (click)="markAllRead()">
+            Mark all as read
+          </button>
+        }
+      </div>
+
+      <div class="notif-bell-panel__body">
+        @if (loading() && notifications().length === 0) {
+          <div class="notif-bell-empty">
+            <span class="material-symbols-outlined skeleton-icon">hourglass_top</span>
+            <p class="text-body-md">Loading...</p>
+          </div>
+        } @else if (notifications().length === 0) {
+          <div class="notif-bell-empty">
+            <span class="material-symbols-outlined">notifications_none</span>
+            <p class="text-body-md">You're all caught up.</p>
+          </div>
+        } @else {
+          @for (notification of notifications(); track notification.id) {
+            <div
+              class="notif-item"
+              [class.notif-item--unread]="!notification.isRead"
+              (click)="onNotificationClick(notification)"
+            >
+              <span class="notif-item__title text-label-md">{{ notification.title }}</span>
+              @if (notification.body) {
+                <p class="notif-item__body text-body-md">{{ notification.body }}</p>
+              }
+              <div class="notif-item__footer">
+                <span class="notif-item__time">{{ notification.createdAt | date: 'MMM d, h:mm a' }}</span>
+                @if (documentUrl(notification); as url) {
+                  <app-document-download [url]="url" label="Download PDF" icon="picture_as_pdf" />
+                }
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      @if (notifications().length > 0) {
+        <div class="notif-bell-panel__footer">
+          <button type="button" class="notif-bell-panel__view-all" (click)="goToBookings()">
+            View my bookings
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

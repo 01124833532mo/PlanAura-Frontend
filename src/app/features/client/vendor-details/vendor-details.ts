@@ -2,7 +2,6 @@ import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertBanner } from '../../../shared/ui/alert-banner/alert-banner';
-import { StatusBadge } from '../../../shared/ui/status-badge/status-badge';
 import { AppError } from '../../../core/interfaces/api-response.model';
 import { BookingRequest, BookingStatus } from '../../../core/interfaces/booking-request.model';
 import { PortfolioMediaItem } from '../../../core/interfaces/portfolio.model';
@@ -25,7 +24,7 @@ import { VendorService } from '../../../core/services/vendor.service';
 @Component({
   selector: 'app-vendor-details',
   standalone: true,
-  imports: [AlertBanner, StatusBadge, DecimalPipe],
+  imports: [AlertBanner, DecimalPipe],
   templateUrl: './vendor-details.html',
   styleUrl: './vendor-details.css',
 })

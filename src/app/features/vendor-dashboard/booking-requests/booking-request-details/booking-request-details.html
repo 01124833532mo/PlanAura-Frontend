@@ -62,18 +62,14 @@
       </div>
       <div class="details-grid__row">
         <dt><span class="material-symbols-outlined">person</span>Client</dt>
-        <dd>Client #{{ booking.clientId }}</dd>
+        <dd>{{ booking.clientName ?? ('Client #' + booking.clientId) }}</dd>
       </div>
-      <div class="details-grid__row">
-        <dt><span class="material-symbols-outlined">description</span>Event plan</dt>
-        <dd>#{{ booking.eventPlanId }}</dd>
-      </div>
-      <div class="details-grid__row">
+      <div class="details-grid__row details-grid__row--history">
         <dt><span class="material-symbols-outlined">schedule</span>Requested</dt>
         <dd>{{ booking.createdAt | date: 'MMM d, y, h:mm a' }}</dd>
       </div>
       @if (booking.respondedAt) {
-        <div class="details-grid__row">
+        <div class="details-grid__row details-grid__row--history">
           <dt><span class="material-symbols-outlined">reply</span>Responded</dt>
           <dd>{{ booking.respondedAt | date: 'MMM d, y, h:mm a' }}</dd>
         </div>

@@ -39,6 +39,7 @@ export interface BookingRequest {
   id: number;
   eventPlanId: number;
   clientId: number;
+  clientName: string | null;
   vendorId: number;
   vendorPackageId: number | null;
   eventDate: string;

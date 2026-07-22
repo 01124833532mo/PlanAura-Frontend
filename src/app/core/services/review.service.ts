@@ -8,6 +8,7 @@ import {
   Review,
   ReviewFilter,
   ReviewSummary,
+  UpdateReview,
 } from '../interfaces/review.model';
 
 /** Wraps ReviewsController (api/reviews). */
@@ -61,5 +62,10 @@ export class ReviewService {
   /** POST /api/reviews — a client leaves a review for a booking. */
   createReview(dto: CreateReview): Observable<Review> {
     return this.http.post<Review>(`${API_BASE_URL}/reviews`, dto);
+  }
+
+  /** PATCH /api/reviews/{reviewId} — a client edits their own review. */
+  updateReview(reviewId: number, dto: UpdateReview): Observable<Review> {
+    return this.http.patch<Review>(`${API_BASE_URL}/reviews/${reviewId}`, dto);
   }
 }

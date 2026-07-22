@@ -42,3 +42,9 @@ export interface CreateReview {
   rating: number;
   comment?: string;
 }
+
+/** Mirrors Planura.Core.Application.Models.UpdateReviewDto. */
+export interface UpdateReview {
+  rating: number;
+  comment?: string;
+}

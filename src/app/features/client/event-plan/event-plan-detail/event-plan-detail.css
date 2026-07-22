@@ -133,10 +133,19 @@
 
 .booking-row {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+}
+
+/* Vendor identity + date/guests/price — free to wrap between themselves,
+   but always separate from the status/actions zone below (own row, gated
+   by .booking-row__footer) so a long status label can never overlap them. */
+.booking-row__main {
+  display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--gutter);
-  padding: var(--space-lg);
 }
 
 .booking-row__vendor {
@@ -195,14 +204,25 @@
   color: var(--color-charcoal);
 }
 
+/* Status + actions: their own full-width row beneath .booking-row__main —
+   the Pending badge's label ("Awaiting vendor response — payment
+   authorized") is long and never wraps (ui-status-badge forces
+   white-space: nowrap), so it previously overflowed the max-width column
+   it shared inline with the price/actions and visually overlapped them.
+   A dedicated row gives it the card's full width to render in instead. */
+.booking-row__footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
 .booking-row__status {
-  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 0.3rem;
-  max-width: 12rem;
-  text-align: right;
+  min-width: 0;
 }
 
 .booking-row__status-note {
@@ -212,8 +232,8 @@
 .booking-row__actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-sm);
-  flex-shrink: 0;
 }
 
 .booking-row__report {
@@ -297,12 +317,13 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .booking-row {
+  .booking-row__main {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
-  .booking-row__actions {
-    justify-content: flex-end;
+  .booking-row__footer {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

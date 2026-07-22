@@ -29,9 +29,6 @@ export class ClientDashboard implements OnInit {
     const now = Date.now();
     return this.plans().filter((plan) => new Date(plan.eventDate).getTime() >= now).length;
   });
-  protected readonly totalGuests = computed(() =>
-    this.plans().reduce((sum, plan) => sum + (plan.guestCount ?? 0), 0),
-  );
 
   ngOnInit(): void {
     this.loading.set(true);

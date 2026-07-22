@@ -197,6 +197,16 @@
 
 .booking-row__status {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  max-width: 12rem;
+  text-align: right;
+}
+
+.booking-row__status-note {
+  color: var(--color-secondary);
 }
 
 .booking-row__actions {

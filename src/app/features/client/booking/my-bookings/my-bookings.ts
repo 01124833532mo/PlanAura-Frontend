@@ -7,7 +7,10 @@ import { Button } from '../../../../shared/ui/button/button';
 import { DocumentDownload } from '../../../../shared/ui/document-download/document-download';
 import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { AppError } from '../../../../core/interfaces/api-response.model';
-import { BookingRequest } from '../../../../core/interfaces/booking-request.model';
+import {
+  BookingPaymentStatus,
+  BookingRequest,
+} from '../../../../core/interfaces/booking-request.model';
 import { EventPlan } from '../../../../core/interfaces/event-plan.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
 import { VendorProfile } from '../../../../core/interfaces/vendor-profile.model';
@@ -30,6 +33,9 @@ import { VendorService } from '../../../../core/services/vendor.service';
   styleUrl: './my-bookings.css',
 })
 export class MyBookings implements OnInit {
+  // Exposed so the template can reference enum members directly.
+  protected readonly BookingPaymentStatus = BookingPaymentStatus;
+
   private readonly router = inject(Router);
   private readonly bookingService = inject(BookingRequestService);
   private readonly eventPlanService = inject(EventPlanService);

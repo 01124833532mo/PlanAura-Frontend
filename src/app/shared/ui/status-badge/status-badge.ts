@@ -1,5 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { BookingStatus } from '../../../core/interfaces/booking-request.model';
+import {
+  BookingPaymentStatus,
+  BookingStatus,
+} from '../../../core/interfaces/booking-request.model';
 
 type BadgeTone = 'pending' | 'gold' | 'success' | 'error' | 'muted';
 
@@ -7,8 +10,10 @@ type BadgeTone = 'pending' | 'gold' | 'success' | 'error' | 'muted';
  * Under the authorize-then-capture payment model, a booking's card is
  * authorized at submit time — Accepted always implies Paid (capture happens
  * atomically on vendor accept) and Rejected/Cancelled/Expired always imply no
- * charge was made. There is no longer an "Accepted but unpaid" state, so this
- * only needs the booking status, not a separate paymentStatus input.
+ * charge was made. There is no longer an "Accepted but unpaid" state, so the
+ * booking status alone is enough for every case except a refund, which is
+ * tracked separately on paymentStatus and can apply on top of any booking
+ * status (e.g. a Completed or Cancelled booking can later be refunded).
  */
 @Component({
   selector: 'ui-status-badge',
@@ -18,6 +23,7 @@ type BadgeTone = 'pending' | 'gold' | 'success' | 'error' | 'muted';
 })
 export class StatusBadge {
   @Input({ required: true }) status!: BookingStatus;
+  @Input() paymentStatus?: BookingPaymentStatus;
 
   protected get label(): string {
     return this.resolve().label;
@@ -28,6 +34,10 @@ export class StatusBadge {
   }
 
   private resolve(): { label: string; tone: BadgeTone } {
+    if (this.paymentStatus === BookingPaymentStatus.Refunded) {
+      return { label: 'Refunded', tone: 'muted' };
+    }
+
     switch (this.status) {
       case BookingStatus.Pending:
         return { label: 'Awaiting vendor response — payment authorized', tone: 'pending' };

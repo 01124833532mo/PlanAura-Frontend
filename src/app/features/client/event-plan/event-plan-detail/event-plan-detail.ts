@@ -11,6 +11,7 @@ import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
+  BookingPaymentStatus,
   BookingRequest,
   BookingStatus,
   DisputeStatus,
@@ -52,6 +53,7 @@ export class EventPlanDetail implements OnInit {
 
   // Exposed so the template can reference enum members directly.
   protected readonly BookingStatus = BookingStatus;
+  protected readonly BookingPaymentStatus = BookingPaymentStatus;
   protected readonly DisputeStatus = DisputeStatus;
 
   protected readonly plan = signal<EventPlan | null>(null);

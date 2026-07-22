@@ -10,7 +10,7 @@ import { EventPlanService } from '../../../core/services/event-plan.service';
 @Component({
   selector: 'app-client-dashboard',
   standalone: true,
-  imports: [AlertBanner, Button, DatePipe],
+  imports: [AlertBanner, Button, DatePipe, RouterLink],
   templateUrl: './client-dashboard.html',
   styleUrl: './client-dashboard.css',
 })

@@ -1,0 +1,37 @@
+<div class="overview-page">
+  <div class="overview-page__header animate-fade-up">
+    <div>
+      <p class="text-label-sm overview-page__eyebrow">
+        <span class="material-symbols-outlined">dashboard</span>
+        Overview
+      </p>
+      <h3 class="text-headline-sm">
+        @if (vendorProfileState.profile(); as profile) {
+          Welcome back, {{ profile.businessName }}
+        } @else {
+          Welcome back
+        }
+      </h3>
+      <p class="text-body-md">Here's where your business stands today.</p>
+    </div>
+  </div>
+
+  <app-dashboard-stats />
+
+  <section class="overview-section animate-fade-up stagger-1">
+    <div class="overview-section__header">
+      <div>
+        <h4 class="text-title-md">Pending requests</h4>
+        <p class="text-body-sm overview-section__hint">
+          Clients waiting on your response — accept to confirm and capture payment.
+        </p>
+      </div>
+      <a class="overview-section__link text-label-md" routerLink="/vendor/dashboard/requests">
+        View all requests
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </a>
+    </div>
+
+    <app-booking-request-list fixedTab="pending" [pageSize]="5" />
+  </section>
+</div>

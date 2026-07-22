@@ -12,7 +12,12 @@ import { VendorBrowseFilter, VendorListItem } from '../../../core/interfaces/ven
 import { ServiceCategoryService } from '../../../core/services/service-category.service';
 import { VendorBrowseService } from '../../../core/services/vendor-browse.service';
 
-const RATING_OPTIONS = [4.0, 4.5, 4.8];
+/**
+ * Minimum-rating tiers, low to high. The lower tiers matter: a vendor's AvgRating is a real
+ * average over a handful of reviews, so most sit in the 3s — an options list that started at
+ * 4.0 (as this one did) filtered every vendor out and read as a broken filter.
+ */
+const RATING_OPTIONS = [2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 4.8];
 const PAGE_SIZE = 12;
 
 type DropdownKey = 'category' | 'price' | 'rating' | 'sort';
@@ -66,8 +71,13 @@ export class VendorBrowse implements OnInit {
   protected readonly filterForm = this.fb.group({
     category: this.fb.control<string | null>(null),
     city: this.fb.nonNullable.control(''),
-    minPrice: this.fb.nonNullable.control(''),
-    maxPrice: this.fb.nonNullable.control(''),
+    // Typed number|null, NOT string: the price inputs are <input type="number">, so Angular
+    // binds NumberValueAccessor, which writes a number (or null when the box is emptied) into
+    // the control regardless of how it was declared. Declaring these as strings made the
+    // compiler believe raw.minPrice was a string while it held a number at runtime, and the
+    // .trim() calls below threw as soon as a price was typed — taking the whole search with it.
+    minPrice: this.fb.control<number | null>(null),
+    maxPrice: this.fb.control<number | null>(null),
     sortBy: this.fb.nonNullable.control<'featured' | 'rating' | 'priceAsc' | 'priceDesc'>(
       'featured',
     ),
@@ -206,8 +216,8 @@ export class VendorBrowse implements OnInit {
     return (
       !!raw.category ||
       raw.city.trim() !== '' ||
-      raw.minPrice.trim() !== '' ||
-      raw.maxPrice.trim() !== '' ||
+      raw.minPrice !== null ||
+      raw.maxPrice !== null ||
       this.minRating() !== null
     );
   }
@@ -240,27 +250,26 @@ export class VendorBrowse implements OnInit {
   }
 
   protected priceLabel(): string {
-    const raw = this.filterForm.getRawValue();
-    const min = raw.minPrice.trim();
-    const max = raw.maxPrice.trim();
-    if (!min && !max) {
+    const { minPrice, maxPrice } = this.filterForm.getRawValue();
+    if (minPrice === null && maxPrice === null) {
       return 'Any price';
     }
-    if (min && max) {
-      return `${min} – ${max}`;
+    if (minPrice !== null && maxPrice !== null) {
+      return `${minPrice} – ${maxPrice}`;
     }
-    if (min) {
-      return `${min}+`;
+    if (minPrice !== null) {
+      return `${minPrice}+`;
     }
-    return `Up to ${max}`;
+    return `Up to ${maxPrice}`;
   }
 
   protected clearPrice(): void {
-    this.filterForm.patchValue({ minPrice: '', maxPrice: '' });
+    this.filterForm.patchValue({ minPrice: null, maxPrice: null });
   }
 
-  protected selectRating(rating: number): void {
-    this.minRating.set(this.minRating() === rating ? null : rating);
+  /** Passing null clears the filter; re-picking the active tier toggles it off. */
+  protected selectRating(rating: number | null): void {
+    this.minRating.set(rating === null || this.minRating() === rating ? null : rating);
     this.page.set(1);
     this.runSearch();
   }
@@ -278,7 +287,7 @@ export class VendorBrowse implements OnInit {
 
   protected resetFilters(): void {
     this.filterForm.reset(
-      { category: null, city: '', minPrice: '', maxPrice: '', sortBy: 'featured' },
+      { category: null, city: '', minPrice: null, maxPrice: null, sortBy: 'featured' },
       { emitEvent: false },
     );
     this.minRating.set(null);
@@ -302,8 +311,8 @@ export class VendorBrowse implements OnInit {
     const filter: VendorBrowseFilter = {
       category: raw.category ?? undefined,
       city: raw.city.trim() || undefined,
-      minPrice: raw.minPrice.trim() === '' ? undefined : Number(raw.minPrice),
-      maxPrice: raw.maxPrice.trim() === '' ? undefined : Number(raw.maxPrice),
+      minPrice: raw.minPrice ?? undefined,
+      maxPrice: raw.maxPrice ?? undefined,
       minRating: this.minRating() ?? undefined,
       sortBy: raw.sortBy,
       page: this.page(),

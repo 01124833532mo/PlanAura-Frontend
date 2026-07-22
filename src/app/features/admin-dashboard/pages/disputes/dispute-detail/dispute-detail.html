@@ -39,7 +39,15 @@
       </section>
 
       <section class="admin-card">
-        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">Dispute Reason</h3>
+        <h3 class="admin-panel__title" style="margin-bottom: var(--admin-space-md);">
+          Dispute Reason
+          @if (d.disputeRaisedBy) {
+            <span style="color: var(--admin-text-secondary); font-weight: 400;">
+              — reported by the {{ d.disputeRaisedBy | lowercase }}
+              ({{ d.disputeRaisedBy === 'Vendor' ? d.vendorName : d.clientName }})
+            </span>
+          }
+        </h3>
         <p style="color: var(--admin-text-secondary); font-size: var(--admin-text-base);">{{ d.disputeReason ?? 'No reason recorded.' }}</p>
       </section>
 

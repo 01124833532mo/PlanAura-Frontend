@@ -1,5 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
@@ -7,21 +8,40 @@ import { DocumentDownload } from '../../../../shared/ui/document-download/docume
 import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
+  BookingPaymentStatus,
   BookingRequest,
   BookingStatus,
+  DisputeStatus,
 } from '../../../../core/interfaces/booking-request.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
 import { VendorBookingRequestService } from '../../../../core/services/vendor-booking-request.service';
 import { VendorPackageService } from '../../../../core/services/vendor-package.service';
 import { VendorProfileStateService } from '../../../../core/services/vendor-profile-state.service';
-import { notifySuccess } from '../../../../shared/utils/notify';
-import { DashboardStats } from '../../dashboard-stats/dashboard-stats';
+import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
 import { BookingRequestDetails } from '../booking-request-details/booking-request-details';
 import { RejectBookingDialog } from '../reject-booking-dialog/reject-booking-dialog';
+import { ReportProblemDialog } from '../report-problem-dialog/report-problem-dialog';
 
-interface StatusFilter {
+/** Slug used in the `?status=` query param so drill-down links stay readable. */
+export type RequestTabKey =
+  | 'all'
+  | 'pending'
+  | 'accepted'
+  | 'completed'
+  | 'declined'
+  | 'refunded'
+  | 'cancelled';
+
+/**
+ * A tab narrows on booking status, payment status, or neither. Refunded is a
+ * payment-status tab: a refund leaves BookingStatus untouched, so refunded
+ * bookings also still appear under their original status tab (badged "Refunded").
+ */
+interface StatusTab {
   label: string;
-  value: BookingStatus | 'all';
+  key: RequestTabKey;
+  status?: BookingStatus;
+  paymentStatus?: BookingPaymentStatus;
 }
 
 @Component({
@@ -33,8 +53,8 @@ interface StatusFilter {
     DocumentDownload,
     StatusBadge,
     RejectBookingDialog,
+    ReportProblemDialog,
     BookingRequestDetails,
-    DashboardStats,
     DatePipe,
     DecimalPipe,
   ],
@@ -45,18 +65,35 @@ export class BookingRequestList implements OnInit {
   private readonly bookingService = inject(VendorBookingRequestService);
   private readonly packageService = inject(VendorPackageService);
   private readonly vendorProfileState = inject(VendorProfileStateService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  /**
+   * Set by the Overview page to embed a single-tab slice of this list: the page
+   * header, tab bar and `?status=` sync are all suppressed and the tab is locked.
+   */
+  @Input() fixedTab?: RequestTabKey;
+  @Input() pageSize = 20;
+
+  protected get embedded(): boolean {
+    return this.fixedTab !== undefined;
+  }
 
   // Exposed so the template can reference enum members directly.
   protected readonly BookingStatus = BookingStatus;
+  protected readonly DisputeStatus = DisputeStatus;
 
-  protected readonly filters: readonly StatusFilter[] = [
-    { label: 'Pending', value: BookingStatus.Pending },
-    { label: 'Accepted', value: BookingStatus.Accepted },
-    { label: 'Declined', value: BookingStatus.Rejected },
-    { label: 'All', value: 'all' },
+  protected readonly tabs: readonly StatusTab[] = [
+    { label: 'All', key: 'all' },
+    { label: 'Pending', key: 'pending', status: BookingStatus.Pending },
+    { label: 'Accepted', key: 'accepted', status: BookingStatus.Accepted },
+    { label: 'Completed', key: 'completed', status: BookingStatus.Completed },
+    { label: 'Declined', key: 'declined', status: BookingStatus.Rejected },
+    { label: 'Refunded', key: 'refunded', paymentStatus: BookingPaymentStatus.Refunded },
+    { label: 'Cancelled', key: 'cancelled', status: BookingStatus.Cancelled },
   ];
 
-  protected readonly activeFilter = signal<BookingStatus | 'all'>(BookingStatus.Pending);
+  protected readonly activeTab = signal<RequestTabKey>('all');
 
   protected readonly requests = signal<BookingRequest[]>([]);
   protected readonly packagesById = signal<Map<number, VendorPackage>>(new Map());
@@ -74,7 +111,11 @@ export class BookingRequestList implements OnInit {
   protected readonly rejectSaving = signal(false);
   protected readonly rejectError = signal<AppError | null>(null);
 
-  private readonly pageSize = 20;
+  // "Report a problem" dialog state — raises a dispute for an admin to resolve.
+  protected readonly disputeTarget = signal<BookingRequest | null>(null);
+  protected readonly disputeSaving = signal(false);
+  protected readonly disputeError = signal<AppError | null>(null);
+
   protected readonly page = signal(1);
   protected readonly totalCount = signal(0);
 
@@ -82,17 +123,42 @@ export class BookingRequestList implements OnInit {
     Math.max(1, Math.ceil(this.totalCount() / this.pageSize)),
   );
 
-  ngOnInit(): void {
-    this.load();
-  }
+  protected readonly emptyMessage = computed(() => {
+    const label = this.tabs.find((t) => t.key === this.activeTab())?.label ?? '';
+    return this.activeTab() === 'all'
+      ? 'No booking requests here yet.'
+      : `No ${label.toLowerCase()} booking requests.`;
+  });
 
-  protected selectFilter(value: BookingStatus | 'all'): void {
-    if (this.activeFilter() === value) {
+  ngOnInit(): void {
+    if (this.embedded) {
+      this.activeTab.set(this.fixedTab!);
+      this.load();
       return;
     }
-    this.activeFilter.set(value);
-    this.page.set(1);
-    this.load();
+
+    // Drill-down links from the Overview stat cards land here with `?status=`.
+    // Re-emits on in-place navigation, so switching tabs from a card while
+    // already on this page still reloads.
+    this.route.queryParamMap.subscribe((params) => {
+      const requested = params.get('status');
+      const match = this.tabs.find((t) => t.key === requested);
+      this.activeTab.set(match?.key ?? 'all');
+      this.page.set(1);
+      this.load();
+    });
+  }
+
+  protected selectTab(key: RequestTabKey): void {
+    if (this.activeTab() === key) {
+      return;
+    }
+    // Writing the query param drives the subscription above, which reloads.
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { status: key },
+      queryParamsHandling: 'merge',
+    });
   }
 
   protected prevPage(): void {
@@ -115,10 +181,15 @@ export class BookingRequestList implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    const filter = this.activeFilter();
+    const tab = this.tabs.find((t) => t.key === this.activeTab());
+
     this.bookingService
       .listIncoming({
-        status: filter === 'all' ? undefined : filter,
+        status: tab?.status,
+        paymentStatus: tab?.paymentStatus,
+        // A booking-status tab means "still in this state", so refunded bookings
+        // are excluded — they belong to the Refunded tab (and to All).
+        excludeRefunded: tab?.status !== undefined,
         page: this.page(),
         pageSize: this.pageSize,
       })
@@ -249,6 +320,52 @@ export class BookingRequestList implements OnInit {
       error: (err: AppError) => {
         this.rejectError.set(err);
         this.rejectSaving.set(false);
+      },
+    });
+  }
+
+  /** Mirrors the client's "Report a problem" — server allows it on Accepted/Completed only. */
+  protected canDispute(booking: BookingRequest): boolean {
+    return (
+      (booking.status === BookingStatus.Accepted || booking.status === BookingStatus.Completed) &&
+      booking.disputeStatus !== DisputeStatus.Open
+    );
+  }
+
+  protected openDispute(booking: BookingRequest): void {
+    // Close the details modal first so only the report dialog is shown.
+    this.detailsTarget.set(null);
+    this.disputeTarget.set(booking);
+    this.disputeError.set(null);
+  }
+
+  protected closeDispute(): void {
+    if (this.disputeSaving()) {
+      return;
+    }
+    this.disputeTarget.set(null);
+  }
+
+  protected submitDispute(reason: string): void {
+    const target = this.disputeTarget();
+    if (!target) {
+      return;
+    }
+
+    this.disputeSaving.set(true);
+    this.disputeError.set(null);
+
+    this.bookingService.disputeBooking(target.id, reason).subscribe({
+      next: (updated) => {
+        this.requests.update((list) => list.map((b) => (b.id === updated.id ? updated : b)));
+        this.disputeSaving.set(false);
+        this.disputeTarget.set(null);
+        notifySuccess('Your report has been sent to the Planura team.');
+      },
+      error: (err: AppError) => {
+        this.disputeError.set(err);
+        this.disputeSaving.set(false);
+        notifyError('Could not submit report', err.message);
       },
     });
   }

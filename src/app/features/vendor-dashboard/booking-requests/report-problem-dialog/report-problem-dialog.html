@@ -1,0 +1,49 @@
+<div class="modal-backdrop" (click)="handleBackdropClick()">
+  <div
+    class="modal-card report-dialog card-luxe luxe-shadow animate-scale-in"
+    role="dialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="report-dialog__header">
+      <span class="report-dialog__icon material-symbols-outlined" aria-hidden="true">flag</span>
+      <div>
+        <h4 class="text-headline-sm">Report a problem</h4>
+        @if (eventDate) {
+          <p class="text-body-md report-dialog__subtitle">
+            Event on {{ eventDate }}@if (clientName) { · {{ clientName }} }
+          </p>
+        }
+      </div>
+    </div>
+
+    <ui-alert-banner [message]="error?.message ?? null" [details]="error?.fieldErrors ?? []" />
+
+    <div class="report-dialog__field">
+      <label class="ui-field__label" for="booking-report-reason">What happened?</label>
+      <textarea
+        id="booking-report-reason"
+        class="report-dialog__textarea"
+        rows="5"
+        maxlength="1000"
+        placeholder="Describe the issue — the client didn't show up, payment problem, unsafe conditions..."
+        [(ngModel)]="reason"
+        [disabled]="saving"
+        (blur)="touched = true"
+      ></textarea>
+      @if (touched && invalid) {
+        <p class="text-label-sm report-dialog__error">Please describe the issue.</p>
+      }
+      <p class="text-label-sm report-dialog__hint">
+        This opens a dispute for the Planura team to review. It is not shared with the client.
+      </p>
+    </div>
+
+    <div class="report-dialog__actions">
+      <ui-button variant="outline" type="button" [disabled]="saving" (click)="cancelled.emit()">
+        Cancel
+      </ui-button>
+      <ui-button type="button" [loading]="saving" (click)="submit()">Submit report</ui-button>
+    </div>
+  </div>
+</div>

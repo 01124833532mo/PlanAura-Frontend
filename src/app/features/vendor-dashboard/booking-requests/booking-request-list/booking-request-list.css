@@ -257,3 +257,35 @@
     width: 100%;
   }
 }
+
+/* Raises a dispute for the Planura team — mirrors the client's row-level report link. */
+.request-row__report,
+.request-row__reported {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-sm-size);
+  padding: 0.3rem 0;
+}
+
+.request-row__report {
+  border: none;
+  background: transparent;
+  color: var(--color-secondary);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.request-row__report:hover {
+  color: var(--color-error);
+}
+
+.request-row__reported {
+  color: var(--color-error);
+}
+
+.request-row__report .material-symbols-outlined,
+.request-row__reported .material-symbols-outlined {
+  font-size: 1rem;
+}

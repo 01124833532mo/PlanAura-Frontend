@@ -125,3 +125,26 @@
 .details-dialog__actions .material-symbols-outlined {
   font-size: 1.1rem;
 }
+
+/* Post-decision escalation path — deliberately quiet, unlike Accept/Decline. */
+.details-dialog__actions--report {
+  justify-content: flex-start;
+}
+
+.details-dialog__report {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: none;
+  background: transparent;
+  color: var(--color-secondary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-sm-size);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.4rem 0;
+}
+
+.details-dialog__report:hover {
+  color: var(--color-error);
+}

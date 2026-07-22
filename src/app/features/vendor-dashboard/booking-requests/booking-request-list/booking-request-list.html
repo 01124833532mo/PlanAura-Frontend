@@ -1,31 +1,31 @@
 <div class="requests-page">
-  <div class="requests-page__header animate-fade-up">
-    <div>
-      <p class="text-label-sm requests-page__eyebrow">
-        <span class="material-symbols-outlined">mail</span>
-        Bookings
-      </p>
-      <h3 class="text-headline-sm">Booking Requests</h3>
-      <p class="text-body-md">Review requests from clients and accept or decline them.</p>
+  @if (!embedded) {
+    <div class="requests-page__header animate-fade-up">
+      <div>
+        <p class="text-label-sm requests-page__eyebrow">
+          <span class="material-symbols-outlined">mail</span>
+          Bookings
+        </p>
+        <h3 class="text-headline-sm">My Booking Requests</h3>
+        <p class="text-body-md">Every request you've received, grouped by where it stands.</p>
+      </div>
     </div>
-  </div>
 
-  <app-dashboard-stats />
-
-  <div class="requests-filters animate-fade-up" role="tablist">
-    @for (filter of filters; track filter.value) {
-      <button
-        class="requests-filter"
-        type="button"
-        role="tab"
-        [class.requests-filter--active]="activeFilter() === filter.value"
-        [attr.aria-selected]="activeFilter() === filter.value"
-        (click)="selectFilter(filter.value)"
-      >
-        {{ filter.label }}
-      </button>
-    }
-  </div>
+    <div class="requests-filters animate-fade-up" role="tablist">
+      @for (tab of tabs; track tab.key) {
+        <button
+          class="requests-filter"
+          type="button"
+          role="tab"
+          [class.requests-filter--active]="activeTab() === tab.key"
+          [attr.aria-selected]="activeTab() === tab.key"
+          (click)="selectTab(tab.key)"
+        >
+          {{ tab.label }}
+        </button>
+      }
+    </div>
+  }
 
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
@@ -39,7 +39,7 @@
     } @else if (requests().length === 0) {
       <div class="requests-page__empty animate-fade-in">
         <span class="material-symbols-outlined requests-page__empty-icon" aria-hidden="true">inbox</span>
-        <p class="text-body-md">No booking requests here yet.</p>
+        <p class="text-body-md">{{ emptyMessage() }}</p>
       </div>
     } @else {
       @for (req of requests(); track req.id) {
@@ -86,7 +86,7 @@
                 {{ req.agreedPrice | number: '1.0-2' }} {{ priceCurrency(req) }}
               </span>
             }
-            <ui-status-badge [status]="req.status" />
+            <ui-status-badge [status]="req.status" [paymentStatus]="req.paymentStatus" />
 
             @if (req.contractDocumentUrl) {
               <app-document-download
@@ -116,6 +116,22 @@
                   Decline
                 </ui-button>
               </div>
+            }
+
+            @if (canDispute(req)) {
+              <button
+                class="request-row__report"
+                type="button"
+                (click)="$event.stopPropagation(); openDispute(req)"
+              >
+                <span class="material-symbols-outlined">flag</span>
+                Report a problem
+              </button>
+            } @else if (req.disputeStatus === DisputeStatus.Open) {
+              <span class="request-row__reported">
+                <span class="material-symbols-outlined">flag</span>
+                Report under review
+              </span>
             }
           </div>
         </div>
@@ -148,9 +164,22 @@
     [packageTitle]="packageTitle(target)"
     [currency]="priceCurrency(target)"
     [actioning]="actioningId() === target.id"
+    [canDispute]="canDispute(target)"
     (accept)="accept(target)"
     (reject)="openReject(target)"
+    (dispute)="openDispute(target)"
     (closed)="closeDetails()"
+  />
+}
+
+@if (disputeTarget(); as target) {
+  <app-report-problem-dialog
+    [eventDate]="(target.eventDate | date: 'EEE, MMM d, y') ?? ''"
+    [clientName]="target.clientName"
+    [saving]="disputeSaving()"
+    [error]="disputeError()"
+    (submitted)="submitDispute($event)"
+    (cancelled)="closeDispute()"
   />
 }
 

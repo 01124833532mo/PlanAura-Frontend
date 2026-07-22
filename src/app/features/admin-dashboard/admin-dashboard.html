@@ -92,7 +92,11 @@
               <p class="admin-mini-list__title">{{ vendor.businessName }}</p>
               <p class="admin-mini-list__subtitle">{{ vendor.vendorName }} · {{ vendor.categoryName ?? 'Uncategorized' }}</p>
             </div>
-            <a [routerLink]="['/admin/vendor-verifications', vendor.vendorId]" class="admin-btn admin-btn--secondary admin-btn--sm">
+            <a
+              routerLink="/admin/vendor-verifications"
+              [queryParams]="{ vendorId: vendor.vendorId }"
+              class="admin-btn admin-btn--secondary admin-btn--sm"
+            >
               Review
             </a>
           </li>
@@ -126,7 +130,7 @@
           </thead>
           <tbody>
             @for (booking of recentBookings(); track booking.id) {
-              <tr class="is-clickable" [routerLink]="['/admin/bookings', booking.id]">
+              <tr class="is-clickable" routerLink="/admin/bookings" [queryParams]="{ bookingId: booking.id }">
                 <td>{{ booking.clientName }}</td>
                 <td>{{ booking.vendorName }}</td>
                 <td>{{ booking.eventDate | date: 'mediumDate' }}</td>

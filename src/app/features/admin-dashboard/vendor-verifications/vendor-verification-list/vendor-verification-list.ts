@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
   PendingVendorVerification,
@@ -36,6 +37,8 @@ import { VendorVerificationDetailsView } from '../vendor-verification-details/ve
 })
 export class VendorVerificationList implements OnDestroy {
   private readonly verificationService = inject(VendorVerificationService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private successTimeout: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly VendorType = VendorType;
@@ -64,6 +67,16 @@ export class VendorVerificationList implements OnDestroy {
 
   constructor() {
     this.fetchPending();
+
+    // The dashboard's "Review" shortcut deep-links here as ?vendorId=N. There is no
+    // routable detail page — the details view is a modal this page owns — so the id
+    // arrives as a query param and opens the modal directly. Opening by id rather than
+    // waiting for fetchPending() keeps the two requests independent, and surfaces a
+    // real error in the modal if that vendor is no longer pending.
+    const vendorId = Number(this.route.snapshot.queryParamMap.get('vendorId'));
+    if (vendorId > 0) {
+      this.loadDetails(vendorId);
+    }
   }
 
   ngOnDestroy(): void {
@@ -91,12 +104,16 @@ export class VendorVerificationList implements OnDestroy {
   // ---- View Details ----
 
   protected openDetails(request: PendingVendorVerification): void {
-    this.selectedVendorId.set(request.vendorId);
+    this.loadDetails(request.vendorId);
+  }
+
+  private loadDetails(vendorId: number): void {
+    this.selectedVendorId.set(vendorId);
     this.detailsData.set(null);
     this.detailsError.set(null);
     this.detailsLoading.set(true);
 
-    this.verificationService.getDetails(request.vendorId).subscribe({
+    this.verificationService.getDetails(vendorId).subscribe({
       next: (details) => {
         this.detailsData.set(details);
         this.detailsLoading.set(false);
@@ -112,6 +129,16 @@ export class VendorVerificationList implements OnDestroy {
     this.selectedVendorId.set(null);
     this.detailsData.set(null);
     this.detailsError.set(null);
+
+    // Drop the deep-link param so a refresh (or Back) doesn't reopen what was just closed.
+    if (this.route.snapshot.queryParamMap.has('vendorId')) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { vendorId: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
   }
 
   // ---- Approve ----

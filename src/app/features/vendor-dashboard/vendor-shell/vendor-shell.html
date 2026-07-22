@@ -7,11 +7,19 @@
   <nav class="vendor-nav__links">
     <a
       class="vendor-nav__link"
+      routerLink="/vendor/dashboard/overview"
+      routerLinkActive="vendor-nav__link--active"
+    >
+      <span class="material-symbols-outlined vendor-nav__link-icon">dashboard</span>
+      <span class="text-label-md">Overview</span>
+    </a>
+    <a
+      class="vendor-nav__link"
       routerLink="/vendor/dashboard/requests"
       routerLinkActive="vendor-nav__link--active"
     >
       <span class="material-symbols-outlined vendor-nav__link-icon">mail</span>
-      <span class="text-label-md">Booking Requests</span>
+      <span class="text-label-md">My Booking Requests</span>
     </a>
     <a
       class="vendor-nav__link"

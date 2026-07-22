@@ -172,6 +172,20 @@
         aria-label="Minimum rating"
         (keydown)="onListboxKeydown($event)"
       >
+        <button
+          type="button"
+          class="dropdown-option"
+          role="option"
+          [attr.aria-selected]="minRating() === null"
+          [class.dropdown-option--selected]="minRating() === null"
+          (click)="selectRating(null)"
+        >
+          <span class="dropdown-option__rating">Any rating</span>
+          @if (minRating() === null) {
+            <span class="material-symbols-outlined" aria-hidden="true">check</span>
+          }
+        </button>
+
         @for (rating of ratingOptions; track rating) {
           <button
             type="button"

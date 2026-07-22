@@ -151,32 +151,60 @@
         </p>
       </div>
 
-      <div class="home-category-grid">
-        @for (category of categories(); track category.id) {
-          <a
-            class="category-tile hover-lift animate-fade-up"
-            [routerLink]="['/client/vendors']"
-            [queryParams]="{ category: category.slug }"
+      <div class="home-category-carousel">
+        @if (canScrollCategoriesPrev()) {
+          <button
+            class="home-category-carousel__nav home-category-carousel__nav--prev"
+            type="button"
+            title="Previous"
+            (click)="scrollCategories('prev')"
           >
-            @if (category.iconUrl && !failedCategoryImages().has(category.id)) {
-              <img
-                [src]="category.iconUrl"
-                alt="{{ category.nameEn }}"
-                title="{{ category.nameEn }}"
-                class="category-tile__image"
-                (error)="onCategoryImageError(category.id)"
-              />
-            } @else {
-              <div class="category-tile__image category-tile__image--fallback">
-                <span class="material-symbols-outlined">{{ categoryIcon(category.slug) }}</span>
-              </div>
-            }
-            <div class="category-tile__overlay"></div>
-            <span class="category-tile__label">
-              {{ category.nameEn }}
-              <span class="material-symbols-outlined category-tile__arrow">arrow_forward</span>
-            </span>
-          </a>
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+        }
+
+        <div
+          class="home-category-grid"
+          #categoryScroll
+          (scroll)="updateCategoryScrollState()"
+        >
+          @for (category of categories(); track category.id) {
+            <a
+              class="category-tile hover-lift animate-fade-up"
+              [routerLink]="['/client/vendors']"
+              [queryParams]="{ category: category.slug }"
+            >
+              @if (category.iconUrl && !failedCategoryImages().has(category.id)) {
+                <img
+                  [src]="category.iconUrl"
+                  alt="{{ category.nameEn }}"
+                  title="{{ category.nameEn }}"
+                  class="category-tile__image"
+                  (error)="onCategoryImageError(category.id)"
+                />
+              } @else {
+                <div class="category-tile__image category-tile__image--fallback">
+                  <span class="material-symbols-outlined">{{ categoryIcon(category.slug) }}</span>
+                </div>
+              }
+              <div class="category-tile__overlay"></div>
+              <span class="category-tile__label">
+                {{ category.nameEn }}
+                <span class="material-symbols-outlined category-tile__arrow">arrow_forward</span>
+              </span>
+            </a>
+          }
+        </div>
+
+        @if (canScrollCategoriesNext()) {
+          <button
+            class="home-category-carousel__nav home-category-carousel__nav--next"
+            type="button"
+            title="Next"
+            (click)="scrollCategories('next')"
+          >
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
         }
       </div>
     </section>

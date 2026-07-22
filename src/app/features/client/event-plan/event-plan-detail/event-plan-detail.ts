@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
@@ -21,6 +21,7 @@ import { VendorPackage } from '../../../../core/interfaces/vendor-package.model'
 import { VendorProfile } from '../../../../core/interfaces/vendor-profile.model';
 import { BookingRequestService } from '../../../../core/services/booking-request.service';
 import { EventPlanService } from '../../../../core/services/event-plan.service';
+import { ReviewService } from '../../../../core/services/review.service';
 import { VendorPackageService } from '../../../../core/services/vendor-package.service';
 import { VendorService } from '../../../../core/services/vendor.service';
 import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
@@ -48,6 +49,7 @@ export class EventPlanDetail implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly eventPlanService = inject(EventPlanService);
   private readonly bookingService = inject(BookingRequestService);
+  private readonly reviewService = inject(ReviewService);
   private readonly vendorService = inject(VendorService);
   private readonly packageService = inject(VendorPackageService);
 
@@ -73,6 +75,17 @@ export class EventPlanDetail implements OnInit {
   protected readonly disputeError = signal<AppError | null>(null);
 
   protected readonly cancelTarget = signal<BookingRequest | null>(null);
+
+  protected readonly reviewTargetId = signal<number | null>(null);
+  protected readonly reviewTarget = computed(
+    () => this.bookings().find((b) => b.id === this.reviewTargetId()) ?? null,
+  );
+  protected readonly reviewRating = signal(0);
+  protected readonly reviewForm = this.fb.nonNullable.group({
+    comment: ['', Validators.maxLength(1000)],
+  });
+  protected readonly reviewSubmitting = signal(false);
+  protected readonly reviewError = signal<AppError | null>(null);
 
   private planId = 0;
 
@@ -240,6 +253,69 @@ export class EventPlanDetail implements OnInit {
         this.disputeError.set(err);
         this.disputeSubmitting.set(false);
         notifyError('Could not submit report', err.message);
+      },
+    });
+  }
+
+  protected openReview(booking: BookingRequest): void {
+    this.reviewTargetId.set(booking.id);
+    this.reviewRating.set(booking.reviewRating ?? 0);
+    this.reviewForm.reset({ comment: booking.reviewComment ?? '' });
+    this.reviewError.set(null);
+  }
+
+  protected closeReview(): void {
+    this.reviewTargetId.set(null);
+  }
+
+  protected setReviewRating(stars: number): void {
+    this.reviewRating.set(stars);
+  }
+
+  protected submitReview(): void {
+    if (this.reviewForm.invalid) {
+      this.reviewForm.markAllAsTouched();
+      return;
+    }
+
+    if (this.reviewRating() < 1) {
+      this.reviewError.set({ status: 400, message: 'Please select a star rating.', fieldErrors: [] });
+      return;
+    }
+
+    const booking = this.reviewTarget();
+    if (!booking) {
+      return;
+    }
+
+    const isEdit = booking.reviewId != null;
+    const rating = this.reviewRating();
+    const comment = this.reviewForm.getRawValue().comment.trim() || undefined;
+
+    this.reviewSubmitting.set(true);
+    this.reviewError.set(null);
+
+    const request$ = isEdit
+      ? this.reviewService.updateReview(booking.reviewId!, { rating, comment })
+      : this.reviewService.createReview({ bookingRequestId: booking.id, rating, comment });
+
+    request$.subscribe({
+      next: (review) => {
+        this.bookings.update((list) =>
+          list.map((b) =>
+            b.id === booking.id
+              ? { ...b, reviewId: review.id, reviewRating: review.rating, reviewComment: review.comment }
+              : b,
+          ),
+        );
+        this.reviewSubmitting.set(false);
+        this.reviewTargetId.set(null);
+        notifySuccess(isEdit ? 'Review updated.' : 'Thanks for your review!');
+      },
+      error: (err: AppError) => {
+        this.reviewError.set(err);
+        this.reviewSubmitting.set(false);
+        notifyError(isEdit ? 'Could not update review' : 'Could not submit review', err.message);
       },
     });
   }

@@ -63,6 +63,11 @@ export interface BookingRequest {
   contractId: string | null;
   contractDocumentUrl: string | null;
   contractGeneratedAt: string | null;
+
+  /** Non-null only once the client has left a review for this (Completed) booking. */
+  reviewId: number | null;
+  reviewRating: number | null;
+  reviewComment: string | null;
 }
 
 /** Mirrors Planura.Core.Application.Models.BookingRequestFilterDto. No eventPlanId filter exists server-side. */

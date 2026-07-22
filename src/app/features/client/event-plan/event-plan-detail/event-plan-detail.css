@@ -256,6 +256,42 @@
   margin-top: var(--space-md);
 }
 
+.review-modal__stars {
+  display: flex;
+  gap: 0.2rem;
+  margin-bottom: var(--space-sm);
+}
+
+.review-modal__star {
+  background: none;
+  border: none;
+  padding: 0.15rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.review-modal__star .material-symbols-outlined {
+  font-size: 1.75rem;
+  color: var(--color-outline-variant);
+}
+
+.review-modal__star--filled .material-symbols-outlined {
+  color: var(--color-rose-gold);
+  font-variation-settings: 'FILL' 1;
+}
+
+.review-modal__star:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.review-modal__counter {
+  text-align: right;
+  color: var(--color-secondary);
+  margin-top: -0.5rem;
+}
+
 @media (max-width: 900px) {
   .event-plan-detail-header__grid {
     grid-template-columns: repeat(2, 1fr);

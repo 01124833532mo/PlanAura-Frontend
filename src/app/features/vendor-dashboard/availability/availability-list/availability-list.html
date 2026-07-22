@@ -32,6 +32,7 @@
         <button class="calendar__today-btn" type="button" (click)="goToday()">Today</button>
         <div class="calendar__legend">
           <span class="calendar__legend-item"><span class="calendar__legend-dot calendar__legend-dot--available"></span>Available</span>
+          <span class="calendar__legend-item"><span class="calendar__legend-dot calendar__legend-dot--held"></span>Pending</span>
           <span class="calendar__legend-item"><span class="calendar__legend-dot calendar__legend-dot--booked"></span>Booked</span>
           <span class="calendar__legend-item"><span class="calendar__legend-dot calendar__legend-dot--blocked"></span>Blocked</span>
         </div>
@@ -73,11 +74,12 @@
                     class="calendar__slot"
                     type="button"
                     [class.calendar__slot--available]="ds.slot.status === AvailabilityStatus.Available"
+                    [class.calendar__slot--held]="ds.slot.status === AvailabilityStatus.Held"
                     [class.calendar__slot--booked]="ds.slot.status === AvailabilityStatus.Booked"
                     [class.calendar__slot--blocked]="ds.slot.status === AvailabilityStatus.Blocked"
                     [class.calendar__slot--continuation]="ds.segment !== 'single'"
                     [title]="statusLabel(ds.slot.status) + ' · ' + ds.rangeTitle"
-                    (click)="$event.stopPropagation(); openEdit(ds.slot)"
+                    (click)="$event.stopPropagation(); openSlot(ds.slot)"
                   >
                     <span class="calendar__slot-dot" aria-hidden="true"></span>
                     <span class="calendar__slot-label">{{ ds.label }}</span>
@@ -125,4 +127,14 @@
       }
     </div>
   </div>
+}
+
+@if (bookingDetails(); as booking) {
+  <app-booking-request-details
+    [booking]="booking"
+    [actioning]="bookingActioning()"
+    (accept)="acceptBooking(booking)"
+    (reject)="rejectBooking(booking)"
+    (closed)="closeBookingDetails()"
+  />
 }

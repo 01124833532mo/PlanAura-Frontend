@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
 import { AppError } from '../../../../core/interfaces/api-response.model';
+import { BookingRequest } from '../../../../core/interfaces/booking-request.model';
 import {
   AvailabilityStatus,
   CreateVendorAvailabilityPayload,
@@ -9,8 +10,10 @@ import {
   VendorAvailability,
 } from '../../../../core/interfaces/vendor-availability.model';
 import { VendorAvailabilityService } from '../../../../core/services/vendor-availability.service';
+import { VendorBookingRequestService } from '../../../../core/services/vendor-booking-request.service';
 import { VendorProfileStateService } from '../../../../core/services/vendor-profile-state.service';
 import { AvailabilityForm } from '../availability-form/availability-form';
+import { BookingRequestDetails } from '../../booking-requests/booking-request-details/booking-request-details';
 
 /** One slot as it appears on a single day cell (a multi-day slot yields one per covered day). */
 interface DaySlot {
@@ -44,12 +47,13 @@ function dayKey(d: Date): string {
 @Component({
   selector: 'app-availability-list',
   standalone: true,
-  imports: [AlertBanner, Button, AvailabilityForm],
+  imports: [AlertBanner, Button, AvailabilityForm, BookingRequestDetails],
   templateUrl: './availability-list.html',
   styleUrl: './availability-list.css',
 })
 export class AvailabilityList {
   private readonly availabilityService = inject(VendorAvailabilityService);
+  private readonly vendorBookingRequestService = inject(VendorBookingRequestService);
   private readonly vendorProfileState = inject(VendorProfileStateService);
 
   protected readonly AvailabilityStatus = AvailabilityStatus;
@@ -63,6 +67,11 @@ export class AvailabilityList {
   protected readonly editingSlot = signal<VendorAvailability | null>(null);
   protected readonly initialDate = signal<string | null>(null);
   protected readonly savingId = signal<number | 'new' | null>(null);
+
+  // Read-only booking view opened when the vendor clicks a Booked slot. Errors
+  // (load/accept/reject) surface through the page-level `error` alert banner.
+  protected readonly bookingDetails = signal<BookingRequest | null>(null);
+  protected readonly bookingActioning = signal(false);
 
   // First day of the month currently shown in the calendar.
   protected readonly viewMonth = signal(startOfMonth(new Date()));
@@ -191,7 +200,7 @@ export class AvailabilityList {
       case AvailabilityStatus.Blocked:
         return 'Blocked';
       case AvailabilityStatus.Held:
-        return 'Held';
+        return 'Pending';
     }
   }
 
@@ -243,6 +252,83 @@ export class AvailabilityList {
     this.editingSlot.set(slot);
     this.initialDate.set(null);
     this.formOpen.set(true);
+  }
+
+  /**
+   * Routes a slot click to the right view: a Held or Booked slot has no editable
+   * fields of its own (the vendor doesn't own the booking), so it opens the linked
+   * booking's details instead of the availability edit form. A Blocked slot only
+   * ever exists here because its start time has passed (there's no vendor-facing
+   * "block a date" action), so it's purely informational and does nothing on click.
+   */
+  protected openSlot(slot: VendorAvailability): void {
+    // Held = a fresh request awaiting this vendor's own accept/reject; Booked =
+    // already confirmed. Both are tied to a real booking, so both open the same
+    // read-only (or, while still Held, actionable) details view.
+    if (slot.status === AvailabilityStatus.Booked || slot.status === AvailabilityStatus.Held) {
+      if (slot.bookingRequestId !== null) {
+        this.loadBookingDetails(slot.bookingRequestId);
+      }
+      return;
+    }
+    if (slot.status === AvailabilityStatus.Available) {
+      this.openEdit(slot);
+    }
+  }
+
+  private loadBookingDetails(bookingRequestId: number): void {
+    this.error.set(null);
+    this.bookingDetails.set(null);
+    this.vendorBookingRequestService.getIncoming(bookingRequestId).subscribe({
+      next: (booking) => this.bookingDetails.set(booking),
+      error: (err: AppError) => this.error.set(err),
+    });
+  }
+
+  protected closeBookingDetails(): void {
+    this.bookingDetails.set(null);
+  }
+
+  protected acceptBooking(booking: BookingRequest): void {
+    if (!confirm('Accept this booking request? The client will be charged now.')) {
+      return;
+    }
+
+    this.bookingActioning.set(true);
+    this.error.set(null);
+
+    this.vendorBookingRequestService.accept(booking.id).subscribe({
+      next: () => this.finishBookingAction(),
+      error: (err: AppError) => {
+        this.error.set(err);
+        // A capture failure auto-declines the request server-side, so the slot's
+        // status may have already changed — close the (now stale) modal and refresh.
+        this.finishBookingAction();
+      },
+    });
+  }
+
+  protected rejectBooking(booking: BookingRequest): void {
+    this.bookingActioning.set(true);
+    this.error.set(null);
+
+    this.vendorBookingRequestService.reject(booking.id).subscribe({
+      next: () => this.finishBookingAction(),
+      error: (err: AppError) => {
+        this.error.set(err);
+        this.finishBookingAction();
+      },
+    });
+  }
+
+  /** Refreshes the calendar so any slot status change from the accept/reject is reflected. */
+  private finishBookingAction(): void {
+    this.bookingActioning.set(false);
+    this.closeBookingDetails();
+    const vendorId = this.vendorProfileState.vendorId();
+    if (vendorId !== null) {
+      this.fetchSlots(vendorId);
+    }
   }
 
   protected closeForm(): void {

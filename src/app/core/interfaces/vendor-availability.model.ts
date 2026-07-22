@@ -3,6 +3,7 @@ export enum AvailabilityStatus {
   Available = 1,
   Booked = 2,
   Blocked = 3,
+  Held = 4,
 }
 
 /** Mirrors Planura.Core.Application.Models.VendorAvailabilityDto. */

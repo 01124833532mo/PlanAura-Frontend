@@ -190,6 +190,8 @@ export class AvailabilityList {
         return 'Booked';
       case AvailabilityStatus.Blocked:
         return 'Blocked';
+      case AvailabilityStatus.Held:
+        return 'Held';
     }
   }
 

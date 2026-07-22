@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, map } from 'rxjs';
 import type { Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
@@ -21,11 +20,7 @@ import { StepperHeader } from '../../../../shared/ui/stepper-header/stepper-head
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { STRIPE_PUBLISHABLE_KEY } from '../../../../core/config/app-config';
 import { AppError } from '../../../../core/interfaces/api-response.model';
-import {
-  BookingRequest,
-  BookingStatus,
-  CreateBookingRequest,
-} from '../../../../core/interfaces/booking-request.model';
+import { CreateBookingRequest } from '../../../../core/interfaces/booking-request.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
 import { VendorProfile } from '../../../../core/interfaces/vendor-profile.model';
 import {
@@ -53,6 +48,42 @@ const STRIPE_LOAD_TIMEOUT_MS = 15000;
 /** Two visual steps over the same form/submission — the booking is still only ever created in step 2's confirmBooking(). */
 type WizardStep = 'details' | 'payment';
 const WIZARD_STEP_LABELS = ['Details', 'Payment'];
+
+const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/** One cell of the month grid — carries every slot (of any status) touching that day, so booked/held/blocked days can be shown as busy rather than hidden. */
+interface CalendarDay {
+  date: Date;
+  key: string;
+  dayNum: number;
+  inMonth: boolean;
+  isToday: boolean;
+  isPast: boolean;
+  isSelected: boolean;
+  slots: VendorAvailability[];
+  hasAvailable: boolean;
+}
+
+function pad(n: number): string {
+  return String(n).padStart(2, '0');
+}
+
+function startOfMonth(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), 1);
+}
+
+function lastOfMonth(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth() + 1, 0);
+}
+
+function startOfDay(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+/** Local (not UTC) yyyy-MM-dd key so slots group under the day the client sees. */
+function dayKey(d: Date): string {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
 
 @Component({
   selector: 'app-booking-create',
@@ -134,6 +165,105 @@ export class BookingCreate implements OnInit, OnDestroy {
     () => this.slots().find((slot) => slot.id === this.selectedSlotId()) ?? null,
   );
 
+  protected readonly AvailabilityStatus = AvailabilityStatus;
+  protected readonly weekdayLabels = WEEKDAY_LABELS;
+
+  protected readonly viewMonth = signal(startOfMonth(new Date()));
+  /** Day (yyyy-MM-dd key) whose time-slot list is expanded beneath the grid — null when none is. */
+  protected readonly expandedDayKey = signal<string | null>(null);
+
+  protected readonly monthLabel = computed(() =>
+    this.viewMonth().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+  );
+
+  /** Every fetched slot (any status), spread across each calendar day its start→end range covers. */
+  private readonly slotsByDay = computed<Map<string, VendorAvailability[]>>(() => {
+    const byDay = new Map<string, VendorAvailability[]>();
+
+    for (const slot of this.slots()) {
+      const start = new Date(slot.startAt);
+      const end = new Date(slot.endAt);
+      const startDay = startOfDay(start);
+
+      // A slot ending exactly at midnight belongs to the previous day, not the next.
+      let endDay = startOfDay(end);
+      if (end.getHours() === 0 && end.getMinutes() === 0 && endDay > startDay) {
+        endDay = new Date(endDay);
+        endDay.setDate(endDay.getDate() - 1);
+      }
+      if (endDay < startDay) {
+        endDay = startDay;
+      }
+
+      const cursor = new Date(startDay);
+      while (cursor <= endDay) {
+        const key = dayKey(cursor);
+        const list = byDay.get(key);
+        if (list) {
+          list.push(slot);
+        } else {
+          byDay.set(key, [slot]);
+        }
+        cursor.setDate(cursor.getDate() + 1);
+      }
+    }
+
+    for (const list of byDay.values()) {
+      list.sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime());
+    }
+    return byDay;
+  });
+
+  protected readonly weeks = computed<CalendarDay[][]>(() => {
+    const month = this.viewMonth();
+    const monthIndex = month.getMonth();
+    const slotsByDay = this.slotsByDay();
+
+    const today = new Date();
+    const todayKey = dayKey(today);
+    const todayMidnight = startOfDay(today);
+    const selectedSlot = this.selectedSlot();
+    const selectedKey = selectedSlot ? dayKey(new Date(selectedSlot.startAt)) : null;
+
+    // Grid starts on the Sunday on/before the 1st, ends on the Saturday on/after the last day.
+    const gridStart = new Date(month);
+    gridStart.setDate(1 - month.getDay());
+
+    const weeks: CalendarDay[][] = [];
+    const cursor = new Date(gridStart);
+    for (let w = 0; w < 6; w++) {
+      const week: CalendarDay[] = [];
+      for (let d = 0; d < 7; d++) {
+        const key = dayKey(cursor);
+        const daySlots = slotsByDay.get(key) ?? [];
+        week.push({
+          date: new Date(cursor),
+          key,
+          dayNum: cursor.getDate(),
+          inMonth: cursor.getMonth() === monthIndex,
+          isToday: key === todayKey,
+          isPast: startOfDay(cursor) < todayMidnight,
+          isSelected: key === selectedKey,
+          slots: daySlots,
+          hasAvailable: daySlots.some((s) => s.status === AvailabilityStatus.Available),
+        });
+        cursor.setDate(cursor.getDate() + 1);
+      }
+      weeks.push(week);
+      // Stop after the week that contains the last day of the month.
+      if (cursor.getMonth() !== monthIndex && week[6].date >= lastOfMonth(month)) {
+        break;
+      }
+    }
+    return weeks;
+  });
+
+  /** The expanded day's slots (any status) for the time-slot list beneath the grid. */
+  protected readonly expandedDaySlots = computed<VendorAvailability[]>(() => {
+    const key = this.expandedDayKey();
+    return key ? (this.slotsByDay().get(key) ?? []) : [];
+  });
+
   protected readonly form = this.fb.group({
     eventPlanId: this.fb.control<number | null>(null),
     guestCount: this.fb.nonNullable.control(''),
@@ -168,36 +298,7 @@ export class BookingCreate implements OnInit, OnDestroy {
       this.mountingPayment.set(false);
     }
 
-    // Defense in depth: vendor-details already hides/disables the "Book this
-    // package" button for a blocked package, but this page is reachable
-    // directly (URL, back-button) with state vendor-details never checked.
-    this.checkForBlockingBooking().subscribe((blocking) => {
-      if (blocking) {
-        const message =
-          blocking.status === BookingStatus.Pending
-            ? "You've already requested this package — waiting for the vendor's response."
-            : "You've already booked this package.";
-        notifyError(message);
-        this.router.navigate(['/client/vendors', this.vendorId]);
-        return;
-      }
-
-      this.loadData();
-    });
-  }
-
-  /** Pending or Accepted bookings for this exact package block a new request; Rejected/Cancelled/Expired/Completed don't. */
-  private checkForBlockingBooking(): Observable<BookingRequest | null> {
-    return this.bookingService.listMyBookings({ pageSize: 100 }).pipe(
-      map(
-        (result) =>
-          result.items.find(
-            (b) =>
-              b.vendorPackageId === this.packageId &&
-              (b.status === BookingStatus.Pending || b.status === BookingStatus.Accepted),
-          ) ?? null,
-      ),
-    );
+    this.loadData();
   }
 
   ngOnDestroy(): void {
@@ -394,9 +495,43 @@ export class BookingCreate implements OnInit, OnDestroy {
     });
   }
 
-  protected selectSlot(slotId: number): void {
-    this.selectedSlotId.set(slotId);
+  /** Expands/collapses a day's time-slot list — no-op for past, outside-month, or fully-busy days. */
+  protected selectDay(day: CalendarDay): void {
+    if (day.isPast || !day.inMonth || !day.hasAvailable) {
+      return;
+    }
+    this.expandedDayKey.update((key) => (key === day.key ? null : day.key));
+  }
+
+  protected selectSlot(slot: VendorAvailability): void {
+    if (slot.status !== AvailabilityStatus.Available) {
+      return;
+    }
+    this.selectedSlotId.set(slot.id);
     this.slotError.set(null);
+  }
+
+  protected slotStatusLabel(status: AvailabilityStatus): string {
+    switch (status) {
+      case AvailabilityStatus.Available:
+        return 'Available';
+      case AvailabilityStatus.Booked:
+        return 'Booked';
+      case AvailabilityStatus.Held:
+        return 'Held';
+      case AvailabilityStatus.Blocked:
+        return 'Blocked';
+    }
+  }
+
+  protected prevMonth(): void {
+    this.viewMonth.update((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1));
+    this.expandedDayKey.set(null);
+  }
+
+  protected nextMonth(): void {
+    this.viewMonth.update((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1));
+    this.expandedDayKey.set(null);
   }
 
   protected guestCountErrorMessage(): string | null {
@@ -496,23 +631,6 @@ export class BookingCreate implements OnInit, OnDestroy {
     this.error.set(null);
     this.slotError.set(null);
 
-    // Re-check right before charging the card — the ngOnInit check already
-    // caught stale direct-navigation state, this catches a booking created
-    // in another tab during the time this form was open.
-    const blocking = await new Promise<BookingRequest | null>((resolve) =>
-      this.checkForBlockingBooking().subscribe(resolve),
-    );
-    if (blocking) {
-      this.submitting.set(false);
-      const message =
-        blocking.status === BookingStatus.Pending
-          ? "You've already requested this package — waiting for the vendor's response."
-          : "You've already booked this package.";
-      notifyError(message);
-      this.router.navigate(['/client/vendors', this.vendorId]);
-      return;
-    }
-
     // Deferred Stripe flow: elements.submit() validates/collects the card
     // fields, createPaymentMethod() tokenizes them into a pm_... id —
     // neither step confirms a PaymentIntent, since none exists yet on our side.
@@ -560,7 +678,9 @@ export class BookingCreate implements OnInit, OnDestroy {
         this.submitting.set(false);
 
         if (err.status === 409) {
-          this.slotError.set("This slot was just booked by someone else — please pick another.");
+          this.slotError.set(
+            err.message || "This slot was just booked by someone else — please pick another.",
+          );
           this.selectedSlotId.set(null);
           this.refreshSlots();
           this.currentStep.set('details');

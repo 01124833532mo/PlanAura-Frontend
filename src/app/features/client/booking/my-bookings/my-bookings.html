@@ -25,58 +25,62 @@
     <div class="booking-list">
       @for (booking of bookings(); track booking.id) {
         <div class="card-luxe luxe-shadow hover-lift booking-row" (click)="openPlan(booking)">
-          <div class="booking-row__vendor">
-            <div class="booking-row__logo-placeholder">
-              <span class="material-symbols-outlined">storefront</span>
+          <div class="booking-row__main">
+            <div class="booking-row__vendor">
+              <div class="booking-row__logo-placeholder">
+                <span class="material-symbols-outlined">storefront</span>
+              </div>
+              <div>
+                <h4 class="text-headline-sm">{{ vendorName(booking) }}</h4>
+                @if (packageTitle(booking); as title) {
+                  <p class="text-body-md booking-row__package">{{ title }}</p>
+                }
+                <p class="text-label-sm booking-row__plan">Part of: {{ planTitle(booking) }}</p>
+              </div>
             </div>
-            <div>
-              <h4 class="text-headline-sm">{{ vendorName(booking) }}</h4>
-              @if (packageTitle(booking); as title) {
-                <p class="text-body-md booking-row__package">{{ title }}</p>
-              }
-              <p class="text-label-sm booking-row__plan">Part of: {{ planTitle(booking) }}</p>
-            </div>
-          </div>
 
-          <div class="booking-row__meta">
-            <span>
-              <span class="material-symbols-outlined">event</span>
-              {{ booking.eventDate | date: 'mediumDate' }}
-            </span>
-            @if (booking.guestCount) {
+            <div class="booking-row__meta">
               <span>
-                <span class="material-symbols-outlined">groups</span>
-                {{ booking.guestCount }} guests
+                <span class="material-symbols-outlined">event</span>
+                {{ booking.eventDate | date: 'mediumDate' }}
               </span>
-            }
-            @if (booking.agreedPrice !== null) {
-              <span class="booking-row__price">
-                {{ priceCurrency(booking) }} {{ booking.agreedPrice | number: '1.0-2' }}
-              </span>
-            }
+              @if (booking.guestCount) {
+                <span>
+                  <span class="material-symbols-outlined">groups</span>
+                  {{ booking.guestCount }} guests
+                </span>
+              }
+              @if (booking.agreedPrice !== null) {
+                <span class="booking-row__price">
+                  {{ priceCurrency(booking) }} {{ booking.agreedPrice | number: '1.0-2' }}
+                </span>
+              }
+            </div>
           </div>
 
-          <div class="booking-row__status">
-            <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
-            @if (booking.paymentStatus === BookingPaymentStatus.Refunded) {
-              <p class="text-label-sm booking-row__status-note">
-                Your refund is on its way to your account.
-              </p>
-            }
-          </div>
+          <div class="booking-row__footer">
+            <div class="booking-row__status">
+              <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
+              @if (booking.paymentStatus === BookingPaymentStatus.Refunded) {
+                <p class="text-label-sm booking-row__status-note">
+                  Your refund is on its way to your account.
+                </p>
+              }
+            </div>
 
-          <div class="booking-row__actions">
-            @if (booking.contractDocumentUrl) {
-              <app-document-download
-                [url]="booking.contractDocumentUrl"
-                label="Booking Contract"
-                icon="description"
-              />
-            }
-            <span class="my-bookings-row__view-link">
-              View plan
-              <span class="material-symbols-outlined">chevron_right</span>
-            </span>
+            <div class="booking-row__actions">
+              @if (booking.contractDocumentUrl) {
+                <app-document-download
+                  [url]="booking.contractDocumentUrl"
+                  label="Booking Contract"
+                  icon="description"
+                />
+              }
+              <span class="my-bookings-row__view-link">
+                View plan
+                <span class="material-symbols-outlined">chevron_right</span>
+              </span>
+            </div>
           </div>
         </div>
       }

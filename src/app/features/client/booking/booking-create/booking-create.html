@@ -69,20 +69,92 @@
                 This vendor has no available dates right now.
               </p>
             } @else {
-              <div class="booking-create-slots">
-                @for (slot of availableSlots(); track slot.id) {
+              <div class="booking-calendar">
+                <div class="booking-calendar__toolbar">
                   <button
-                    class="booking-create-slot"
+                    class="booking-calendar__nav-btn"
                     type="button"
-                    [class.booking-create-slot--active]="selectedSlotId() === slot.id"
-                    (click)="selectSlot(slot.id)"
+                    title="Previous month"
+                    (click)="prevMonth()"
                   >
-                    <span class="material-symbols-outlined">event</span>
-                    <span>
-                      {{ slot.startAt | date: 'mediumDate' }}, {{ slot.startAt | date: 'shortTime' }}
-                      – {{ slot.endAt | date: 'shortTime' }}
-                    </span>
+                    <span class="material-symbols-outlined">chevron_left</span>
                   </button>
+                  <span class="booking-calendar__month">{{ monthLabel() }}</span>
+                  <button
+                    class="booking-calendar__nav-btn"
+                    type="button"
+                    title="Next month"
+                    (click)="nextMonth()"
+                  >
+                    <span class="material-symbols-outlined">chevron_right</span>
+                  </button>
+                </div>
+
+                <div class="booking-calendar__weekdays">
+                  @for (label of weekdayLabels; track label) {
+                    <span class="booking-calendar__weekday">{{ label }}</span>
+                  }
+                </div>
+
+                <div class="booking-calendar__grid">
+                  @for (week of weeks(); track $index) {
+                    @for (day of week; track day.key) {
+                      <button
+                        type="button"
+                        class="booking-calendar__day"
+                        [class.booking-calendar__day--outside]="!day.inMonth"
+                        [class.booking-calendar__day--past]="day.isPast"
+                        [class.booking-calendar__day--available]="!day.isPast && day.inMonth && day.hasAvailable"
+                        [class.booking-calendar__day--unavailable]="
+                          !day.isPast && day.inMonth && !day.hasAvailable && day.slots.length > 0
+                        "
+                        [class.booking-calendar__day--today]="day.isToday"
+                        [class.booking-calendar__day--selected]="day.isSelected"
+                        [class.booking-calendar__day--expanded]="day.key === expandedDayKey()"
+                        [disabled]="day.isPast || !day.inMonth || !day.hasAvailable"
+                        [title]="day.hasAvailable ? 'Available' : (day.slots.length > 0 ? 'Unavailable' : '')"
+                        (click)="selectDay(day)"
+                      >
+                        {{ day.dayNum }}
+                      </button>
+                    }
+                  }
+                </div>
+
+                <div class="booking-calendar__legend">
+                  <span class="booking-calendar__legend-item">
+                    <span class="booking-calendar__legend-dot booking-calendar__legend-dot--available"></span>
+                    Available
+                  </span>
+                  <span class="booking-calendar__legend-item">
+                    <span class="booking-calendar__legend-dot booking-calendar__legend-dot--unavailable"></span>
+                    Unavailable
+                  </span>
+                  <span class="booking-calendar__legend-item">
+                    <span class="booking-calendar__legend-dot booking-calendar__legend-dot--selected"></span>
+                    Selected
+                  </span>
+                </div>
+
+                @if (expandedDaySlots().length > 0) {
+                  <div class="booking-calendar__timeslots">
+                    @for (slot of expandedDaySlots(); track slot.id) {
+                      <button
+                        type="button"
+                        class="booking-calendar__timeslot"
+                        [class.booking-calendar__timeslot--available]="slot.status === AvailabilityStatus.Available"
+                        [class.booking-calendar__timeslot--active]="selectedSlotId() === slot.id"
+                        [disabled]="slot.status !== AvailabilityStatus.Available"
+                        (click)="selectSlot(slot)"
+                      >
+                        <span class="material-symbols-outlined">schedule</span>
+                        <span>{{ slot.startAt | date: 'shortTime' }} – {{ slot.endAt | date: 'shortTime' }}</span>
+                        @if (slot.status !== AvailabilityStatus.Available) {
+                          <span class="booking-calendar__timeslot-status">{{ slotStatusLabel(slot.status) }}</span>
+                        }
+                      </button>
+                    }
+                  </div>
                 }
               </div>
             }

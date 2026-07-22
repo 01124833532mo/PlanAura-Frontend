@@ -76,81 +76,85 @@
         <div class="booking-list">
           @for (booking of bookings(); track booking.id) {
             <div class="card-luxe luxe-shadow hover-lift booking-row">
-              <div class="booking-row__vendor">
-                @if (vendorLogo(booking); as logo) {
-                  <img [src]="logo" [alt]="vendorName(booking)" class="booking-row__logo" />
-                } @else {
-                  <div class="booking-row__logo-placeholder">
-                    <span class="material-symbols-outlined">storefront</span>
+              <div class="booking-row__main">
+                <div class="booking-row__vendor">
+                  @if (vendorLogo(booking); as logo) {
+                    <img [src]="logo" [alt]="vendorName(booking)" class="booking-row__logo" />
+                  } @else {
+                    <div class="booking-row__logo-placeholder">
+                      <span class="material-symbols-outlined">storefront</span>
+                    </div>
+                  }
+                  <div>
+                    <h4 class="text-headline-sm">{{ vendorName(booking) }}</h4>
+                    @if (packageTitle(booking); as title) {
+                      <p class="text-body-md booking-row__package">{{ title }}</p>
+                    }
                   </div>
-                }
-                <div>
-                  <h4 class="text-headline-sm">{{ vendorName(booking) }}</h4>
-                  @if (packageTitle(booking); as title) {
-                    <p class="text-body-md booking-row__package">{{ title }}</p>
+                </div>
+
+                <div class="booking-row__meta">
+                  <span>
+                    <span class="material-symbols-outlined">event</span>
+                    {{ booking.eventDate | date: 'mediumDate' }}
+                  </span>
+                  @if (booking.guestCount) {
+                    <span>
+                      <span class="material-symbols-outlined">groups</span>
+                      {{ booking.guestCount }} guests
+                    </span>
+                  }
+                  @if (booking.agreedPrice !== null) {
+                    <span class="booking-row__price">
+                      {{ priceCurrency(booking) }} {{ booking.agreedPrice | number: '1.0-2' }}
+                    </span>
                   }
                 </div>
               </div>
 
-              <div class="booking-row__meta">
-                <span>
-                  <span class="material-symbols-outlined">event</span>
-                  {{ booking.eventDate | date: 'mediumDate' }}
-                </span>
-                @if (booking.guestCount) {
-                  <span>
-                    <span class="material-symbols-outlined">groups</span>
-                    {{ booking.guestCount }} guests
-                  </span>
-                }
-                @if (booking.agreedPrice !== null) {
-                  <span class="booking-row__price">
-                    {{ priceCurrency(booking) }} {{ booking.agreedPrice | number: '1.0-2' }}
-                  </span>
-                }
-              </div>
+              <div class="booking-row__footer">
+                <div class="booking-row__status">
+                  <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
+                  @if (booking.paymentStatus === BookingPaymentStatus.Refunded) {
+                    <p class="text-label-sm booking-row__status-note">
+                      Your refund is on its way to your account.
+                    </p>
+                  }
+                </div>
 
-              <div class="booking-row__status">
-                <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
-                @if (booking.paymentStatus === BookingPaymentStatus.Refunded) {
-                  <p class="text-label-sm booking-row__status-note">
-                    Your refund is on its way to your account.
-                  </p>
-                }
-              </div>
-
-              <div class="booking-row__actions">
-                @if (booking.contractDocumentUrl) {
-                  <app-document-download
-                    [url]="booking.contractDocumentUrl"
-                    label="Booking Contract"
-                    icon="description"
-                  />
-                }
-                @if (booking.status === BookingStatus.Pending) {
-                  <ui-button
-                    variant="outline"
-                    [fullWidth]="false"
-                    [loading]="actioningId() === booking.id"
-                    (click)="cancelBooking(booking)"
-                  >
-                    Cancel request
-                  </ui-button>
-                }
-                @if (booking.status === BookingStatus.Completed) {
-                  <ui-button variant="outline" [fullWidth]="false" (click)="openReview(booking)">
-                    {{ booking.reviewId ? 'Edit your review' : 'Leave a review' }}
-                  </ui-button>
-                }
-                @if (
-                  (booking.status === BookingStatus.Accepted ||
-                    booking.status === BookingStatus.Completed) &&
-                  booking.disputeStatus !== DisputeStatus.Open
-                ) {
-                  <button class="booking-row__report" type="button" (click)="openDispute(booking)">
-                    Report a problem
-                  </button>
-                }
+                <div class="booking-row__actions">
+                  @if (booking.contractDocumentUrl) {
+                    <app-document-download
+                      [url]="booking.contractDocumentUrl"
+                      label="Booking Contract"
+                      icon="description"
+                    />
+                  }
+                  @if (booking.status === BookingStatus.Pending) {
+                    <ui-button
+                      variant="outline"
+                      [fullWidth]="false"
+                      [loading]="actioningId() === booking.id"
+                      (click)="cancelBooking(booking)"
+                    >
+                      Cancel request
+                    </ui-button>
+                  }
+                  @if (booking.status === BookingStatus.Completed) {
+                    <ui-button variant="outline" [fullWidth]="false" (click)="openReview(booking)">
+                      {{ booking.reviewId ? 'Edit your review' : 'Leave a review' }}
+                    </ui-button>
+                  }
+                  @if (
+                    (booking.status === BookingStatus.Accepted ||
+                      booking.status === BookingStatus.Completed) &&
+                    booking.disputeStatus !== DisputeStatus.Open
+                  ) {
+                    <button class="booking-row__report" type="button" (click)="openDispute(booking)">
+                      Report a problem
+                    </button>
+                  }
+                </div>
               </div>
             </div>
           }

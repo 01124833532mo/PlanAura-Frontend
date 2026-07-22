@@ -128,7 +128,7 @@
           } @else {
             <div class="vendor-package-grid">
               @for (pkg of packages(); track pkg.id) {
-                <div class="card-luxe luxe-shadow vendor-package-card" [class.vendor-package-card--blocked]="blockingBooking(pkg)">
+                <div class="card-luxe luxe-shadow vendor-package-card">
                   <div class="vendor-package-card__header">
                     <h4 class="vendor-package-card__title">{{ pkg.title }}</h4>
                     <span class="vendor-package-card__price">
@@ -154,24 +154,14 @@
                         Up to {{ pkg.maxGuests }} guests
                       </span>
                     }
-                    @if (blockingBooking(pkg); as blocking) {
-                      <span
-                        class="status-badge"
-                        [class.status-badge--pending]="blockingTone(blocking) === 'pending'"
-                        [class.status-badge--success]="blockingTone(blocking) === 'success'"
-                      >
-                        {{ blockingLabel(blocking) }}
-                      </span>
-                    } @else {
-                      <button
-                        class="btn-gold-gradient"
-                        type="button"
-                        (click)="bookPackage(pkg)"
-                      >
-                        <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
-                        Book this package
-                      </button>
-                    }
+                    <button
+                      class="btn-gold-gradient"
+                      type="button"
+                      (click)="bookPackage(pkg)"
+                    >
+                      <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
+                      Book this package
+                    </button>
                   </div>
                 </div>
               }

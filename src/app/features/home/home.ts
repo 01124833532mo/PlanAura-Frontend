@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -51,14 +51,23 @@ const DEFAULT_CATEGORY_ICON = 'celebration';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home implements OnInit {
+export class Home implements OnInit, AfterViewInit {
   private readonly authService = inject(AuthService);
   private readonly categoryService = inject(ServiceCategoryService);
   private readonly vendorBrowseService = inject(VendorBrowseService);
   private readonly router = inject(Router);
 
+  @ViewChild('categoryScroll')
+  private categoryScroll?: ElementRef<HTMLDivElement>;
+
   protected readonly categories = signal<ServiceCategory[]>([]);
   protected readonly featuredVendors = signal<VendorListItem[]>([]);
+
+  // Whether the category row has more content off-screen in either
+  // direction — drives visibility of the prev/next scroll buttons. Only
+  // relevant once there are enough categories to overflow a single row.
+  protected readonly canScrollCategoriesPrev = signal(false);
+  protected readonly canScrollCategoriesNext = signal(false);
 
   // Some category iconUrls 404 at runtime (likely manually-entered test data
   // pointing at files that were never actually uploaded) — track failures
@@ -75,14 +84,45 @@ export class Home implements OnInit {
 
   ngOnInit(): void {
     this.categoryService.getActiveCategories().subscribe({
-      next: (categories) => this.categories.set(categories),
+      next: (categories) => {
+        this.categories.set(categories);
+        // Tiles render after this tick, so defer the overflow check.
+        setTimeout(() => this.updateCategoryScrollState());
+      },
       error: () => this.categories.set([]),
     });
 
-    this.vendorBrowseService.list({ sortBy: 'featured', pageSize: 6 }).subscribe({
+    this.vendorBrowseService.list({ sortBy: 'featured', pageSize: 8 }).subscribe({
       next: (result) => this.featuredVendors.set(result.items),
       error: () => this.featuredVendors.set([]),
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.updateCategoryScrollState();
+  }
+
+  protected scrollCategories(direction: 'prev' | 'next'): void {
+    const el = this.categoryScroll?.nativeElement;
+    if (!el) {
+      return;
+    }
+    const amount = el.clientWidth * 0.9 * (direction === 'prev' ? -1 : 1);
+    el.scrollBy({ left: amount, behavior: 'smooth' });
+    // scrollBy is async/animated, so re-check after it settles.
+    setTimeout(() => this.updateCategoryScrollState(), 350);
+  }
+
+  protected updateCategoryScrollState(): void {
+    const el = this.categoryScroll?.nativeElement;
+    if (!el) {
+      this.canScrollCategoriesPrev.set(false);
+      this.canScrollCategoriesNext.set(false);
+      return;
+    }
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    this.canScrollCategoriesPrev.set(el.scrollLeft > 4);
+    this.canScrollCategoriesNext.set(el.scrollLeft < maxScroll - 4);
   }
 
   protected categoryIcon(slug: string): string {

@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, map } from 'rxjs';
 import type { Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
@@ -21,11 +20,7 @@ import { StepperHeader } from '../../../../shared/ui/stepper-header/stepper-head
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { STRIPE_PUBLISHABLE_KEY } from '../../../../core/config/app-config';
 import { AppError } from '../../../../core/interfaces/api-response.model';
-import {
-  BookingRequest,
-  BookingStatus,
-  CreateBookingRequest,
-} from '../../../../core/interfaces/booking-request.model';
+import { CreateBookingRequest } from '../../../../core/interfaces/booking-request.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
 import { VendorProfile } from '../../../../core/interfaces/vendor-profile.model';
 import {
@@ -168,36 +163,7 @@ export class BookingCreate implements OnInit, OnDestroy {
       this.mountingPayment.set(false);
     }
 
-    // Defense in depth: vendor-details already hides/disables the "Book this
-    // package" button for a blocked package, but this page is reachable
-    // directly (URL, back-button) with state vendor-details never checked.
-    this.checkForBlockingBooking().subscribe((blocking) => {
-      if (blocking) {
-        const message =
-          blocking.status === BookingStatus.Pending
-            ? "You've already requested this package — waiting for the vendor's response."
-            : "You've already booked this package.";
-        notifyError(message);
-        this.router.navigate(['/client/vendors', this.vendorId]);
-        return;
-      }
-
-      this.loadData();
-    });
-  }
-
-  /** Pending or Accepted bookings for this exact package block a new request; Rejected/Cancelled/Expired/Completed don't. */
-  private checkForBlockingBooking(): Observable<BookingRequest | null> {
-    return this.bookingService.listMyBookings({ pageSize: 100 }).pipe(
-      map(
-        (result) =>
-          result.items.find(
-            (b) =>
-              b.vendorPackageId === this.packageId &&
-              (b.status === BookingStatus.Pending || b.status === BookingStatus.Accepted),
-          ) ?? null,
-      ),
-    );
+    this.loadData();
   }
 
   ngOnDestroy(): void {
@@ -496,23 +462,6 @@ export class BookingCreate implements OnInit, OnDestroy {
     this.error.set(null);
     this.slotError.set(null);
 
-    // Re-check right before charging the card — the ngOnInit check already
-    // caught stale direct-navigation state, this catches a booking created
-    // in another tab during the time this form was open.
-    const blocking = await new Promise<BookingRequest | null>((resolve) =>
-      this.checkForBlockingBooking().subscribe(resolve),
-    );
-    if (blocking) {
-      this.submitting.set(false);
-      const message =
-        blocking.status === BookingStatus.Pending
-          ? "You've already requested this package — waiting for the vendor's response."
-          : "You've already booked this package.";
-      notifyError(message);
-      this.router.navigate(['/client/vendors', this.vendorId]);
-      return;
-    }
-
     // Deferred Stripe flow: elements.submit() validates/collects the card
     // fields, createPaymentMethod() tokenizes them into a pm_... id —
     // neither step confirms a PaymentIntent, since none exists yet on our side.
@@ -560,7 +509,9 @@ export class BookingCreate implements OnInit, OnDestroy {
         this.submitting.set(false);
 
         if (err.status === 409) {
-          this.slotError.set("This slot was just booked by someone else — please pick another.");
+          this.slotError.set(
+            err.message || "This slot was just booked by someone else — please pick another.",
+          );
           this.selectedSlotId.set(null);
           this.refreshSlots();
           this.currentStep.set('details');

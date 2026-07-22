@@ -330,10 +330,6 @@
   transition: opacity var(--dur-base) var(--ease-smooth);
 }
 
-.vendor-package-card--blocked {
-  opacity: 0.85;
-}
-
 .vendor-package-card__header {
   display: flex;
   align-items: flex-start;
@@ -566,29 +562,6 @@
 
 .vendor-review-card__response-label .material-symbols-outlined {
   font-size: 1rem;
-}
-
-/* Copied from shared/ui/status-badge/status-badge.css — component-scoped
-   styles don't cross Angular's view-encapsulation boundary, so this
-   duplicates the exact rules rather than reaching into that component. */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.3rem 0.85rem;
-  border-radius: var(--radius-full);
-  font-size: var(--font-label-sm-size);
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.status-badge--pending {
-  background: var(--color-primary-fixed);
-  color: var(--color-primary);
-}
-
-.status-badge--success {
-  background: var(--color-success-container);
-  color: var(--color-success);
 }
 
 @media (max-width: 640px) {

@@ -44,6 +44,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
 }
 
 .calendar__toolbar {
@@ -116,11 +117,14 @@
 .calendar__legend-dot--available {
   background: var(--color-success);
 }
+.calendar__legend-dot--held {
+  background: var(--color-lavender);
+}
 .calendar__legend-dot--booked {
   background: var(--color-primary);
 }
 .calendar__legend-dot--blocked {
-  background: var(--color-error);
+  background: var(--color-secondary);
 }
 
 .calendar__loading {
@@ -277,14 +281,36 @@
   color: var(--color-success);
 }
 
+/*
+  Held = a fresh request awaiting this vendor's own accept/reject; Booked =
+  already confirmed. Lavender keeps Held visually distinct from both the coral
+  "Booked" tone and the green "Available" tone, since it needs its own
+  at-a-glance signal ("something needs your attention here").
+*/
+.calendar__slot--held {
+  background: var(--color-lavender);
+  color: var(--color-charcoal);
+}
+
 .calendar__slot--booked {
   background: var(--color-primary-fixed);
   color: var(--color-primary-hover);
 }
 
+/*
+  Blocked slots only ever exist because their start time has passed (there's no
+  vendor-facing "block a date" action), so they're purely informational — a
+  muted neutral tone (not the coral used for Booked, and not the red "error"
+  tone which read as an alert here) plus a not-allowed cursor make that clear.
+*/
 .calendar__slot--blocked {
-  background: var(--color-error-container);
-  color: var(--color-error);
+  background: var(--color-surface-container);
+  color: var(--color-secondary);
+  cursor: not-allowed;
+}
+
+.calendar__slot--blocked:hover {
+  filter: none;
 }
 
 /* Modal (shared with the create/edit form) */

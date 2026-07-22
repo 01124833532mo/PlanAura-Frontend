@@ -106,6 +106,14 @@ export class BookingCreate implements OnInit, OnDestroy {
   protected readonly mountingPayment = signal(true);
   /** True if Stripe.js failed to load or didn't respond within STRIPE_LOAD_TIMEOUT_MS — shows a retry affordance instead of hanging silently. */
   protected readonly paymentSetupFailed = signal(false);
+  /**
+   * Set when Stripe's Payment Element itself emits 'loaderror' after mounting —
+   * distinct from paymentSetupFailed (Stripe.js not loading). The common cause
+   * is a Stripe account/currency configuration problem (e.g. no payment methods
+   * activated for the package's currency, or the amount below that currency's
+   * minimum), which otherwise leaves a silent, collapsed, empty card box.
+   */
+  protected readonly paymentLoadError = signal<string | null>(null);
 
   private vendorId = 0;
   private packageId = 0;
@@ -114,6 +122,8 @@ export class BookingCreate implements OnInit, OnDestroy {
   private stripe: Stripe | null = null;
   private elements: StripeElements | null = null;
   private paymentElement: StripePaymentElement | null = null;
+  /** True once the Payment Element has actually been mounted into the (visible) container. */
+  private paymentMounted = false;
 
   protected readonly availableSlots = computed(() =>
     this.slots().filter((slot) => slot.status === AvailabilityStatus.Available),
@@ -254,6 +264,15 @@ export class BookingCreate implements OnInit, OnDestroy {
   private async setupPayment(pkg: VendorPackage): Promise<void> {
     this.mountingPayment.set(true);
     this.paymentSetupFailed.set(false);
+    this.paymentLoadError.set(null);
+
+    // Retry path: discard any previously-created (possibly collapsed) element
+    // before re-preparing from scratch.
+    if (this.paymentElement) {
+      this.paymentElement.unmount();
+      this.paymentElement = null;
+    }
+    this.paymentMounted = false;
 
     const timeout = new Promise<null>((resolve) =>
       setTimeout(() => resolve(null), STRIPE_LOAD_TIMEOUT_MS),
@@ -263,7 +282,7 @@ export class BookingCreate implements OnInit, OnDestroy {
       timeout,
     ]);
 
-    if (!this.stripe || !this.paymentElementContainer) {
+    if (!this.stripe) {
       this.paymentSetupFailed.set(true);
       this.mountingPayment.set(false);
       return;
@@ -284,9 +303,82 @@ export class BookingCreate implements OnInit, OnDestroy {
       paymentMethodCreation: 'manual',
     });
     this.paymentElement = this.elements.create('payment');
-    this.paymentElement.mount(this.paymentElementContainer.nativeElement);
 
+    // Surface a Payment Element load failure instead of leaving a silent, empty,
+    // collapsed card box. Fires e.g. when the account has no payment methods
+    // activated for this package's currency, or the amount is below that
+    // currency's Stripe minimum — a configuration issue Retry can't fix, so this
+    // shows an explanatory message rather than the retry affordance.
+    this.paymentElement.on('loaderror', (event) => {
+      console.error('[booking-create] Stripe Payment Element loaderror:', event.error);
+      this.paymentLoadError.set(
+        event.error?.message ??
+          'The payment form could not be loaded. Please try again later or contact support.',
+      );
+    });
+
+    // Do NOT mount yet if we're still on step 1: Stripe's Payment Element
+    // renders a collapsed, 0-height iframe (and never recovers) if it's mounted
+    // while its container is display:none — which the payment step is during
+    // step 1, where this runs. Mount now only if we're already on the payment
+    // step (Stripe finished after the user advanced, or Retry was pressed
+    // there); otherwise goToPayment() triggers the mount when it reveals it.
+    if (this.currentStep() === 'payment') {
+      await this.mountPaymentElement();
+    } else {
+      this.mountingPayment.set(false);
+    }
+  }
+
+  /**
+   * Mounts the prepared Payment Element into #paymentElementContainer once that
+   * container is actually visible on screen. No-op if already mounted or not yet
+   * prepared. Split out from setupPayment() so goToPayment() can trigger the
+   * mount the moment the payment step becomes visible.
+   */
+  private async mountPaymentElement(): Promise<void> {
+    if (this.paymentMounted || !this.paymentElement) {
+      return;
+    }
+    this.mountingPayment.set(true);
+
+    const container = await this.waitForVisiblePaymentContainer();
+    if (!container) {
+      this.paymentSetupFailed.set(true);
+      this.mountingPayment.set(false);
+      return;
+    }
+
+    this.paymentElement.mount(container.nativeElement);
+    this.paymentMounted = true;
     this.mountingPayment.set(false);
+  }
+
+  /**
+   * Resolves once #paymentElementContainer is both present in the DOM *and*
+   * visible (no display:none ancestor), or null if that hasn't happened within
+   * the bounded wait. Two render-timing gaps make this necessary: the @ViewChild
+   * only updates after a change-detection pass, and the container's payment-step
+   * ancestor only stops being display:none a render after currentStep flips to
+   * 'payment'. Uses setTimeout (not requestAnimationFrame) so it keeps polling
+   * even if the tab is backgrounded mid-setup.
+   */
+  private waitForVisiblePaymentContainer(): Promise<ElementRef<HTMLDivElement> | null> {
+    return new Promise((resolve) => {
+      const deadline = Date.now() + 3000;
+      const check = () => {
+        const el = this.paymentElementContainer;
+        // offsetParent is null whenever the element or any ancestor is display:none.
+        if (el && el.nativeElement.offsetParent !== null) {
+          resolve(el);
+        } else if (Date.now() >= deadline) {
+          resolve(null);
+        } else {
+          setTimeout(check, 16);
+        }
+      };
+      check();
+    });
   }
 
   protected retryPaymentSetup(): void {
@@ -350,6 +442,11 @@ export class BookingCreate implements OnInit, OnDestroy {
       return;
     }
     this.currentStep.set('payment');
+    // The payment step (and its #paymentElementContainer) becomes visible on the
+    // next render — mount the already-prepared element into it now. No-op if
+    // Stripe.js is still loading; setupPayment() mounts once it finishes, since
+    // currentStep is now 'payment'.
+    void this.mountPaymentElement();
   }
 
   protected backToDetails(): void {
@@ -365,6 +462,16 @@ export class BookingCreate implements OnInit, OnDestroy {
     }
 
     const slotId = this.selectedSlotId()!;
+
+    if (this.paymentLoadError()) {
+      this.error.set({
+        status: 0,
+        message:
+          'The payment form could not be loaded, so this booking cannot be submitted. Please contact support.',
+        fieldErrors: [],
+      });
+      return;
+    }
 
     if (!this.stripe || !this.elements) {
       this.error.set({

@@ -7,7 +7,12 @@
 } @else if (stats(); as s) {
   <div class="stats-grid animate-fade-up">
     @for (tile of tiles(s); track tile.label) {
-      <div class="stat-card" [class]="'stat-card--' + tile.tone">
+      <a
+        class="stat-card"
+        [class]="'stat-card--' + tile.tone"
+        [routerLink]="tile.link"
+        [queryParams]="tile.queryParams ?? {}"
+      >
         <span class="stat-card__icon" aria-hidden="true">
           <span class="material-symbols-outlined">{{ tile.icon }}</span>
         </span>
@@ -18,7 +23,10 @@
             <p class="stat-card__hint text-label-sm">{{ tile.hint }}</p>
           }
         </div>
-      </div>
+        <span class="stat-card__chevron material-symbols-outlined" aria-hidden="true">
+          chevron_right
+        </span>
+      </a>
     }
   </div>
 }

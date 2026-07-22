@@ -19,7 +19,7 @@
     </div>
 
     <div class="details-dialog__status">
-      <ui-status-badge [status]="booking.status" />
+      <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
     </div>
 
     @if (booking.contractDocumentUrl || vendorProfileState.profile()?.partnershipAgreementUrl) {
@@ -104,6 +104,13 @@
           <span class="material-symbols-outlined">check</span>
           Accept request
         </ui-button>
+      </div>
+    } @else if (canDispute) {
+      <div class="details-dialog__actions details-dialog__actions--report">
+        <button class="details-dialog__report" type="button" (click)="dispute.emit()">
+          <span class="material-symbols-outlined">flag</span>
+          Report a problem
+        </button>
       </div>
     }
   </div>

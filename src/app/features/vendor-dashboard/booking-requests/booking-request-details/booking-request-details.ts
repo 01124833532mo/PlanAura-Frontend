@@ -32,9 +32,12 @@ export class BookingRequestDetails {
   @Input() packageTitle: string | null = null;
   @Input() currency = 'EGP';
   @Input() actioning = false;
+  /** Owned by the parent, which knows the server's Accepted/Completed + no-open-dispute rule. */
+  @Input() canDispute = false;
 
   @Output() accept = new EventEmitter<void>();
   @Output() reject = new EventEmitter<void>();
+  @Output() dispute = new EventEmitter<void>();
   @Output() closed = new EventEmitter<void>();
 
   protected readonly BookingStatus = BookingStatus;

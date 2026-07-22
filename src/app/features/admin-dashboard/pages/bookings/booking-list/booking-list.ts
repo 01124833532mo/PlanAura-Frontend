@@ -1,6 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AdminBookingService } from '../../../../../core/services/admin-booking.service';
 import { AppError } from '../../../../../core/interfaces/api-response.model';
 import { AdminBookingFilter, AdminBookingListItem } from '../../../../../core/interfaces/admin-booking.model';
@@ -35,6 +35,17 @@ const STATUS_OPTIONS: { label: string; value: BookingStatus | undefined }[] = [
 })
 export class BookingList implements OnInit {
   private readonly adminBookingService = inject(AdminBookingService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  /**
+   * Booking id from a ?bookingId=N deep link (the dashboard's Recent Bookings rows), consumed
+   * once the first page has loaded. There is no GET bookings/{id} endpoint and the detail panel
+   * renders an already-fetched list row, so the row has to come from the list itself — meaning
+   * this only opens if the booking is on the first page. That's the case it's used for (recent
+   * bookings are the newest), and when it isn't, the admin still lands on the list.
+   */
+  private deepLinkBookingId: number | null = null;
 
   protected readonly statusOptions = STATUS_OPTIONS;
   protected readonly DisputeStatus = DisputeStatus;
@@ -51,6 +62,8 @@ export class BookingList implements OnInit {
   protected readonly selectedBooking = signal<AdminBookingListItem | null>(null);
 
   ngOnInit(): void {
+    const id = Number(this.route.snapshot.queryParamMap.get('bookingId'));
+    this.deepLinkBookingId = id > 0 ? id : null;
     this.load();
   }
 
@@ -63,6 +76,14 @@ export class BookingList implements OnInit {
         this.bookings.set(result.items);
         this.totalCount.set(result.totalCount);
         this.loading.set(false);
+
+        if (this.deepLinkBookingId !== null) {
+          const match = result.items.find((b) => b.id === this.deepLinkBookingId);
+          this.deepLinkBookingId = null;
+          if (match) {
+            this.openDetail(match);
+          }
+        }
       },
       error: (err: AppError) => {
         this.error.set(err);
@@ -93,5 +114,15 @@ export class BookingList implements OnInit {
 
   protected closeDetail(): void {
     this.selectedBooking.set(null);
+
+    // Drop the deep-link param so a refresh (or Back) doesn't reopen what was just closed.
+    if (this.route.snapshot.queryParamMap.has('bookingId')) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { bookingId: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
   }
 }

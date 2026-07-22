@@ -23,6 +23,35 @@
   box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
 }
 
+/* Each tile is a drill-down link into its dedicated page. */
+.stat-card {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.stat-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.stat-card__chevron {
+  margin-left: auto;
+  font-size: 1.2rem;
+  color: var(--color-secondary);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity var(--dur-fast) var(--ease-smooth),
+    transform var(--dur-fast) var(--ease-smooth);
+}
+
+.stat-card:hover .stat-card__chevron,
+.stat-card:focus-visible .stat-card__chevron {
+  opacity: 0.7;
+  transform: translateX(0);
+}
+
 .stat-card--skeleton {
   height: 5.5rem;
   border: none;

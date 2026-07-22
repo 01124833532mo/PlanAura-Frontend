@@ -57,6 +57,8 @@ export interface AdminDisputeDetails {
   disputedAt: string | null;
   /** The actual reason the dispute was raised. */
   disputeReason: string | null;
+  /** 'Client' or 'Vendor' — either party can raise a dispute. Null for older records. */
+  disputeRaisedBy: string | null;
   resolutionNotes: string | null;
   resolvedByAdminId: number | null;
   resolvedByAdminName: string | null;

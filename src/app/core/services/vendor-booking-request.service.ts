@@ -27,6 +27,12 @@ export class VendorBookingRequestService {
     if (filter.status !== undefined) {
       params = params.set('status', filter.status);
     }
+    if (filter.paymentStatus !== undefined) {
+      params = params.set('paymentStatus', filter.paymentStatus);
+    }
+    if (filter.excludeRefunded) {
+      params = params.set('excludeRefunded', true);
+    }
     if (filter.page !== undefined) {
       params = params.set('page', filter.page);
     }
@@ -61,5 +67,19 @@ export class VendorBookingRequestService {
     return this.http.post<BookingRequest>(`${API_BASE_URL}/booking-requests/${id}/reject`, {
       reason: reason ?? null,
     });
+  }
+
+  /**
+   * POST /api/booking-requests/incoming/{id}/dispute — raises a dispute with the
+   * admin. Note the `incoming/` prefix: the client's equivalent sits on
+   * {id}/dispute, and both controllers share the api/booking-requests route, so
+   * the vendor action is namespaced to avoid an ambiguous route match.
+   * Only valid on Accepted or Completed bookings with no open dispute.
+   */
+  disputeBooking(id: number, reason: string): Observable<BookingRequest> {
+    return this.http.post<BookingRequest>(
+      `${API_BASE_URL}/booking-requests/incoming/${id}/dispute`,
+      { reason },
+    );
   }
 }

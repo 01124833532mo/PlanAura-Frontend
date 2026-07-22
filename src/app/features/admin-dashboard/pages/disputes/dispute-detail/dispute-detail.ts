@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, LowerCasePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -15,7 +15,7 @@ import { mapBookingPaymentStatus, mapBookingStatus, mapDisputeStatus } from '../
 @Component({
   selector: 'app-dispute-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, FormsModule, AdminBadge, AdminErrorState],
+  imports: [RouterLink, DatePipe, DecimalPipe, LowerCasePipe, FormsModule, AdminBadge, AdminErrorState],
   templateUrl: './dispute-detail.html',
   styleUrl: './dispute-detail.css',
 })

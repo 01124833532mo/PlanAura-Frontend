@@ -73,6 +73,17 @@ export interface BookingRequest {
 /** Mirrors Planura.Core.Application.Models.BookingRequestFilterDto. No eventPlanId filter exists server-side. */
 export interface BookingRequestFilter {
   status?: BookingStatus;
+  /**
+   * Independent of `status` — a refund never changes BookingStatus, so this is
+   * the only way to list refunded bookings. Vendor endpoint only.
+   */
+  paymentStatus?: BookingPaymentStatus;
+  /**
+   * Drops refunded bookings. Needed on every status tab: a refund doesn't change
+   * BookingStatus, so an Accepted-then-refunded booking would otherwise still
+   * show under Accepted. Vendor endpoint only.
+   */
+  excludeRefunded?: boolean;
   page?: number;
   pageSize?: number;
 }

@@ -204,10 +204,16 @@ export const routes: Routes = [
         (m) => m.VendorShell,
       ),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'requests' },
+      { path: '', pathMatch: 'full', redirectTo: 'overview' },
+      {
+        path: 'overview',
+        data: { title: 'Overview' },
+        loadComponent: () =>
+          import('./features/vendor-dashboard/overview/overview').then((m) => m.Overview),
+      },
       {
         path: 'requests',
-        data: { title: 'Booking Requests' },
+        data: { title: 'My Booking Requests' },
         loadComponent: () =>
           import(
             './features/vendor-dashboard/booking-requests/booking-request-list/booking-request-list'

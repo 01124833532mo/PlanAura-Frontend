@@ -21,6 +21,23 @@
     />
   }
 
+  @if (plans().length > 0) {
+    <div class="event-plan-page__filter-banner animate-fade-up">
+      <span class="material-symbols-outlined">event_upcoming</span>
+      @if (upcomingOnly()) {
+        <span class="text-body-md">Showing upcoming event plans only.</span>
+        <button class="event-plan-page__filter-clear" type="button" (click)="toggleUpcomingFilter()">
+          View all
+        </button>
+      } @else {
+        <span class="text-body-md">Showing all event plans.</span>
+        <button class="event-plan-page__filter-clear" type="button" (click)="toggleUpcomingFilter()">
+          Show upcoming only
+        </button>
+      }
+    </div>
+  }
+
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
   @if (loading()) {
@@ -28,15 +45,20 @@
       <span class="material-symbols-outlined event-plan-page__state-icon skeleton-icon">hourglass_top</span>
       <p class="text-body-md event-plan-page__empty">Loading your event plans...</p>
     </div>
-  } @else if (plans().length === 0) {
+  } @else if (displayedPlans().length === 0) {
     <div class="card-luxe luxe-shadow event-plan-page__empty-card animate-fade-up stagger-1">
       <span class="material-symbols-outlined event-plan-page__state-icon">event_note</span>
-      <p class="text-body-md">No event plans yet — create your first.</p>
-      <ui-button [fullWidth]="false" (click)="createPlan()">Create plan</ui-button>
+      @if (upcomingOnly()) {
+        <p class="text-body-md">No upcoming event plans right now.</p>
+        <ui-button [fullWidth]="false" variant="outline" (click)="toggleUpcomingFilter()">View all plans</ui-button>
+      } @else {
+        <p class="text-body-md">No event plans yet — create your first.</p>
+        <ui-button [fullWidth]="false" (click)="createPlan()">Create plan</ui-button>
+      }
     </div>
   } @else {
     <div class="event-plan-grid">
-      @for (plan of plans(); track plan.id) {
+      @for (plan of displayedPlans(); track plan.id) {
         <div class="card-luxe luxe-shadow hover-lift event-plan-card animate-fade-up">
           <div class="event-plan-card__header">
             <span class="event-plan-card__icon material-symbols-outlined" aria-hidden="true">celebration</span>

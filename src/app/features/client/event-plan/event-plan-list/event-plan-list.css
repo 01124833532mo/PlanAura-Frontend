@@ -36,6 +36,36 @@
   max-width: 380px;
 }
 
+.event-plan-page__filter-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.65rem var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary-hover);
+}
+
+.event-plan-page__filter-banner .material-symbols-outlined {
+  color: var(--color-primary);
+}
+
+.event-plan-page__filter-banner .text-body-md {
+  flex: 1;
+  color: inherit;
+}
+
+.event-plan-page__filter-clear {
+  border: none;
+  background: transparent;
+  color: var(--color-primary-hover);
+  font-weight: 700;
+  font-size: var(--font-label-sm-size);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
 .event-plan-page__empty-card {
   padding: var(--space-xl);
   text-align: center;

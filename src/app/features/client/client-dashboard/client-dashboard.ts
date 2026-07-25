@@ -48,6 +48,10 @@ export class ClientDashboard implements OnInit {
     this.router.navigateByUrl('/client/event-plans');
   }
 
+  protected goToUpcoming(): void {
+    this.router.navigate(['/client/event-plans'], { queryParams: { filter: 'upcoming' } });
+  }
+
   protected viewPlan(plan: EventPlan): void {
     this.router.navigate(['/client/event-plans', plan.id]);
   }

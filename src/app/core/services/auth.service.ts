@@ -18,6 +18,7 @@ import {
   VerifyResetCodeRequest,
 } from '../interfaces/auth.model';
 import { VendorRegistrationPayload } from '../interfaces/vendor.model';
+import { ClientProfileStateService } from './client-profile-state.service';
 import { TokenStorageService } from './token-storage.service';
 import { VendorProfileStateService } from './vendor-profile-state.service';
 
@@ -35,6 +36,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly tokenStorage = inject(TokenStorageService);
   private readonly vendorProfileState = inject(VendorProfileStateService);
+  private readonly clientProfileState = inject(ClientProfileStateService);
 
   private readonly currentUserSignal = signal<CurrentUser | null>(null);
   private readonly authResponseSignal = signal<AuthResponse | null>(null);
@@ -169,6 +171,7 @@ export class AuthService {
     this.currentUserSignal.set(null);
     this.authResponseSignal.set(null);
     this.vendorProfileState.clear();
+    this.clientProfileState.clear();
   }
 
   private handleAuthResponse(response: AuthResponse): void {

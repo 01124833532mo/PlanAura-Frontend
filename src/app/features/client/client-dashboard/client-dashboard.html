@@ -20,7 +20,7 @@
         <span class="client-dashboard__stat-label">Event Plans</span>
       </span>
     </button>
-    <div class="client-dashboard__stat">
+    <button class="client-dashboard__stat hover-lift" type="button" (click)="goToUpcoming()">
       <span class="client-dashboard__stat-icon client-dashboard__stat-icon--alt material-symbols-outlined" aria-hidden="true">
         event_upcoming
       </span>
@@ -28,7 +28,7 @@
         <span class="client-dashboard__stat-value">{{ upcomingCount() }}</span>
         <span class="client-dashboard__stat-label">Upcoming</span>
       </span>
-    </div>
+    </button>
   </div>
 
   <div class="client-dashboard__layout">

@@ -77,10 +77,16 @@
       @if (currentUser(); as user) {
         <span class="client-topbar__divider" aria-hidden="true"></span>
 
-        <div class="client-topbar__profile">
+        <a class="client-topbar__profile" routerLink="/client/profile" aria-label="Go to My Profile">
           <span class="client-topbar__name">{{ user.fullName }}</span>
-          <span class="client-topbar__avatar">{{ user.fullName.charAt(0) }}</span>
-        </div>
+          <span class="client-topbar__avatar">
+            @if (clientProfileState.profile()?.avatarUrl && !avatarBroken()) {
+              <img [src]="clientProfileState.profile()!.avatarUrl" [alt]="user.fullName" (error)="avatarBroken.set(true)" />
+            } @else {
+              {{ user.fullName.charAt(0) }}
+            }
+          </span>
+        </a>
       }
     </div>
   </header>

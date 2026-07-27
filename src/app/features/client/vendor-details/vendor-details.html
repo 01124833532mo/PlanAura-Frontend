@@ -128,7 +128,15 @@
           } @else {
             <div class="vendor-package-grid">
               @for (pkg of packages(); track pkg.id) {
-                <div class="card-luxe luxe-shadow vendor-package-card">
+                <div
+                  class="card-luxe luxe-shadow hover-lift vendor-package-card vendor-package-card--clickable"
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-label]="'Book ' + pkg.title"
+                  (click)="bookPackage(pkg)"
+                  (keydown.enter)="bookPackage(pkg)"
+                  (keydown.space)="bookPackage(pkg); $event.preventDefault()"
+                >
                   <div class="vendor-package-card__header">
                     <h4 class="vendor-package-card__title">{{ pkg.title }}</h4>
                     <span class="vendor-package-card__price">
@@ -157,7 +165,7 @@
                     <button
                       class="btn-gold-gradient"
                       type="button"
-                      (click)="bookPackage(pkg)"
+                      (click)="bookPackage(pkg); $event.stopPropagation()"
                     >
                       <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
                       Book this package

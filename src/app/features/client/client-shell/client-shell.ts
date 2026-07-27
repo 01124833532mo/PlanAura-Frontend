@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ClientProfileStateService } from '../../../core/services/client-profile-state.service';
 import { createActiveRouteTitle } from '../../../shared/utils/active-route-title';
 import { confirmLogout } from '../../../shared/utils/confirm-logout';
 import { NotificationBell } from '../../../shared/ui/notification-bell/notification-bell';
@@ -17,7 +18,11 @@ export class ClientShell implements OnInit {
   private readonly router = inject(Router);
 
   protected readonly currentUser = this.authService.currentUser;
+  protected readonly clientProfileState = inject(ClientProfileStateService);
   protected readonly pageTitle = createActiveRouteTitle('Overview');
+
+  /** Flips true if the avatar image fails to load, forcing the initial-letter fallback. */
+  protected readonly avatarBroken = signal(false);
 
   ngOnInit(): void {
     // clientGuard only fetches /me on a cold load when role signals are
@@ -26,6 +31,7 @@ export class ClientShell implements OnInit {
     if (!this.currentUser()) {
       this.authService.fetchCurrentUser().subscribe();
     }
+    this.clientProfileState.load();
   }
 
   protected async logout(): Promise<void> {

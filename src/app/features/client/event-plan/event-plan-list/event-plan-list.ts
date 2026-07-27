@@ -1,5 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
@@ -28,6 +29,25 @@ export class EventPlanList implements OnInit {
   protected readonly bookingSuccess = signal(false);
   protected readonly deleteTarget = signal<EventPlan | null>(null);
 
+  // "Upcoming" filter, landed on from the dashboard's Upcoming stat card —
+  // same predicate (eventDate >= now) as ClientDashboard.upcomingCount, so
+  // the count there and the list here never disagree. Driven off the
+  // ?filter=upcoming query param via a live signal (not just route.snapshot)
+  // so back/forward and a page refresh all reflect the same state, and
+  // toggleUpcomingFilter() below has something to react to when it navigates.
+  private readonly queryParamMap = toSignal(this.route.queryParamMap, {
+    initialValue: this.route.snapshot.queryParamMap,
+  });
+  protected readonly upcomingOnly = computed(() => this.queryParamMap().get('filter') === 'upcoming');
+
+  protected readonly displayedPlans = computed(() => {
+    if (!this.upcomingOnly()) {
+      return this.plans();
+    }
+    const now = Date.now();
+    return this.plans().filter((plan) => new Date(plan.eventDate).getTime() >= now);
+  });
+
   ngOnInit(): void {
     this.bookingSuccess.set(this.route.snapshot.queryParamMap.get('bookingSuccess') === '1');
     this.fetchPlans();
@@ -51,6 +71,12 @@ export class EventPlanList implements OnInit {
 
   protected createPlan(): void {
     this.router.navigateByUrl('/client/event-plans/new');
+  }
+
+  protected toggleUpcomingFilter(): void {
+    this.router.navigate(['/client/event-plans'], {
+      queryParams: this.upcomingOnly() ? {} : { filter: 'upcoming' },
+    });
   }
 
   protected bookVendors(plan: EventPlan): void {

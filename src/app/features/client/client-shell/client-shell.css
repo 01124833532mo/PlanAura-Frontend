@@ -214,6 +214,15 @@
   border-radius: var(--radius-full);
   background: var(--color-surface-container-lowest);
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-smooth), box-shadow var(--dur-fast) var(--ease-smooth);
+}
+
+.client-topbar__profile:hover,
+.client-topbar__profile:focus-visible {
+  background: var(--color-soft-beige);
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.08);
 }
 
 .client-topbar__name {
@@ -235,6 +244,13 @@
   font-size: 0.85rem;
   font-weight: 700;
   box-shadow: var(--shadow-glow);
+  overflow: hidden;
+}
+
+.client-topbar__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .client-content {

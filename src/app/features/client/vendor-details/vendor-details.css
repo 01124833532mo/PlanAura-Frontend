@@ -330,6 +330,15 @@
   transition: opacity var(--dur-base) var(--ease-smooth);
 }
 
+.vendor-package-card--clickable {
+  cursor: pointer;
+}
+
+.vendor-package-card--clickable:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .vendor-package-card__header {
   display: flex;
   align-items: flex-start;

@@ -9,6 +9,7 @@ import { TextField } from '../../../shared/ui/text-field/text-field';
 import { AppError } from '../../../core/interfaces/api-response.model';
 import { ClientProfile, UpdateClientProfilePayload } from '../../../core/interfaces/client-profile.model';
 import { ClientProfileService } from '../../../core/services/client-profile.service';
+import { ClientProfileStateService } from '../../../core/services/client-profile-state.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { passwordsMatchValidator } from '../../../shared/validators/password-match.validator';
 import { notifyError, notifySuccess } from '../../../shared/utils/notify';
@@ -43,6 +44,7 @@ interface ChecklistItem {
 export class ClientProfileComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly clientProfileService = inject(ClientProfileService);
+  private readonly clientProfileState = inject(ClientProfileStateService);
   private readonly authService = inject(AuthService);
 
   protected readonly profile = signal<ClientProfile | null>(null);
@@ -146,6 +148,7 @@ export class ClientProfileComponent implements OnInit {
     this.clientProfileService.updateMyProfile(payload).subscribe({
       next: (profile) => {
         this.profile.set(profile);
+        this.clientProfileState.refresh();
         this.saving.set(false);
         this.editModalOpen.set(false);
         notifySuccess('Profile updated successfully.');

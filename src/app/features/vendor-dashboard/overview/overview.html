@@ -18,8 +18,16 @@
 
   <app-dashboard-stats />
 
-  <section class="overview-section animate-fade-up stagger-1">
-    <div class="overview-section__header">
+  <!--
+    No entrance-animation class on this section: the embedded booking list renders its details
+    modal (a position:fixed .modal-backdrop) inside here. An animated wrapper establishes a
+    stacking context / containing block that traps the fixed overlay - pinning it to the section
+    (breaking centering) and painting it beneath the sticky topbar. The list animates its own
+    rows internally, and the header below keeps its fade-up since it's a sibling of the list,
+    not an ancestor of the modal.
+  -->
+  <section class="overview-section">
+    <div class="overview-section__header animate-fade-up">
       <div>
         <h4 class="text-title-md">Pending requests</h4>
         <p class="text-body-sm overview-section__hint">

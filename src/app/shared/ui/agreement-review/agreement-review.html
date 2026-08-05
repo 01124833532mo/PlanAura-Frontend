@@ -15,7 +15,7 @@
       <p class="text-body-md">Preparing your Booking Agreement…</p>
     </div>
   } @else if (error) {
-    <div class="agreement-review__state agreement-review__state--error">
+    <div class="agreement-review__state agreement-review__state--error" role="alert">
       <span class="material-symbols-outlined" aria-hidden="true">error</span>
       <p class="text-body-md">{{ error }}</p>
     </div>
@@ -36,5 +36,10 @@
       />
       <span class="text-body-md">I have read and agree to the Booking Agreement.</span>
     </label>
+  } @else {
+    <div class="agreement-review__state agreement-review__state--error" role="alert">
+      <span class="material-symbols-outlined" aria-hidden="true">error</span>
+      <p class="text-body-md">Booking Agreement is not available right now. Please try again.</p>
+    </div>
   }
 </section>

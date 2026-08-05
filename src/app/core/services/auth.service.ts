@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, catchError, of, tap } from 'rxjs';
 import { API_BASE_URL } from '../config/app-config';
 import {
   AuthResponse,
@@ -131,6 +131,34 @@ export class AuthService {
     return this.http
       .get<CurrentUser>(`${API_BASE_URL}/auth/me`)
       .pipe(tap((user) => this.currentUserSignal.set(user)));
+  }
+
+  /**
+   * Restores session state (roles) from a token already sitting in
+   * localStorage, exactly once, before the Router's first navigation —
+   * see the app initializer in app.config.ts. Guards can then stay
+   * synchronous: by the time any of them run, isAuthenticated()/isClient()/
+   * isVendor()/isAdmin() already reflect the real session, so nothing needs
+   * to call GET /api/auth/me lazily (which was the source of the /auth
+   * flash and racy duplicate-call bug on refresh).
+   *
+   * A no-op if there's no token (nothing to restore) — resolves immediately
+   * so the app initializer never blocks anonymous page loads.
+   */
+  initializeSession(): Observable<CurrentUser | null> {
+    if (!this.isAuthenticatedSignal()) {
+      return of(null);
+    }
+
+    return this.fetchCurrentUser().pipe(
+      catchError(() => {
+        // Token is present but invalid/expired (or unreadable) — treat as
+        // logged out rather than leaving a token whose role we could never
+        // resolve, which would otherwise make every guard reject it.
+        this.logout();
+        return of(null);
+      }),
+    );
   }
 
   /** PUT /api/auth/me */

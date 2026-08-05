@@ -1,14 +1,14 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { catchError, map, of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 /**
- * Blocks non-client accounts from client-only routes. isClient() only
- * reflects roles already loaded into memory (from a login() this session, or
- * a prior fetchCurrentUser() call) — on a cold page load/refresh those
- * signals are empty even for a valid client with a token in storage, so this
- * guard falls back to GET /api/auth/me to resolve roles before deciding.
+ * Blocks non-client accounts from client-only routes.
+ *
+ * Synchronous: AuthService.initializeSession() (see app.config.ts's
+ * provideAppInitializer) has already resolved roles from any token in
+ * storage before the Router's first navigation, so isClient() is accurate
+ * here even on a cold page load/refresh — no lazy /me fetch needed.
  */
 export const clientGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -18,12 +18,5 @@ export const clientGuard: CanActivateFn = () => {
     return router.parseUrl('/auth');
   }
 
-  if (authService.isClient()) {
-    return of(true);
-  }
-
-  return authService.fetchCurrentUser().pipe(
-    map(() => (authService.isClient() ? true : router.parseUrl('/auth'))),
-    catchError(() => of(router.parseUrl('/auth'))),
-  );
+  return authService.isClient() ? true : router.parseUrl('/auth');
 };

@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { resolveVendorLandingPath } from '../interfaces/vendor-verification.model';
 import { AuthService } from '../services/auth.service';
 import { VendorService } from '../services/vendor.service';
@@ -17,11 +17,12 @@ import { VendorService } from '../services/vendor.service';
  * comparison below works generically for all of them, redirecting to
  * whichever one the vendor's status actually calls for.
  *
- * isVendor() only reflects roles already loaded into memory (from a login()
- * this session, or a prior fetchCurrentUser() call) — on a cold page
- * load/refresh those signals are empty even for a valid vendor with a token
- * in storage, so this guard falls back to GET /api/auth/me to resolve roles
- * first when needed.
+ * isVendor() is synchronous: AuthService.initializeSession() (see
+ * app.config.ts's provideAppInitializer) has already resolved roles from any
+ * token in storage before the Router's first navigation, so it's accurate
+ * here even on a cold page load/refresh. The verification-status lookup
+ * below stays async — it's per-route backend state, not identity, and has
+ * to be fetched fresh regardless.
  */
 export const vendorGuard: CanActivateFn = (_route, state) => {
   const authService = inject(AuthService);
@@ -32,24 +33,18 @@ export const vendorGuard: CanActivateFn = (_route, state) => {
     return router.parseUrl('/auth');
   }
 
-  const checkVerificationStatus = () =>
-    vendorService.getMyProfile().pipe(
-      map((profile) => {
-        const target = resolveVendorLandingPath(profile.verificationStatus);
-        const onTarget =
-          state.url === target ||
-          (target === '/vendor/dashboard' && state.url.startsWith('/vendor/dashboard/'));
-        return onTarget ? true : router.parseUrl(target);
-      }),
-      catchError(() => of(router.parseUrl('/auth'))),
-    );
-
-  if (authService.isVendor()) {
-    return checkVerificationStatus();
+  if (!authService.isVendor()) {
+    return router.parseUrl('/auth');
   }
 
-  return authService.fetchCurrentUser().pipe(
-    switchMap(() => (authService.isVendor() ? checkVerificationStatus() : of(router.parseUrl('/auth')))),
+  return vendorService.getMyProfile().pipe(
+    map((profile) => {
+      const target = resolveVendorLandingPath(profile.verificationStatus);
+      const onTarget =
+        state.url === target ||
+        (target === '/vendor/dashboard' && state.url.startsWith('/vendor/dashboard/'));
+      return onTarget ? true : router.parseUrl(target);
+    }),
     catchError(() => of(router.parseUrl('/auth'))),
   );
 };

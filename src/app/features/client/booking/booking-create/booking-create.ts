@@ -13,6 +13,7 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
+import { AgreementReview } from '../../../../shared/ui/agreement-review/agreement-review';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
 import { SelectField, SelectOption } from '../../../../shared/ui/select-field/select-field';
@@ -95,6 +96,7 @@ function dayKey(d: Date): string {
     Button,
     AlertBanner,
     StepperHeader,
+    AgreementReview,
     DecimalPipe,
     DatePipe,
   ],
@@ -132,6 +134,13 @@ export class BookingCreate implements OnInit, OnDestroy {
   protected readonly currentStep = signal<WizardStep>('details');
   protected readonly wizardStepLabels = WIZARD_STEP_LABELS;
   protected readonly stepIndex = computed(() => (this.currentStep() === 'details' ? 0 : 1));
+
+  // Booking Agreement (generated when the client reaches the payment step; must be agreed before booking).
+  protected readonly agreementLoading = signal(false);
+  protected readonly agreementUrl = signal<string | null>(null);
+  protected readonly agreementError = signal<string | null>(null);
+  protected readonly agreed = signal(false);
+  private agreementToken: string | null = null;
 
   /** True while Stripe.js/Elements is loading — the payment section stays present but visually hidden. */
   protected readonly mountingPayment = signal(true);
@@ -582,6 +591,53 @@ export class BookingCreate implements OnInit, OnDestroy {
     // Stripe.js is still loading; setupPayment() mounts once it finishes, since
     // currentStep is now 'payment'.
     void this.mountPaymentElement();
+    // Generate the Booking Agreement for the (now-fixed) details so the client can
+    // review and agree before confirming. Regenerated on every entry to this step,
+    // so a details change picks up a fresh agreement (no persistent draft is kept).
+    this.loadAgreement();
+  }
+
+  /**
+   * Requests the server-generated Booking Agreement for the current booking details and shows it in
+   * the embedded viewer. The returned token binds this exact agreement to the booking on confirm.
+   */
+  private loadAgreement(): void {
+    const slotId = this.selectedSlotId();
+    const raw = this.form.getRawValue();
+    const eventPlanId = this.eventPlanIdFromQuery ?? raw.eventPlanId;
+    if (!slotId || !eventPlanId) {
+      return;
+    }
+
+    const guestCount = raw.guestCount.trim() === '' ? undefined : Number(raw.guestCount);
+
+    this.agreementLoading.set(true);
+    this.agreementError.set(null);
+    this.agreed.set(false);
+    this.agreementUrl.set(null);
+    this.agreementToken = null;
+
+    this.bookingService
+      .previewAgreement({
+        eventPlanId,
+        availabilityId: slotId,
+        vendorPackageId: this.packageId,
+        guestCount,
+        clientMessage: raw.clientMessage.trim() || undefined,
+      })
+      .subscribe({
+        next: (res) => {
+          this.agreementToken = res.token;
+          this.agreementUrl.set(res.documentUrl);
+          this.agreementLoading.set(false);
+        },
+        error: (err: AppError) => {
+          this.agreementError.set(
+            err.message || 'The Booking Agreement could not be prepared. Please try again.',
+          );
+          this.agreementLoading.set(false);
+        },
+      });
   }
 
   protected backToDetails(): void {
@@ -614,6 +670,17 @@ export class BookingCreate implements OnInit, OnDestroy {
         message: this.paymentSetupFailed()
           ? 'The payment form failed to load — use the Retry button above before submitting.'
           : 'The payment form is still loading — please wait a moment and try again.',
+        fieldErrors: [],
+      });
+      return;
+    }
+
+    // Defensive re-check of the agreement gate — the button is disabled until it's met, but never
+    // rely on step-gating alone.
+    if (!this.agreementToken || !this.agreed()) {
+      this.error.set({
+        status: 0,
+        message: 'Please review and agree to the Booking Agreement before confirming.',
         fieldErrors: [],
       });
       return;
@@ -666,6 +733,8 @@ export class BookingCreate implements OnInit, OnDestroy {
       clientMessage: raw.clientMessage.trim() || undefined,
       paymentMethodId: paymentMethod.id,
       requestId: crypto.randomUUID(),
+      agreementToken: this.agreementToken,
+      agreementAccepted: true,
     };
 
     this.bookingService.createBooking(dto).subscribe({
@@ -696,6 +765,15 @@ export class BookingCreate implements OnInit, OnDestroy {
             message: `Your card was declined: ${err.message} Please try a different card.`,
           });
           notifyError('Payment declined', err.message);
+          return;
+        }
+
+        if (err.status === 400 && /agreement/i.test(err.message ?? '')) {
+          // The reviewed agreement expired between review and submit — regenerate it and ask the
+          // client to read and agree again before retrying.
+          this.loadAgreement();
+          this.error.set({ ...err });
+          notifyError('Please review the agreement again', err.message);
           return;
         }
 

@@ -32,6 +32,28 @@ export interface CreateBookingRequest {
   paymentMethodId: string;
   /** Client-generated id, reused as the Stripe idempotency key to dedupe retried submits. */
   requestId: string;
+  /** Token from the agreement-preview step, binding the reviewed Booking Agreement to this booking. */
+  agreementToken: string;
+  /** The client ticked "I have read and agree to the Booking Agreement". */
+  agreementAccepted: boolean;
+}
+
+/** Mirrors Planura.Core.Application.Models.AgreementPreviewRequestDto. */
+export interface AgreementPreviewRequest {
+  eventPlanId: number;
+  availabilityId: number;
+  vendorPackageId?: number;
+  guestCount?: number;
+  clientMessage?: string;
+}
+
+/** Mirrors Planura.Core.Application.Models.AgreementPreviewResultDto. */
+export interface AgreementPreviewResult {
+  token: string;
+  contractId: string;
+  /** Absolute URL of the generated agreement PDF, for the embedded viewer. */
+  documentUrl: string;
+  generatedAt: string;
 }
 
 /** Mirrors Planura.Core.Application.Models.BookingRequestDto. */
@@ -59,10 +81,14 @@ export interface BookingRequest {
   disputedAt: string | null;
   resolutionNotes: string | null;
   resolvedAt: string | null;
-  /** Set once the AI-generated Event Booking Contract has been produced (on vendor accept). */
+  /** The AI-generated Event Booking Contract — produced at the client's payment step and reviewed by both parties. */
   contractId: string | null;
   contractDocumentUrl: string | null;
   contractGeneratedAt: string | null;
+
+  /** When each party accepted the Booking Agreement (the consent gate before their action). */
+  clientAgreedAt: string | null;
+  vendorAgreedAt: string | null;
 
   /** Non-null only once the client has left a review for this (Completed) booking. */
   reviewId: number | null;

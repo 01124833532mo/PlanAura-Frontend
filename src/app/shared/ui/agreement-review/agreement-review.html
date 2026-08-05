@@ -1,0 +1,45 @@
+<section class="agreement-review">
+  <div class="agreement-review__header">
+    <span class="material-symbols-outlined agreement-review__icon" aria-hidden="true">gavel</span>
+    <div>
+      <h4 class="text-title-md agreement-review__title">Booking Agreement</h4>
+      <p class="text-body-sm agreement-review__subtitle">
+        Please read the agreement below before continuing.
+      </p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="agreement-review__state" role="status">
+      <span class="agreement-review__spinner" aria-hidden="true"></span>
+      <p class="text-body-md">Preparing your Booking Agreement…</p>
+    </div>
+  } @else if (error) {
+    <div class="agreement-review__state agreement-review__state--error" role="alert">
+      <span class="material-symbols-outlined" aria-hidden="true">error</span>
+      <p class="text-body-md">{{ error }}</p>
+    </div>
+  } @else if (safeUrl) {
+    <div class="agreement-review__viewer">
+      <iframe
+        [src]="safeUrl"
+        title="Booking Agreement"
+        class="agreement-review__frame"
+      ></iframe>
+    </div>
+
+    <label class="agreement-review__consent">
+      <input
+        type="checkbox"
+        [checked]="checked()"
+        (change)="onToggle($event)"
+      />
+      <span class="text-body-md">I have read and agree to the Booking Agreement.</span>
+    </label>
+  } @else {
+    <div class="agreement-review__state agreement-review__state--error" role="alert">
+      <span class="material-symbols-outlined" aria-hidden="true">error</span>
+      <p class="text-body-md">Booking Agreement is not available right now. Please try again.</p>
+    </div>
+  }
+</section>

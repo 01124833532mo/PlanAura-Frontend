@@ -91,6 +91,11 @@
     }
 
     @if (booking.status === BookingStatus.Pending) {
+      <app-agreement-review
+        [documentUrl]="booking.contractDocumentUrl"
+        (agreedChange)="agreed.set($event)"
+      />
+
       <div class="details-dialog__actions">
         <ui-button
           variant="outline"
@@ -100,7 +105,12 @@
         >
           Decline
         </ui-button>
-        <ui-button [fullWidth]="false" [loading]="actioning" (click)="accept.emit()">
+        <ui-button
+          [fullWidth]="false"
+          [loading]="actioning"
+          [disabled]="!agreed()"
+          (click)="accept.emit()"
+        >
           <span class="material-symbols-outlined">check</span>
           Accept request
         </ui-button>

@@ -52,10 +52,13 @@ export class VendorBookingRequestService {
 
   /**
    * POST /api/booking-requests/{id}/accept — captures the client's payment and
-   * marks the request Accepted. Only valid while the request is Pending.
+   * marks the request Accepted. Only valid while the request is Pending. The
+   * vendor must have agreed to the Booking Agreement first (agreementAccepted).
    */
   accept(id: number): Observable<BookingRequest> {
-    return this.http.post<BookingRequest>(`${API_BASE_URL}/booking-requests/${id}/accept`, {});
+    return this.http.post<BookingRequest>(`${API_BASE_URL}/booking-requests/${id}/accept`, {
+      agreementAccepted: true,
+    });
   }
 
   /**

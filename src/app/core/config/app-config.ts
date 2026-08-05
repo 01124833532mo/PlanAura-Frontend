@@ -11,7 +11,7 @@
  * Matches the backend's default HTTPS dev profile in
  * Planura.Apis/Properties/launchSettings.json ("https": https://localhost:7123).
  */
-export const API_BASE_URL = 'https://localhost:7123/api';
+export const API_BASE_URL = 'https://planaura.runasp.net/api';
 
 /**
  * Origin the API server also serves static files from (wwwroot), i.e.

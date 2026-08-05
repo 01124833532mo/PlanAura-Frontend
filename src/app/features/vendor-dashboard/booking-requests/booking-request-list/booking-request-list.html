@@ -98,14 +98,16 @@
 
             @if (req.status === BookingStatus.Pending) {
               <div class="request-row__actions" (click)="$event.stopPropagation()">
+                <!-- Accepting requires reviewing and agreeing to the Booking Agreement first, so this
+                     opens the details modal (where that gate lives) rather than accepting inline. -->
                 <ui-button
                   [fullWidth]="false"
                   [loading]="actioningId() === req.id"
                   [disabled]="actioningId() !== null"
-                  (click)="accept(req)"
+                  (click)="openDetails(req)"
                 >
                   <span class="material-symbols-outlined">check</span>
-                  Accept
+                  Review &amp; accept
                 </ui-button>
                 <ui-button
                   variant="outline"

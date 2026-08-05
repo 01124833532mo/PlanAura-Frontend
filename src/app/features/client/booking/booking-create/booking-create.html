@@ -276,12 +276,19 @@
               </p>
             </div>
 
+            <app-agreement-review
+              [documentUrl]="agreementUrl()"
+              [loading]="agreementLoading()"
+              [error]="agreementError()"
+              (agreedChange)="agreed.set($event)"
+            />
+
             <div class="booking-create-form__actions booking-create-form__actions--split">
               <ui-button variant="outline" type="button" [fullWidth]="false" (click)="backToDetails()">
                 <span class="material-symbols-outlined">arrow_back</span>
                 Back
               </ui-button>
-              <ui-button type="submit" [loading]="submitting()">
+              <ui-button type="submit" [loading]="submitting()" [disabled]="!agreed() || !agreementUrl()">
                 <span class="material-symbols-outlined">celebration</span>
                 Confirm &amp; Book
               </ui-button>

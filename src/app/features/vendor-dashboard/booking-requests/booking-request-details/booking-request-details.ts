@@ -1,5 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
+import { AgreementReview } from '../../../../shared/ui/agreement-review/agreement-review';
 import { Button } from '../../../../shared/ui/button/button';
 import { DocumentDownload } from '../../../../shared/ui/document-download/document-download';
 import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
@@ -21,12 +22,18 @@ import { VendorProfileStateService } from '../../../../core/services/vendor-prof
 @Component({
   selector: 'app-booking-request-details',
   standalone: true,
-  imports: [Button, DocumentDownload, StatusBadge, DatePipe, DecimalPipe],
+  imports: [Button, DocumentDownload, StatusBadge, AgreementReview, DatePipe, DecimalPipe],
   templateUrl: './booking-request-details.html',
   styleUrl: './booking-request-details.css',
 })
 export class BookingRequestDetails {
   protected readonly vendorProfileState = inject(VendorProfileStateService);
+
+  /**
+   * The vendor's consent to the Booking Agreement, gating "Accept request". A fresh instance is
+   * created each time the modal opens (parent uses @if), so this always starts unchecked.
+   */
+  protected readonly agreed = signal(false);
 
   @Input({ required: true }) booking!: BookingRequest;
   @Input() packageTitle: string | null = null;

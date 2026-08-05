@@ -3,6 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../config/app-config';
 import {
+  AgreementPreviewRequest,
+  AgreementPreviewResult,
   BookingRequest,
   BookingRequestFilter,
   CreateBookingRequest,
@@ -13,6 +15,18 @@ import {
 @Injectable({ providedIn: 'root' })
 export class BookingRequestService {
   private readonly http = inject(HttpClient);
+
+  /**
+   * POST /api/booking-requests/agreement-preview — generates the Booking Agreement for the current
+   * (fixed) payment-step details and returns a token to bind it on createBooking. Called when the
+   * client reaches the payment step so they can review and agree before confirming.
+   */
+  previewAgreement(dto: AgreementPreviewRequest): Observable<AgreementPreviewResult> {
+    return this.http.post<AgreementPreviewResult>(
+      `${API_BASE_URL}/booking-requests/agreement-preview`,
+      dto,
+    );
+  }
 
   /** POST /api/booking-requests */
   createBooking(dto: CreateBookingRequest): Observable<BookingRequest> {

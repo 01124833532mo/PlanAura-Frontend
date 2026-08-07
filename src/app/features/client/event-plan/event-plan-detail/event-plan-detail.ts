@@ -467,6 +467,10 @@ export class EventPlanDetail implements OnInit {
     this.router.navigate(['/client/event-plans', this.planId, 'edit']);
   }
 
+  protected goToInvitation(): void {
+    this.router.navigate(['/client/event-plans', this.planId, 'invitation']);
+  }
+
   protected selectCategoryToAdd(categoryId: number | null): void {
     this.selectedCategoryToAdd.set(categoryId);
   }

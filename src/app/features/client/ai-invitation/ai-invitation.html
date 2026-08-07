@@ -1,0 +1,86 @@
+<div class="aii-page">
+  <section class="aii-hero card-luxe animate-blur-reveal">
+    <span class="aii-hero__icon material-symbols-outlined" aria-hidden="true">mail</span>
+    <div>
+      <h1 class="text-headline-md">AI Invitation</h1>
+      <p class="text-body-md aii-hero__subtitle">
+        Pick a theme, describe your dream invitation card, and let AI design it for your event.
+      </p>
+    </div>
+  </section>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <section class="aii-form card-luxe animate-fade-up stagger-1">
+    <ui-select-field
+      label="Theme"
+      placeholder="Choose a theme"
+      [options]="themeOptions"
+      [formControl]="themeControl"
+    />
+
+    <ui-text-field
+      label="Describe your dream invitation"
+      placeholder="e.g. Gold foil accents, floral borders, and a soft blush background."
+      [multiline]="true"
+      [formControl]="promptControl"
+      hint="{{ promptControl.value.length }}/{{ maxPromptLength }} characters"
+      [errorMessage]="
+        promptControl.touched && promptControl.invalid
+          ? (promptControl.value.length === 0
+              ? 'A description of the desired invitation is required.'
+              : 'The prompt must be ' + maxPromptLength + ' characters or fewer.')
+          : null
+      "
+    />
+
+    <div class="aii-form__actions">
+      <ui-button [fullWidth]="false" [disabled]="!canGenerate()" [loading]="loading()" (click)="generate()">
+        Generate Invitation
+      </ui-button>
+    </div>
+  </section>
+
+  <section class="aii-gallery animate-fade-up stagger-2">
+    <h3 class="text-headline-sm">Your Invitations</h3>
+
+    @if (loading()) {
+      <div class="aii-gallery__grid">
+        <div class="aii-card card-luxe">
+          <div class="aii-card__image-wrap aii-card__loading">
+            <span class="aii-card__spinner" aria-hidden="true"></span>
+            <p class="text-body-md">Generating your invitation&hellip;</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (invitations().length) {
+      <div class="aii-gallery__grid">
+        @for (invitation of invitations(); track invitation.id) {
+          <div class="aii-card card-luxe">
+            <div class="aii-card__image-wrap">
+              <img class="aii-card__image" [src]="invitation.imageUrl" [alt]="invitation.theme + ' themed invitation'" />
+            </div>
+            <p class="text-body-md aii-card__theme">{{ invitation.theme }}</p>
+            <ui-button
+              variant="outline"
+              [fullWidth]="true"
+              [loading]="downloadingId() === invitation.id"
+              [disabled]="downloadingId() !== null && downloadingId() !== invitation.id"
+              (click)="downloadInvitation(invitation)"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true">download</span>
+              Download
+            </ui-button>
+          </div>
+        }
+      </div>
+    } @else if (!loading()) {
+      <div class="aii-gallery__placeholder">
+        <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+        <p class="text-body-md">Your generated invitations will appear here.</p>
+      </div>
+    }
+  </section>
+</div>

@@ -15,6 +15,15 @@
           class="event-plan-detail-header__edit-btn"
           variant="outline"
           [fullWidth]="false"
+          (click)="goToInvitation()"
+        >
+          <span class="material-symbols-outlined">mail</span>
+          AI Invitation
+        </ui-button>
+        <ui-button
+          class="event-plan-detail-header__edit-btn"
+          variant="outline"
+          [fullWidth]="false"
           (click)="goToEdit()"
         >
           <span class="material-symbols-outlined">edit</span>

@@ -340,6 +340,15 @@ export const routes: Routes = [
           ),
       },
       {
+        // Same distinct-3-segment reasoning as 'event-plans/:id/edit' above.
+        path: 'event-plans/:id/invitation',
+        data: { title: 'AI Invitation' },
+        loadComponent: () =>
+          import('./features/client/ai-invitation/ai-invitation').then(
+            (m) => m.AiInvitationComponent,
+          ),
+      },
+      {
         path: 'bookings',
         data: { title: 'My Bookings' },
         loadComponent: () =>

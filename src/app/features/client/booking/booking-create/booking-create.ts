@@ -22,6 +22,7 @@ import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { STRIPE_PUBLISHABLE_KEY } from '../../../../core/config/app-config';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import { CreateBookingRequest } from '../../../../core/interfaces/booking-request.model';
+import { EventPlan } from '../../../../core/interfaces/event-plan.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
 import { VendorProfile } from '../../../../core/interfaces/vendor-profile.model';
 import {
@@ -121,6 +122,9 @@ export class BookingCreate implements OnInit, OnDestroy {
   protected readonly vendor = signal<VendorProfile | null>(null);
   protected readonly pkg = signal<VendorPackage | null>(null);
   protected readonly slots = signal<VendorAvailability[]>([]);
+  /** Fetched once the event plan id is known, purely to compare its date against the selected slot
+   * (see dateMismatchWarning) — a non-blocking, informational check only. */
+  protected readonly eventPlan = signal<EventPlan | null>(null);
   protected readonly eventPlanOptions = signal<SelectOption[]>([]);
   protected readonly needsEventPlanPicker = signal(false);
 
@@ -173,6 +177,34 @@ export class BookingCreate implements OnInit, OnDestroy {
   protected readonly selectedSlot = computed(
     () => this.slots().find((slot) => slot.id === this.selectedSlotId()) ?? null,
   );
+
+  /**
+   * Informational only — the client may deliberately book a vendor for a different day than the
+   * plan's nominal date (rehearsal, multi-day event, etc.), so this never blocks anything; it just
+   * surfaces the mismatch so they notice before confirming. Compares local calendar dates: the slot
+   * picker already displays dates in the browser's local timezone, so the comparison has to match
+   * that, not a UTC slice of the ISO string.
+   */
+  protected readonly dateMismatchWarning = computed(() => {
+    const slot = this.selectedSlot();
+    const plan = this.eventPlan();
+    if (!slot || !plan?.eventDate) {
+      return null;
+    }
+
+    const slotDateKey = dayKey(new Date(slot.startAt));
+    const planDateKey = plan.eventDate.slice(0, 10);
+    if (slotDateKey === planDateKey) {
+      return null;
+    }
+
+    return (
+      `This slot is on ${new Date(slot.startAt).toLocaleDateString('en-US', { dateStyle: 'medium' })}, ` +
+      `which is different from this event plan's date ` +
+      `(${new Date(plan.eventDate).toLocaleDateString('en-US', { dateStyle: 'medium' })}). ` +
+      `You can still proceed if that's intentional.`
+    );
+  });
 
   protected readonly AvailabilityStatus = AvailabilityStatus;
   protected readonly weekdayLabels = WEEKDAY_LABELS;
@@ -339,6 +371,10 @@ export class BookingCreate implements OnInit, OnDestroy {
 
     this.refreshSlots();
 
+    if (this.eventPlanIdFromQuery) {
+      this.loadEventPlan(this.eventPlanIdFromQuery);
+    }
+
     if (this.needsEventPlanPicker()) {
       this.eventPlanService.getMyEventPlans().subscribe({
         next: (plans) => {
@@ -360,7 +396,21 @@ export class BookingCreate implements OnInit, OnDestroy {
           );
         },
       });
+
+      // No plan was pre-selected via query param — fetch its date (for dateMismatchWarning) once
+      // the client picks one from the dropdown.
+      this.form.controls.eventPlanId.valueChanges.subscribe((id) => {
+        if (id) {
+          this.loadEventPlan(id);
+        } else {
+          this.eventPlan.set(null);
+        }
+      });
     }
+  }
+
+  private loadEventPlan(id: number): void {
+    this.eventPlanService.getEventPlan(id).subscribe({ next: (plan) => this.eventPlan.set(plan) });
   }
 
   /**

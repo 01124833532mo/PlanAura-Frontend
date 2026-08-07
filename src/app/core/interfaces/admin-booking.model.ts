@@ -1,4 +1,4 @@
-import { BookingPaymentStatus, BookingStatus, DisputeStatus } from './booking-request.model';
+import { BookingPaymentStatus, BookingStatus, DisputeStatus, RefundStatus } from './booking-request.model';
 
 /** Mirrors Planura.Core.Application.Models.AdminBooking.AdminBookingDto exactly. */
 export interface AdminBookingListItem {
@@ -12,6 +12,9 @@ export interface AdminBookingListItem {
   clientName: string;
   vendorName: string;
   packageName: string | null;
+  refundStatus: RefundStatus;
+  cancellationRefundAmount: number | null;
+  cancellationRequestedAt: string | null;
 }
 
 /** Mirrors Planura.Core.Application.Models.AdminBooking.AdminBookingFilterDto exactly. */
@@ -20,10 +23,97 @@ export interface AdminBookingFilter {
   status?: BookingStatus;
   paymentStatus?: BookingPaymentStatus;
   disputeStatus?: DisputeStatus;
+  refundStatus?: RefundStatus;
   fromDate?: string;
   toDate?: string;
   page?: number;
   pageSize?: number;
+}
+
+/** Mirrors Planura.Core.Application.Models.AdminBooking.CancellationRequestListItemDto exactly. */
+export interface CancellationRequestListItem {
+  bookingId: number;
+  clientId: number;
+  clientName: string | null;
+  clientEmail: string | null;
+  clientPhone: string | null;
+  vendorId: number;
+  vendorName: string | null;
+  eventDate: string;
+  agreedPrice: number | null;
+  cancellationReason: string | null;
+  cancellationRequestedAt: string | null;
+  cancellationRefundPercent: number | null;
+  cancellationRefundAmount: number | null;
+}
+
+/** Mirrors Planura.Core.Application.Models.AdminBooking.ApproveCancellationDto exactly. */
+export interface ApproveCancellationRequest {
+  amount?: number;
+  note?: string;
+}
+
+/** Mirrors Planura.Core.Application.Models.AdminBooking.RejectCancellationDto exactly. */
+export interface RejectCancellationRequest {
+  note: string;
+}
+
+/** Mirrors Planura.Core.Application.Models.AdminBooking.PaymentTimelineEntryDto exactly. */
+export interface PaymentTimelineEntry {
+  paymentId: number;
+  amount: number;
+  status: number;
+  paymentMethod: string | null;
+  gatewayReference: string | null;
+  authorizedAt: string | null;
+  paidAt: string | null;
+  cancelledAt: string | null;
+  refundedAt: string | null;
+  refundReason: string | null;
+  createdAt: string;
+}
+
+/** Mirrors Planura.Core.Application.Models.AdminBooking.BookingStatusHistoryEntryDto exactly. */
+export interface BookingStatusHistoryEntry {
+  previousStatus: string | null;
+  newStatus: string;
+  changedByUserId: number | null;
+  changedByName: string | null;
+  notes: string | null;
+  changedAt: string;
+}
+
+/** Mirrors Planura.Core.Application.Models.AdminBooking.AdminBookingPaymentDetailDto exactly. */
+export interface AdminBookingPaymentDetail {
+  bookingId: number;
+  status: BookingStatus;
+  eventDate: string;
+
+  clientId: number;
+  clientName: string | null;
+  clientEmail: string | null;
+  clientPhone: string | null;
+
+  vendorId: number;
+  vendorName: string | null;
+
+  totalAmount: number | null;
+  paymentStatus: BookingPaymentStatus;
+
+  refundStatus: RefundStatus;
+  cancellationReason: string | null;
+  cancellationRequestedAt: string | null;
+  cancellationReviewNotes: string | null;
+  cancellationRefundPercent: number | null;
+  cancellationRefundAmount: number | null;
+  cancelledAt: string | null;
+
+  disputeStatus: DisputeStatus | null;
+  disputedAt: string | null;
+  resolutionNotes: string | null;
+
+  paymentTimeline: PaymentTimelineEntry[];
+  statusHistory: BookingStatusHistoryEntry[];
 }
 
 /** Mirrors Planura.Core.Application.Models.AdminBooking.AdminDisputeListItemDto exactly. */

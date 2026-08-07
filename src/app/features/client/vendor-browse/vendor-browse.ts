@@ -43,6 +43,8 @@ export class VendorBrowse implements OnInit {
   protected readonly loading = signal(false);
   protected readonly error = signal<AppError | null>(null);
   protected readonly minRating = signal<number | null>(null);
+  /** yyyy-MM-dd, bound to a plain <input type="date"> — "a photographer available on August 12". */
+  protected readonly availableOnDate = signal<string | null>(null);
   protected readonly eventPlanId = signal<number | undefined>(undefined);
 
   /** Which custom dropdown segment is open — only one at a time, like Airbnb's search bar. */
@@ -218,8 +220,15 @@ export class VendorBrowse implements OnInit {
       raw.city.trim() !== '' ||
       raw.minPrice !== null ||
       raw.maxPrice !== null ||
-      this.minRating() !== null
+      this.minRating() !== null ||
+      this.availableOnDate() !== null
     );
+  }
+
+  protected setAvailableOnDate(value: string): void {
+    this.availableOnDate.set(value || null);
+    this.page.set(1);
+    this.runSearch();
   }
 
   // SelectOption.value is typed string | number (shared with other pages that use numeric
@@ -291,6 +300,7 @@ export class VendorBrowse implements OnInit {
       { emitEvent: false },
     );
     this.minRating.set(null);
+    this.availableOnDate.set(null);
     this.page.set(1);
     this.runSearch();
   }
@@ -314,6 +324,7 @@ export class VendorBrowse implements OnInit {
       minPrice: raw.minPrice ?? undefined,
       maxPrice: raw.maxPrice ?? undefined,
       minRating: this.minRating() ?? undefined,
+      availableOn: this.availableOnDate() ?? undefined,
       sortBy: raw.sortBy,
       page: this.page(),
       pageSize: this.pageSize,

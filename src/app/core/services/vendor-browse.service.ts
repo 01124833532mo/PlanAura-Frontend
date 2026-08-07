@@ -27,6 +27,9 @@ export class VendorBrowseService {
     if (filter.minRating !== undefined) {
       params = params.set('minRating', filter.minRating);
     }
+    if (filter.availableOn) {
+      params = params.set('availableOn', filter.availableOn);
+    }
     // "featured" is the backend's own default sort when omitted — no need to send it.
     if (filter.sortBy && filter.sortBy !== 'featured') {
       params = params.set('sortBy', filter.sortBy);

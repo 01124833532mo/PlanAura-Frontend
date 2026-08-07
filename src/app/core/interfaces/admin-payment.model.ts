@@ -6,6 +6,8 @@ export interface AdminPaymentListItem {
   bookingRequestId: number;
   clientId: number;
   clientName: string | null;
+  clientEmail: string | null;
+  clientPhone: string | null;
   vendorId: number;
   vendorName: string | null;
   amount: number;

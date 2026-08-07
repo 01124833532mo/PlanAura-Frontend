@@ -9,10 +9,16 @@
         <p class="text-body-md">Open up slots clients can request to book.</p>
       </div>
     </div>
-    <ui-button [fullWidth]="false" (click)="openCreate()">
-      <span class="material-symbols-outlined">add</span>
-      Add slot
-    </ui-button>
+    <div class="availability-page__header-actions">
+      <ui-button variant="outline" [fullWidth]="false" (click)="openRecurring()">
+        <span class="material-symbols-outlined">event_repeat</span>
+        Recurring
+      </ui-button>
+      <ui-button [fullWidth]="false" (click)="openCreate()">
+        <span class="material-symbols-outlined">add</span>
+        Add slot
+      </ui-button>
+    </div>
   </div>
 
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
@@ -125,6 +131,87 @@
           </button>
         </div>
       }
+    </div>
+  </div>
+}
+
+@if (recurringOpen()) {
+  <div class="modal-backdrop" (click)="closeRecurring()">
+    <div class="modal-card card-luxe luxe-shadow availability-modal" (click)="$event.stopPropagation()">
+      <div class="availability-modal__header">
+        <span class="availability-modal__icon" aria-hidden="true">
+          <span class="material-symbols-outlined">event_repeat</span>
+        </span>
+        <h4 class="text-headline-sm">Recurring availability</h4>
+      </div>
+
+      <ui-alert-banner
+        [message]="recurringError()?.message ?? null"
+        [details]="recurringError()?.fieldErrors ?? []"
+      />
+
+      <div class="recurring-form">
+        <label class="text-label-sm">Days of the week</label>
+        <div class="recurring-form__days">
+          @for (day of weekdayCheckboxes; track day.index) {
+            <button
+              type="button"
+              class="recurring-form__day"
+              [class.recurring-form__day--selected]="recurringDays().has(day.index)"
+              (click)="toggleRecurringDay(day.index)"
+            >
+              {{ day.label }}
+            </button>
+          }
+        </div>
+
+        <div class="recurring-form__row">
+          <label class="recurring-form__field">
+            <span class="text-label-sm">Start time (UTC)</span>
+            <input
+              type="time"
+              [value]="recurringStartTime()"
+              (input)="recurringStartTime.set($any($event.target).value)"
+            />
+          </label>
+          <label class="recurring-form__field">
+            <span class="text-label-sm">End time (UTC)</span>
+            <input
+              type="time"
+              [value]="recurringEndTime()"
+              (input)="recurringEndTime.set($any($event.target).value)"
+            />
+          </label>
+        </div>
+
+        <div class="recurring-form__row">
+          <label class="recurring-form__field">
+            <span class="text-label-sm">Starting from</span>
+            <input
+              type="date"
+              [value]="recurringStartDate()"
+              (input)="recurringStartDate.set($any($event.target).value)"
+            />
+          </label>
+          <label class="recurring-form__field">
+            <span class="text-label-sm">Repeat for (months)</span>
+            <input
+              type="number"
+              min="1"
+              max="12"
+              [value]="recurringRepeatMonths()"
+              (input)="recurringRepeatMonths.set(+$any($event.target).value)"
+            />
+          </label>
+        </div>
+      </div>
+
+      <div class="availability-modal__danger" style="justify-content: flex-end; display: flex; gap: 0.75rem;">
+        <ui-button variant="outline" [fullWidth]="false" (click)="closeRecurring()">Cancel</ui-button>
+        <ui-button [fullWidth]="false" [loading]="recurringSaving()" (click)="submitRecurring()">
+          Generate slots
+        </ui-button>
+      </div>
     </div>
   </div>
 }

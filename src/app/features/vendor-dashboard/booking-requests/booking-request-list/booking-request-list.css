@@ -181,6 +181,12 @@
   font-weight: 600;
 }
 
+.request-row__time {
+  font-weight: 400;
+  color: var(--color-secondary, rgba(0, 0, 0, 0.6));
+  margin-left: 0.35rem;
+}
+
 .request-row__meta {
   display: flex;
   flex-wrap: wrap;

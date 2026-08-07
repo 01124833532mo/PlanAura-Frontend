@@ -1,3 +1,12 @@
+/** Mirrors Planura.Core.Application.Models.EventPlanChecklistItemDto. IsSatisfied is computed
+ * server-side (true when the plan has an active booking whose vendor belongs to this category). */
+export interface EventPlanChecklistItem {
+  serviceCategoryId: number;
+  categoryName: string;
+  iconUrl: string | null;
+  isSatisfied: boolean;
+}
+
 /** Mirrors the backend's EventPlanDto (verify field names once the controller is available). */
 export interface EventPlan {
   id: number;
@@ -9,6 +18,12 @@ export interface EventPlan {
   budgetTotal: number;
   styleNotes?: string;
   createdAt: string;
+  /** Sum of AgreedPrice over this plan's active bookings. Only populated by getEventPlan (detail); 0 on list results. */
+  totalBookedCost: number;
+  /** budgetTotal - totalBookedCost, or null when no budget is set. Only populated by getEventPlan; null on list results. */
+  remainingBudget: number | null;
+  /** Only populated by getEventPlan; empty on list results. */
+  checklist: EventPlanChecklistItem[];
 }
 
 /** Mirrors the backend's CreateEventPlanDto (verify field names once the controller is available). */

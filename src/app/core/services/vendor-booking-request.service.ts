@@ -5,6 +5,7 @@ import { API_BASE_URL } from '../config/app-config';
 import {
   BookingRequest,
   BookingRequestFilter,
+  BookingStatusHistoryEntry,
   PagedBookingRequestList,
 } from '../interfaces/booking-request.model';
 
@@ -48,6 +49,13 @@ export class VendorBookingRequestService {
   /** GET /api/booking-requests/incoming/{id} */
   getIncoming(id: number): Observable<BookingRequest> {
     return this.http.get<BookingRequest>(`${API_BASE_URL}/booking-requests/incoming/${id}`);
+  }
+
+  /** GET /api/booking-requests/incoming/{id}/timeline — the permanent Booking Activity audit trail. */
+  getTimeline(id: number): Observable<BookingStatusHistoryEntry[]> {
+    return this.http.get<BookingStatusHistoryEntry[]>(
+      `${API_BASE_URL}/booking-requests/incoming/${id}/timeline`,
+    );
   }
 
   /**

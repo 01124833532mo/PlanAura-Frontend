@@ -75,6 +75,7 @@ export class AdminShell implements OnInit {
         { label: 'Verifications', path: '/admin/vendor-verifications', icon: 'verified' },
         { label: 'Clients', path: '/admin/clients', icon: 'group' },
         { label: 'Bookings', path: '/admin/bookings', icon: 'event_note' },
+        { label: 'Cancellation Requests', path: '/admin/bookings/cancellation-requests', icon: 'event_busy' },
         { label: 'Disputes', path: '/admin/disputes', icon: 'gavel' },
         { label: 'Payments', path: '/admin/payments', icon: 'payments' },
       ],

@@ -6,6 +6,10 @@ export enum BookingStatus {
   Cancelled = 4,
   Completed = 5,
   Expired = 6,
+  /** The event's slot has ended; the client is asked to confirm the service was delivered. */
+  AwaitingConfirmation = 7,
+  /** The client requested to cancel an Accepted booking; an admin has not yet decided. */
+  CancellationRequested = 8,
 }
 
 /** Mirrors Planura.Core.Domain.Enums.BookingPaymentStatus (int-backed enum). */
@@ -13,6 +17,14 @@ export enum BookingPaymentStatus {
   Unpaid = 1,
   Paid = 2,
   Refunded = 3,
+}
+
+/** Mirrors Planura.Core.Domain.Enums.RefundStatus (int-backed enum). */
+export enum RefundStatus {
+  None = 1,
+  PendingReview = 2,
+  Processed = 3,
+  Rejected = 4,
 }
 
 /** Mirrors Planura.Core.Domain.Enums.DisputeStatus (int-backed enum). */
@@ -90,10 +102,38 @@ export interface BookingRequest {
   clientAgreedAt: string | null;
   vendorAgreedAt: string | null;
 
+  /** Set when the booking enters AwaitingConfirmation — the clock the auto-confirm grace window counts from. */
+  awaitingConfirmationSince: string | null;
+
+  /** Client-requested cancellation of an Accepted booking, pending admin review. */
+  cancellationReason: string | null;
+  cancellationRequestedAt: string | null;
+  cancellationReviewNotes: string | null;
+  cancellationReviewedAt: string | null;
+  cancellationRefundPercent: number | null;
+  cancellationRefundAmount: number | null;
+  refundStatus: RefundStatus;
+
+  /** The booked slot's exact start/end — lets any "date" display also show the time. */
+  slotStartAt: string | null;
+  slotEndAt: string | null;
+
   /** Non-null only once the client has left a review for this (Completed) booking. */
   reviewId: number | null;
   reviewRating: number | null;
   reviewComment: string | null;
+}
+
+/** Mirrors Planura.Core.Application.Models.AdminBooking.BookingStatusHistoryEntryDto. The permanent
+ * "Booking Activity" audit trail for a booking — the source of truth for outcomes, independent of
+ * any (best-effort) notification. */
+export interface BookingStatusHistoryEntry {
+  previousStatus: string | null;
+  newStatus: string;
+  changedByUserId: number | null;
+  changedByName: string | null;
+  notes: string | null;
+  changedAt: string;
 }
 
 /** Mirrors Planura.Core.Application.Models.BookingRequestFilterDto. No eventPlanId filter exists server-side. */
@@ -112,6 +152,13 @@ export interface BookingRequestFilter {
   excludeRefunded?: boolean;
   page?: number;
   pageSize?: number;
+}
+
+/** Mirrors Planura.Core.Application.Models.CancellationQuoteDto. */
+export interface CancellationQuote {
+  daysUntilEvent: number;
+  refundPercent: number;
+  refundAmount: number;
 }
 
 /** Mirrors Planura.Core.Application.Models.PagedResult<BookingRequestDto>. */

@@ -14,16 +14,21 @@ import {
   BookingPaymentStatus,
   BookingRequest,
   BookingStatus,
+  BookingStatusHistoryEntry,
+  CancellationQuote,
   DisputeStatus,
 } from '../../../../core/interfaces/booking-request.model';
 import { EventPlan } from '../../../../core/interfaces/event-plan.model';
+import { ServiceCategory } from '../../../../core/interfaces/vendor.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
 import { VendorProfile } from '../../../../core/interfaces/vendor-profile.model';
 import { BookingRequestService } from '../../../../core/services/booking-request.service';
 import { EventPlanService } from '../../../../core/services/event-plan.service';
 import { ReviewService } from '../../../../core/services/review.service';
+import { ServiceCategoryService } from '../../../../core/services/service-category.service';
 import { VendorPackageService } from '../../../../core/services/vendor-package.service';
 import { VendorService } from '../../../../core/services/vendor.service';
+import { BookingTimeline } from '../../../../shared/ui/booking-timeline/booking-timeline';
 import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
 
 @Component({
@@ -37,6 +42,7 @@ import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
     TextField,
     ReactiveFormsModule,
     StatusBadge,
+    BookingTimeline,
     DatePipe,
     DecimalPipe,
   ],
@@ -52,6 +58,7 @@ export class EventPlanDetail implements OnInit {
   private readonly reviewService = inject(ReviewService);
   private readonly vendorService = inject(VendorService);
   private readonly packageService = inject(VendorPackageService);
+  private readonly categoryService = inject(ServiceCategoryService);
 
   // Exposed so the template can reference enum members directly.
   protected readonly BookingStatus = BookingStatus;
@@ -67,6 +74,23 @@ export class EventPlanDetail implements OnInit {
   protected readonly error = signal<AppError | null>(null);
   protected readonly actioningId = signal<number | null>(null);
 
+  // Booking Activity: the permanent audit trail, expanded on demand (one booking at a time) and
+  // cached per booking id so re-toggling doesn't re-fetch.
+  protected readonly timelineOpenId = signal<number | null>(null);
+  protected readonly timelines = signal<Map<number, BookingStatusHistoryEntry[]>>(new Map());
+  protected readonly timelineLoading = signal<number | null>(null);
+  protected readonly timelineError = signal<string | null>(null);
+
+  // Checklist widget: categories the client marked as needed for this plan (Venue, Photographer,
+  // Catering, ...), each showing satisfied/unsatisfied based on active bookings.
+  protected readonly allCategories = signal<ServiceCategory[]>([]);
+  protected readonly checklistUpdatingId = signal<number | null>(null);
+  protected readonly selectedCategoryToAdd = signal<number | null>(null);
+  protected readonly availableCategoriesToAdd = computed(() => {
+    const onChecklist = new Set((this.plan()?.checklist ?? []).map((c) => c.serviceCategoryId));
+    return this.allCategories().filter((c) => !onChecklist.has(c.id));
+  });
+
   protected readonly disputeTargetId = signal<number | null>(null);
   protected readonly disputeForm = this.fb.nonNullable.group({
     reason: ['', Validators.required],
@@ -75,6 +99,22 @@ export class EventPlanDetail implements OnInit {
   protected readonly disputeError = signal<AppError | null>(null);
 
   protected readonly cancelTarget = signal<BookingRequest | null>(null);
+
+  // Request-cancellation flow (Accepted bookings only) — shows the estimated refund before the
+  // client commits, then submits a reason; the booking moves to CancellationRequested pending
+  // admin review (see BookingRequestsController.RequestCancellation).
+  protected readonly cancellationTarget = signal<BookingRequest | null>(null);
+  protected readonly cancellationQuote = signal<CancellationQuote | null>(null);
+  protected readonly cancellationQuoteLoading = signal(false);
+  protected readonly cancellationForm = this.fb.nonNullable.group({
+    reason: ['', Validators.required],
+  });
+  protected readonly cancellationSubmitting = signal(false);
+  protected readonly cancellationError = signal<AppError | null>(null);
+
+  // "Confirm service delivered" for AwaitingConfirmation bookings — "Report a problem" reuses the
+  // existing dispute flow below.
+  protected readonly confirmingCompletionId = signal<number | null>(null);
 
   protected readonly reviewTargetId = signal<number | null>(null);
   protected readonly reviewTarget = computed(
@@ -92,6 +132,9 @@ export class EventPlanDetail implements OnInit {
   ngOnInit(): void {
     this.planId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadAll();
+    this.categoryService.getActiveCategories().subscribe({
+      next: (categories) => this.allCategories.set(categories),
+    });
   }
 
   private loadAll(): void {
@@ -218,6 +261,102 @@ export class EventPlanDetail implements OnInit {
     });
   }
 
+  protected openRequestCancellation(booking: BookingRequest): void {
+    this.cancellationTarget.set(booking);
+    this.cancellationForm.reset({ reason: '' });
+    this.cancellationError.set(null);
+    this.cancellationQuote.set(null);
+    this.cancellationQuoteLoading.set(true);
+
+    this.bookingService.getCancellationQuote(booking.id).subscribe({
+      next: (quote) => {
+        this.cancellationQuote.set(quote);
+        this.cancellationQuoteLoading.set(false);
+      },
+      error: (err: AppError) => {
+        this.cancellationError.set(err);
+        this.cancellationQuoteLoading.set(false);
+      },
+    });
+  }
+
+  protected closeRequestCancellation(): void {
+    this.cancellationTarget.set(null);
+  }
+
+  protected submitCancellationRequest(): void {
+    if (this.cancellationForm.invalid) {
+      this.cancellationForm.markAllAsTouched();
+      return;
+    }
+
+    const booking = this.cancellationTarget();
+    if (!booking) {
+      return;
+    }
+
+    this.cancellationSubmitting.set(true);
+    this.cancellationError.set(null);
+
+    this.bookingService
+      .requestCancellation(booking.id, this.cancellationForm.getRawValue().reason)
+      .subscribe({
+        next: (updated) => {
+          this.bookings.update((list) => list.map((b) => (b.id === updated.id ? updated : b)));
+          this.cancellationSubmitting.set(false);
+          this.cancellationTarget.set(null);
+          notifySuccess('Cancellation requested — an admin will review it shortly.');
+        },
+        error: (err: AppError) => {
+          this.cancellationError.set(err);
+          this.cancellationSubmitting.set(false);
+          notifyError('Could not request cancellation', err.message);
+        },
+      });
+  }
+
+  protected confirmServiceDelivered(booking: BookingRequest): void {
+    this.confirmingCompletionId.set(booking.id);
+    this.error.set(null);
+
+    this.bookingService.confirmCompletion(booking.id).subscribe({
+      next: (updated) => {
+        this.bookings.update((list) => list.map((b) => (b.id === updated.id ? updated : b)));
+        this.confirmingCompletionId.set(null);
+        notifySuccess('Thanks for confirming — booking marked complete.');
+      },
+      error: (err: AppError) => {
+        this.confirmingCompletionId.set(null);
+        notifyError('Could not confirm booking', err.message);
+      },
+    });
+  }
+
+  protected toggleTimeline(booking: BookingRequest): void {
+    if (this.timelineOpenId() === booking.id) {
+      this.timelineOpenId.set(null);
+      return;
+    }
+
+    this.timelineOpenId.set(booking.id);
+    if (this.timelines().has(booking.id)) {
+      return;
+    }
+
+    this.timelineLoading.set(booking.id);
+    this.timelineError.set(null);
+    this.bookingService.getTimeline(booking.id).subscribe({
+      next: (entries) => {
+        this.timelines.update((map) => new Map(map).set(booking.id, entries));
+        this.timelineLoading.set(null);
+      },
+      error: (err: AppError) => {
+        this.timelineError.set(err.message || 'Could not load booking activity.');
+        this.timelineLoading.set(null);
+      },
+    });
+  }
+
   protected openDispute(booking: BookingRequest): void {
     this.disputeTargetId.set(booking.id);
     this.disputeForm.reset({ reason: '' });
@@ -326,5 +465,47 @@ export class EventPlanDetail implements OnInit {
 
   protected goToEdit(): void {
     this.router.navigate(['/client/event-plans', this.planId, 'edit']);
+  }
+
+  protected selectCategoryToAdd(categoryId: number | null): void {
+    this.selectedCategoryToAdd.set(categoryId);
+  }
+
+  protected addChecklistCategory(): void {
+    const categoryId = this.selectedCategoryToAdd();
+    if (!categoryId) {
+      return;
+    }
+
+    this.checklistUpdatingId.set(categoryId);
+    this.eventPlanService.addChecklistItem(this.planId, categoryId).subscribe({
+      next: (item) => {
+        this.plan.update((p) => (p ? { ...p, checklist: [...p.checklist, item] } : p));
+        this.checklistUpdatingId.set(null);
+        this.selectedCategoryToAdd.set(null);
+      },
+      error: (err: AppError) => {
+        this.checklistUpdatingId.set(null);
+        notifyError('Could not add category', err.message);
+      },
+    });
+  }
+
+  protected removeChecklistCategory(serviceCategoryId: number): void {
+    this.checklistUpdatingId.set(serviceCategoryId);
+    this.eventPlanService.removeChecklistItem(this.planId, serviceCategoryId).subscribe({
+      next: () => {
+        this.plan.update((p) =>
+          p
+            ? { ...p, checklist: p.checklist.filter((c) => c.serviceCategoryId !== serviceCategoryId) }
+            : p,
+        );
+        this.checklistUpdatingId.set(null);
+      },
+      error: (err: AppError) => {
+        this.checklistUpdatingId.set(null);
+        notifyError('Could not remove category', err.message);
+      },
+    });
   }
 }

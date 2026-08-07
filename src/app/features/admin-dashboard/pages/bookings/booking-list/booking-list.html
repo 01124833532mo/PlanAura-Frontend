@@ -14,6 +14,11 @@
         <option [value]="opt.value ?? ''">{{ opt.label }}</option>
       }
     </select>
+    <select class="admin-select" (change)="onRefundStatusChange($any($event.target).value)">
+      @for (opt of refundStatusOptions; track opt.label) {
+        <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+      }
+    </select>
   </div>
 
   @if (loading()) {
@@ -86,8 +91,114 @@
         </a>
       }
 
+      <button
+        type="button"
+        class="admin-btn admin-btn--secondary"
+        style="margin-top: var(--admin-space-sm); width: 100%;"
+        (click)="openPaymentDetail(booking)"
+      >
+        <span class="material-symbols-outlined" style="font-size: 18px;">receipt_long</span>
+        View Payment Detail
+      </button>
+
       <div class="admin-modal-card__actions">
         <button type="button" class="admin-btn admin-btn--secondary" style="flex: 1;" (click)="closeDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (paymentDetailLoading() || paymentDetail() || paymentDetailError()) {
+  <div class="admin-modal-backdrop" (click)="closePaymentDetail()">
+    <div class="admin-modal-card admin-modal-card--wide admin-animate-scale-in" style="text-align: left;" (click)="$event.stopPropagation()">
+      <h3 class="admin-modal-card__title" style="text-align: left;">Payment Detail</h3>
+
+      @if (paymentDetailLoading()) {
+        <p class="admin-modal-card__message">Loading…</p>
+      } @else if (paymentDetailError()) {
+        <admin-error-state [message]="paymentDetailError()!.message" (retry)="closePaymentDetail()" />
+      } @else if (paymentDetail(); as detail) {
+        <div class="admin-field-grid" style="margin-top: var(--admin-space-md);">
+          <div class="admin-field"><span class="admin-field__label">Client</span><span class="admin-field__value">{{ detail.clientName ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Client Email</span><span class="admin-field__value">{{ detail.clientEmail ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Client Phone</span><span class="admin-field__value">{{ detail.clientPhone ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Vendor</span><span class="admin-field__value">{{ detail.vendorName ?? '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Total Amount</span><span class="admin-field__value">{{ detail.totalAmount ? (detail.totalAmount | number: '1.0-2') + ' EGP' : '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Payment Status</span><span class="admin-field__value"><admin-badge [label]="mapBookingPaymentStatus(detail.paymentStatus).label" [tone]="mapBookingPaymentStatus(detail.paymentStatus).tone" /></span></div>
+          <div class="admin-field"><span class="admin-field__label">Refund Status</span><span class="admin-field__value"><admin-badge [label]="mapRefundStatus(detail.refundStatus).label" [tone]="mapRefundStatus(detail.refundStatus).tone" /></span></div>
+          @if (detail.cancellationRefundAmount !== null) {
+            <div class="admin-field"><span class="admin-field__label">Cancellation Refund</span><span class="admin-field__value">{{ detail.cancellationRefundAmount | number: '1.0-2' }} EGP ({{ detail.cancellationRefundPercent }}%)</span></div>
+          }
+        </div>
+
+        @if (detail.cancellationReason) {
+          <p class="admin-modal-card__message" style="margin-top: var(--admin-space-md);">
+            <strong>Cancellation reason:</strong> {{ detail.cancellationReason }}
+          </p>
+        }
+        @if (detail.cancellationReviewNotes) {
+          <p class="admin-modal-card__message">
+            <strong>Admin review notes:</strong> {{ detail.cancellationReviewNotes }}
+          </p>
+        }
+
+        <h4 class="admin-page-header__title" style="font-size: 1rem; margin-top: var(--admin-space-lg);">Payment Timeline</h4>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Method</th>
+                <th>Authorized</th>
+                <th>Paid</th>
+                <th>Refunded</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (payment of detail.paymentTimeline; track payment.paymentId) {
+                <tr>
+                  <td>{{ payment.amount | number: '1.0-2' }} EGP</td>
+                  <td>{{ payment.status }}</td>
+                  <td>{{ payment.paymentMethod ?? '—' }}</td>
+                  <td>{{ payment.authorizedAt ? (payment.authorizedAt | date: 'short') : '—' }}</td>
+                  <td>{{ payment.paidAt ? (payment.paidAt | date: 'short') : '—' }}</td>
+                  <td>{{ payment.refundedAt ? (payment.refundedAt | date: 'short') : '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <h4 class="admin-page-header__title" style="font-size: 1rem; margin-top: var(--admin-space-lg);">Status History</h4>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>By</th>
+                <th>Notes</th>
+                <th>When</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of detail.statusHistory; track entry.changedAt) {
+                <tr>
+                  <td>{{ entry.previousStatus ?? '—' }}</td>
+                  <td>{{ entry.newStatus }}</td>
+                  <td>{{ entry.changedByName ?? 'System' }}</td>
+                  <td>{{ entry.notes ?? '—' }}</td>
+                  <td>{{ entry.changedAt | date: 'short' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <div class="admin-modal-card__actions">
+        <button type="button" class="admin-btn admin-btn--secondary" style="flex: 1;" (click)="closePaymentDetail()">Close</button>
       </div>
     </div>
   </div>

@@ -3,7 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../config/app-config';
 import {
+  CreateRecurringAvailabilityPayload,
   CreateVendorAvailabilityPayload,
+  GenerateRecurringAvailabilityResult,
   UpdateVendorAvailabilityPayload,
   VendorAvailability,
 } from '../interfaces/vendor-availability.model';
@@ -28,6 +30,16 @@ export class VendorAvailabilityService {
   /** POST /api/vendoravailability */
   create(payload: CreateVendorAvailabilityPayload): Observable<VendorAvailability> {
     return this.http.post<VendorAvailability>(`${API_BASE_URL}/vendoravailability`, payload);
+  }
+
+  /** POST /api/vendoravailability/recurring — generates slots from a weekly pattern, skipping overlaps. */
+  generateRecurring(
+    payload: CreateRecurringAvailabilityPayload,
+  ): Observable<GenerateRecurringAvailabilityResult> {
+    return this.http.post<GenerateRecurringAvailabilityResult>(
+      `${API_BASE_URL}/vendoravailability/recurring`,
+      payload,
+    );
   }
 
   /** PUT /api/vendoravailability/{id} */

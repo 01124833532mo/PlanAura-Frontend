@@ -1,0 +1,32 @@
+<div class="booking-timeline">
+  <div class="booking-timeline__header">
+    <span class="material-symbols-outlined" aria-hidden="true">history</span>
+    <h4 class="text-title-md">Booking Activity</h4>
+  </div>
+
+  @if (loading) {
+    <p class="text-body-md booking-timeline__state">Loading activity…</p>
+  } @else if (error) {
+    <p class="text-body-md booking-timeline__state booking-timeline__state--error">{{ error }}</p>
+  } @else if (rows.length === 0) {
+    <p class="text-body-md booking-timeline__state">No activity recorded yet.</p>
+  } @else {
+    <ol class="booking-timeline__list">
+      @for (row of rows; track row.at + row.title) {
+        <li class="booking-timeline__item">
+          <span class="booking-timeline__icon material-symbols-outlined" aria-hidden="true">{{ row.icon }}</span>
+          <div class="booking-timeline__body">
+            <div class="booking-timeline__row-head">
+              <span class="text-label-md booking-timeline__title">{{ row.title }}</span>
+              <span class="text-label-sm booking-timeline__at">{{ row.at | date: 'MMM d, y, h:mm a' }}</span>
+            </div>
+            @if (row.notes) {
+              <p class="text-body-sm booking-timeline__notes">{{ row.notes }}</p>
+            }
+            <span class="text-label-sm booking-timeline__by">by {{ row.by }}</span>
+          </div>
+        </li>
+      }
+    </ol>
+  }
+</div>

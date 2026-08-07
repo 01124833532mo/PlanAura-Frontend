@@ -7,6 +7,8 @@ import {
   AgreementPreviewResult,
   BookingRequest,
   BookingRequestFilter,
+  BookingStatusHistoryEntry,
+  CancellationQuote,
   CreateBookingRequest,
   PagedBookingRequestList,
 } from '../interfaces/booking-request.model';
@@ -59,9 +61,35 @@ export class BookingRequestService {
     return this.http.get<BookingRequest>(`${API_BASE_URL}/booking-requests/${id}`);
   }
 
-  /** PATCH /api/booking-requests/{id}/cancel */
+  /** GET /api/booking-requests/{id}/timeline — the permanent Booking Activity audit trail. */
+  getTimeline(id: number): Observable<BookingStatusHistoryEntry[]> {
+    return this.http.get<BookingStatusHistoryEntry[]>(`${API_BASE_URL}/booking-requests/${id}/timeline`);
+  }
+
+  /** PATCH /api/booking-requests/{id}/cancel — Pending bookings only, cancels immediately. */
   cancelBooking(id: number): Observable<BookingRequest> {
     return this.http.patch<BookingRequest>(`${API_BASE_URL}/booking-requests/${id}/cancel`, {});
+  }
+
+  /** GET /api/booking-requests/{id}/cancellation-quote — estimated refund for an Accepted booking. */
+  getCancellationQuote(id: number): Observable<CancellationQuote> {
+    return this.http.get<CancellationQuote>(`${API_BASE_URL}/booking-requests/${id}/cancellation-quote`);
+  }
+
+  /**
+   * POST /api/booking-requests/{id}/request-cancellation — requests cancellation of an Accepted
+   * booking. Does not cancel it immediately: moves it to CancellationRequested pending admin
+   * approval.
+   */
+  requestCancellation(id: number, reason: string): Observable<BookingRequest> {
+    return this.http.post<BookingRequest>(`${API_BASE_URL}/booking-requests/${id}/request-cancellation`, {
+      reason,
+    });
+  }
+
+  /** POST /api/booking-requests/{id}/confirm-completion — confirms service delivery, completing an AwaitingConfirmation booking. */
+  confirmCompletion(id: number): Observable<BookingRequest> {
+    return this.http.post<BookingRequest>(`${API_BASE_URL}/booking-requests/${id}/confirm-completion`, {});
   }
 
   /** POST /api/booking-requests/{id}/dispute */

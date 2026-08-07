@@ -1,0 +1,125 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Booking Management</p>
+    <h2 class="admin-page-header__title">Cancellation Requests</h2>
+    <p class="admin-page-header__subtitle">
+      Clients requesting to cancel an accepted booking. Nothing is released or refunded until you decide.
+    </p>
+  </div>
+  <button type="button" class="admin-btn admin-btn--secondary" (click)="load()" [disabled]="loading()">
+    <span class="material-symbols-outlined" style="font-size: 18px;">refresh</span>
+    Refresh
+  </button>
+</section>
+
+<div class="admin-card admin-animate-fade-up admin-stagger-1">
+  @if (loading()) {
+    <admin-skeleton-rows [rows]="5" [columns]="7" />
+  } @else if (error()) {
+    <admin-error-state [message]="error()!.message" (retry)="load()" />
+  } @else if (requests().length === 0) {
+    <admin-empty-state icon="task_alt" title="No pending cancellation requests" message="You're all caught up." />
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Contact</th>
+            <th>Vendor</th>
+            <th>Event Date</th>
+            <th>Price</th>
+            <th>Est. Refund</th>
+            <th>Requested</th>
+            <th>Reason</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (req of requests(); track req.bookingId) {
+            <tr>
+              <td>{{ req.clientName ?? '—' }}</td>
+              <td>
+                <div style="display:flex;flex-direction:column;font-size:0.8rem;">
+                  <span>{{ req.clientEmail ?? '—' }}</span>
+                  <span>{{ req.clientPhone ?? '—' }}</span>
+                </div>
+              </td>
+              <td>{{ req.vendorName ?? '—' }}</td>
+              <td>{{ req.eventDate | date: 'mediumDate' }}</td>
+              <td>{{ req.agreedPrice ? (req.agreedPrice | number: '1.0-0') + ' EGP' : '—' }}</td>
+              <td>
+                @if (req.cancellationRefundAmount !== null) {
+                  {{ req.cancellationRefundAmount | number: '1.0-2' }} EGP ({{ req.cancellationRefundPercent }}%)
+                } @else {
+                  —
+                }
+              </td>
+              <td>{{ req.cancellationRequestedAt ? (req.cancellationRequestedAt | date: 'medium') : '—' }}</td>
+              <td style="max-width: 220px; white-space: normal;">{{ req.cancellationReason ?? '—' }}</td>
+              <td>
+                <div style="display:flex;gap:0.5rem;">
+                  <button type="button" class="admin-btn admin-btn--secondary" (click)="openApprove(req)">Approve</button>
+                  <button type="button" class="admin-btn admin-btn--secondary" (click)="openReject(req)">Reject</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (reviewTarget(); as target) {
+  <div class="admin-modal-backdrop" (click)="closeReview()">
+    <div class="admin-modal-card admin-animate-scale-in" style="text-align: left;" (click)="$event.stopPropagation()">
+      <h3 class="admin-modal-card__title" style="text-align: left;">
+        {{ reviewMode() === 'approve' ? 'Approve cancellation' : 'Reject cancellation' }}
+      </h3>
+      <p class="admin-modal-card__message" style="text-align: left;">
+        Booking #{{ target.bookingId }} — {{ target.clientName }} × {{ target.vendorName }}
+      </p>
+
+      @if (reviewError()) {
+        <admin-error-state [message]="reviewError()!.message" (retry)="closeReview()" />
+      }
+
+      @if (reviewMode() === 'approve') {
+        <label class="admin-field" style="margin-top: var(--admin-space-md);">
+          <span class="admin-field__label">Refund amount (EGP)</span>
+          <input
+            type="number"
+            class="admin-select"
+            style="width: 100%;"
+            [ngModel]="reviewAmount()"
+            (ngModelChange)="reviewAmount.set($event)"
+          />
+        </label>
+      }
+
+      <label class="admin-field" style="margin-top: var(--admin-space-md);">
+        <span class="admin-field__label">Note {{ reviewMode() === 'reject' ? '(required — shown to the client)' : '(optional)' }}</span>
+        <textarea
+          class="admin-select"
+          style="width: 100%; min-height: 5rem;"
+          [ngModel]="reviewNote()"
+          (ngModelChange)="reviewNote.set($event)"
+        ></textarea>
+      </label>
+
+      <div class="admin-modal-card__actions">
+        <button type="button" class="admin-btn admin-btn--secondary" style="flex: 1;" (click)="closeReview()">Cancel</button>
+        <button
+          type="button"
+          class="admin-btn admin-btn--primary"
+          style="flex: 1;"
+          [disabled]="reviewSubmitting()"
+          (click)="submitReview()"
+        >
+          {{ reviewSubmitting() ? 'Saving…' : (reviewMode() === 'approve' ? 'Approve & refund' : 'Reject') }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

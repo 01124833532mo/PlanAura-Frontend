@@ -179,3 +179,20 @@
   font-size: 0.8rem;
   color: var(--color-secondary);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .vendor-card__title-row {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  /* Favourite/trust chips are 32px on desktop — below the touch minimum. */
+  .vendor-card__favorite {
+    width: 38px;
+    height: 38px;
+  }
+}

@@ -276,3 +276,35 @@
 .dtp__done:hover {
   filter: brightness(1.05);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .dtp__panel {
+    padding: var(--space-sm);
+  }
+
+  .dtp__grid {
+    gap: 1px;
+  }
+
+  .dtp__weekdays {
+    font-size: var(--font-label-sm-size);
+  }
+
+  /* Hour + minute + AM/PM on one row leaves each control ~90px; stacking keeps
+     the native selects tappable. */
+  .dtp__time {
+    flex-wrap: wrap;
+  }
+
+  .dtp__footer {
+    flex-wrap: wrap;
+  }
+
+  .dtp__footer > * {
+    flex: 1 1 auto;
+  }
+}

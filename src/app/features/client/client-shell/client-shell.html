@@ -1,4 +1,4 @@
-<aside class="client-nav">
+<aside class="client-nav" [class.client-nav--open]="mobileNavOpen()">
   <div class="client-nav__brand">
     <span class="client-nav__logo material-symbols-outlined" aria-hidden="true">celebration</span>
     <span class="text-headline-sm client-nav__brand-name">Planura</span>
@@ -9,6 +9,7 @@
       class="client-nav__link"
       routerLink="/client/dashboard"
       routerLinkActive="client-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined client-nav__link-icon">space_dashboard</span>
       <span class="text-label-md">Overview</span>
@@ -17,6 +18,7 @@
       class="client-nav__link"
       routerLink="/client/event-plans"
       routerLinkActive="client-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined client-nav__link-icon">event_note</span>
       <span class="text-label-md">My Event Plans</span>
@@ -25,6 +27,7 @@
       class="client-nav__link"
       routerLink="/client/vendors"
       routerLinkActive="client-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined client-nav__link-icon">storefront</span>
       <span class="text-label-md">Browse Vendors</span>
@@ -33,6 +36,7 @@
       class="client-nav__link"
       routerLink="/client/bookings"
       routerLinkActive="client-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined client-nav__link-icon">event_available</span>
       <span class="text-label-md">My Bookings</span>
@@ -41,6 +45,7 @@
       class="client-nav__link"
       routerLink="/client/ai-visualizer"
       routerLinkActive="client-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined client-nav__link-icon">auto_awesome</span>
       <span class="text-label-md">AI Visualizer</span>
@@ -49,6 +54,7 @@
       class="client-nav__link"
       routerLink="/client/profile"
       routerLinkActive="client-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined client-nav__link-icon">account_circle</span>
       <span class="text-label-md">My Profile</span>
@@ -56,7 +62,11 @@
   </nav>
 
   <div class="client-nav__footer">
-    <a class="btn-gold-gradient client-nav__new-event" routerLink="/client/event-plans/new">
+    <a
+      class="btn-gold-gradient client-nav__new-event"
+      routerLink="/client/event-plans/new"
+      (click)="closeMobileNav()"
+    >
       <span class="material-symbols-outlined">add</span>
       <span class="text-label-md">New Event</span>
     </a>
@@ -67,9 +77,27 @@
   </div>
 </aside>
 
+<!-- Dismiss layer for the mobile drawer. Only painted below 768px; above that
+     the rail is part of the layout and there is nothing to dismiss. -->
+@if (mobileNavOpen()) {
+  <div class="client-nav-backdrop" (click)="closeMobileNav()" aria-hidden="true"></div>
+}
+
 <main class="client-main">
   <header class="client-topbar">
-    <h2 class="text-headline-md client-topbar__title">{{ pageTitle() }}</h2>
+    <div class="client-topbar__lead">
+      <button
+        class="client-topbar__menu-btn"
+        type="button"
+        (click)="toggleMobileNav()"
+        [attr.aria-expanded]="mobileNavOpen()"
+        aria-label="Toggle navigation menu"
+      >
+        <span class="material-symbols-outlined">{{ mobileNavOpen() ? 'close' : 'menu' }}</span>
+      </button>
+
+      <h2 class="text-headline-md client-topbar__title">{{ pageTitle() }}</h2>
+    </div>
 
     <div class="client-topbar__actions">
       <app-notification-bell />

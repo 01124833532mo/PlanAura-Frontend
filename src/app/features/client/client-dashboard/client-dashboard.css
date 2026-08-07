@@ -441,3 +441,60 @@ button.client-dashboard__stat {
 .client-dashboard__tip strong {
   color: var(--color-charcoal);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Title block and the "New event" CTA stop competing for one row. */
+  .client-dashboard__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .client-dashboard__header ui-button {
+    display: block;
+  }
+
+  .client-dashboard__header ::ng-deep .ui-btn {
+    width: 100%;
+  }
+
+  .client-dashboard__panel {
+    padding: var(--space-md);
+  }
+
+  .client-dashboard__stat {
+    padding: var(--space-md);
+  }
+
+  /* Icon + label + trailing chevron on one 328px row leaves the label ~6
+     characters; letting the row wrap keeps the label readable. */
+  .client-dashboard__project-row {
+    flex-wrap: wrap;
+  }
+
+  .client-dashboard__tip {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-dashboard__stat-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .client-dashboard__project-icon,
+  .client-dashboard__action-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .client-dashboard__empty {
+    max-width: 100%;
+  }
+}

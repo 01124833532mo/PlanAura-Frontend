@@ -374,21 +374,9 @@
   font-size: 1.1rem;
 }
 
-@media (max-width: 640px) {
-  .calendar__day {
-    min-height: 4.75rem;
-    padding: 0.3rem;
-  }
-
-  .calendar__slot {
-    padding: 0.15rem 0.3rem;
-    font-size: 0.65rem;
-  }
-
-  .calendar__legend {
-    display: none;
-  }
-}
+/* Superseded by the horizontal-scroll treatment at the bottom of this file.
+   Shrinking the cells was the wrong lever: at 7 columns on a 360px screen the
+   cell is ~44px wide, and no font size makes a "9:00 AM" pill fit that. */
 
 .availability-page__header-actions {
   display: flex;
@@ -441,4 +429,90 @@
   padding: 0.5rem 0.75rem;
   border-radius: var(--radius-md, 0.5rem);
   border: 1px solid var(--color-border, rgba(0, 0, 0, 0.15));
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .availability-page__header,
+  .calendar__toolbar {
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .availability-page__header-actions {
+    /* flex-shrink: 0 on desktop keeps both buttons on the title's row; at this
+       width they need to be allowed to take the full row instead. */
+    flex-shrink: 1;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .availability-page__header-actions > * {
+    flex: 1 1 auto;
+  }
+
+  .calendar {
+    padding: var(--space-sm);
+  }
+
+  .calendar__month {
+    /* 11rem plus two 44px arrows overflows a 328px content box. */
+    min-width: 0;
+    flex: 1;
+  }
+
+  /* ---- The month grid scrolls sideways instead of crushing its columns ----
+     Both the weekday header and the day grid live inside .calendar__scroll, so
+     they move together and stay aligned. 616px across 7 columns gives ~84px
+     cells — wide enough for the slot pills' time labels to stay readable.
+     Negative margins let the strip bleed to the card's edges so the swipe
+     affordance is visible and no width is wasted on padding. */
+  .calendar__scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    margin-inline: calc(var(--space-sm) * -1);
+    padding-inline: var(--space-sm);
+  }
+
+  .calendar__weekdays,
+  .calendar__grid {
+    min-width: 616px;
+  }
+
+  .calendar__day {
+    min-height: 5.5rem;
+  }
+
+  /* The "+" affordance is hover-only on desktop, so on touch there is nothing
+     telling the vendor a day is tappable. Show it, dimmed. */
+  .calendar__day--clickable .calendar__day-add {
+    opacity: 0.45;
+  }
+
+  .recurring-form__row {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .recurring-form__day {
+    /* 7 weekday toggles wrap to two rows; 44px keeps each one tappable. */
+    min-width: 44px;
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* The legend duplicates colour information the pills already carry, and it
+     costs a full two-line row above a calendar that is already scrolling. */
+  .calendar__legend {
+    display: none;
+  }
+
+  .calendar__toolbar-right {
+    justify-content: flex-start;
+  }
 }

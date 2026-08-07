@@ -882,20 +882,121 @@
    Responsive
    ========================================================================== */
 
-@media (max-width: 900px) {
-  .home-topbar,
-  .home-hero,
-  .home-section,
-  .home-how,
-  .home-testimonials,
-  .home-stats,
-  .home-footer {
-    padding-left: var(--margin-mobile);
-    padding-right: var(--margin-mobile);
-  }
+/* --margin-desktop already collapses to --margin-mobile at 768px, so the
+   section gutters follow automatically; this block only handles the parts that
+   need real reflow rather than a smaller gutter. */
 
+/* ---- <= 1024px — tablet ---- */
+@media (max-width: 1024px) {
+  /* The collage is only half the hero's width on desktop; once the hero stacks
+     it gets the full column and no longer needs a 360px reservation. */
+  .home-hero__visual {
+    min-height: auto;
+  }
+}
+
+/* ---- <= 768px — mobile ---- */
+@media (max-width: 768px) {
   .home-cta {
     margin-left: var(--margin-mobile);
     margin-right: var(--margin-mobile);
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  /* Topbar collapses to icon-only: brand + three labelled controls do not fit
+     a 360px bar. aria-label on each control keeps them announced. */
+  .home-topbar {
+    gap: var(--space-xs);
+  }
+
+  .home-topbar__link-label {
+    display: none;
+  }
+
+  .home-topbar__link {
+    padding: 0.5rem;
+    min-width: 42px;
+    justify-content: center;
+  }
+
+  .home-topbar__actions {
+    gap: var(--space-xs);
+  }
+
+  /* Search pill becomes a stacked card — two 180px fields plus a submit button
+     cannot share one row, and wrapping them inside a full-radius pill looks
+     broken. */
+  .home-hero__search {
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: var(--radius-xl);
+    max-width: 100%;
+  }
+
+  .home-hero__search-field {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .home-hero__search button,
+  .home-hero__actions button,
+  .home-hero__actions a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .home-hero__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  /* The float card hangs 8% past the collage's left edge — fine inside a
+     half-width column, an overflow source at full width. */
+  .home-hero__floatcard {
+    left: 0;
+    bottom: 0;
+    padding: 0.6rem 0.8rem;
+  }
+
+  /* Carousel arrows sit outside the track; on touch the strip is swipeable, so
+     they are redundant as well as overflowing. */
+  .home-category-carousel__nav {
+    display: none;
+  }
+
+  .home-stats {
+    gap: var(--space-md);
+  }
+
+  .home-stats__item {
+    min-width: 120px;
+  }
+
+  .home-footer__inner {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+}
+
+/* ---- <= 480px — phones ---- */
+@media (max-width: 480px) {
+  .home-hero {
+    padding-top: var(--space-xl);
+  }
+
+  .category-tile {
+    width: min(300px, 84vw);
+  }
+
+  /* Two stats per row instead of a 4-wide strip that wraps unevenly. */
+  .home-stats__item {
+    min-width: 0;
+    flex: 1 1 40%;
+  }
+
+  .home-testimonial,
+  .home-how__step {
+    padding: var(--space-md);
   }
 }

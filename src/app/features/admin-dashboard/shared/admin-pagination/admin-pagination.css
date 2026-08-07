@@ -36,3 +36,22 @@
   white-space: nowrap;
   padding: 0 6px;
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  /* The "showing X of Y" summary and the page controls sit on one justified
+     row; stacking them keeps the controls centred and thumb-reachable. */
+  .admin-pagination {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--admin-space-xs);
+  }
+
+  .admin-pagination__controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

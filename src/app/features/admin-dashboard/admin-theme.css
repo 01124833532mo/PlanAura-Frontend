@@ -942,3 +942,147 @@
     --admin-sidebar-width: 240px;
   }
 }
+
+/* ==========================================================================
+   RESPONSIVE LAYER
+   The admin pages themselves carry almost no CSS — they compose the classes
+   above — so every list/detail screen in /admin gets its mobile behaviour from
+   this one block.
+   ========================================================================== */
+
+/* ---- <= 768px — mobile ---- */
+@media (max-width: 768px) {
+  .admin-app {
+    --admin-space-xl: 22px;
+    --admin-space-2xl: 30px;
+    --admin-space-3xl: 40px;
+    --admin-text-2xl: 22px;
+    --admin-text-3xl: 26px;
+    --admin-radius-xl: 14px;
+  }
+
+  .admin-card {
+    padding: var(--admin-space-md);
+  }
+
+  /* Header title and its action buttons stack; the buttons then stretch to the
+     full width rather than sitting as two orphaned chips. */
+  .admin-page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--admin-space-sm);
+    margin-bottom: var(--admin-space-lg);
+    padding-bottom: var(--admin-space-md);
+  }
+
+  .admin-page-header__actions {
+    width: 100%;
+  }
+
+  .admin-page-header__actions .admin-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  /* Status filters become a single swipeable strip. Wrapping them instead
+     produced four stacked rows that pushed the table off the first screen. */
+  .admin-status-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    margin-left: calc(var(--admin-space-md) * -1);
+    margin-right: calc(var(--admin-space-md) * -1);
+    padding-left: var(--admin-space-md);
+    padding-right: var(--admin-space-md);
+  }
+
+  .admin-status-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-status-tab {
+    flex: 0 0 auto;
+  }
+
+  /* Toolbar controls go full width and stack — a 180px min-width search box
+     next to a 180px select does not fit a 360px screen. */
+  .admin-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding-bottom: var(--admin-space-md);
+    margin-bottom: var(--admin-space-md);
+  }
+
+  .admin-table-toolbar .admin-input,
+  .admin-table-toolbar .admin-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* The table keeps readable column widths and the WRAPPER scrolls sideways.
+     Squeezing 6 columns into 360px makes every cell a two-character sliver. */
+  .admin-table {
+    min-width: 720px;
+  }
+
+  /* Let the scroll area run to the card's edges so the swipe affordance is
+     obvious and no horizontal room is wasted on padding. */
+  .admin-card > .admin-table-wrap {
+    margin-left: calc(var(--admin-space-md) * -1);
+    margin-right: calc(var(--admin-space-md) * -1);
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+  }
+
+  /* Modals become bottom sheets, matching the main app's behaviour. */
+  .admin-modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .admin-modal-card,
+  .admin-modal-card--wide {
+    max-width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
+    overflow-y: auto;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .admin-modal-card__actions {
+    flex-direction: column-reverse;
+  }
+
+  .admin-modal-card__actions .admin-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Row action icons are 34px on desktop — below the 44px touch minimum. */
+  .admin-icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ---- <= 480px — phones ---- */
+@media (max-width: 480px) {
+  /* auto-fit at minmax(220px, 1fr) still tries to fit two 220px columns into a
+     360px viewport once the gap is counted; force a single column. */
+  .admin-stat-grid,
+  .admin-field-grid {
+    grid-template-columns: 1fr;
+    gap: var(--admin-space-md);
+  }
+
+  .admin-doc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-page-header__subtitle {
+    font-size: var(--admin-text-sm);
+  }
+}

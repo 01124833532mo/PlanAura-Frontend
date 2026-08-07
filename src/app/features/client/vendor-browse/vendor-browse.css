@@ -554,3 +554,62 @@
     max-width: 100%;
   }
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Four 48px-tall filter segments in a row overflow well before 768px; they
+     wrap into a two-up grid instead so each keeps a legible label. */
+  .filter-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .filter-segment,
+  .filter-segment--date {
+    flex: 1 1 calc(50% - var(--space-sm));
+    min-width: 0;
+  }
+
+  .filter-segment__trigger {
+    width: 100%;
+  }
+
+  .filter-segment__value {
+    max-width: 100%;
+  }
+
+  /* The dropdown is absolutely positioned from its trigger's left edge — for
+     the right-hand segments that pushes a 240px panel off-screen. Pinning it
+     to the toolbar's full width keeps it on screen wherever it opens from. */
+  .filter-segment__panel,
+  .filter-segment__panel--price {
+    left: 0;
+    right: 0;
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  /* auto-fill at 230px would still try for two columns inside a ~330px
+     content box once the gutter is counted, producing 150px cards. */
+  .browse-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-segment,
+  .filter-segment--date,
+  .filter-toolbar__clear {
+    flex: 1 1 100%;
+  }
+
+  .filter-toolbar__clear {
+    width: 100%;
+  }
+
+  .dropdown-price-row {
+    flex-direction: column;
+  }
+}

@@ -621,6 +621,28 @@
   }
 }
 
+/* The desktop title is nowrap + flex-shrink:0, which on a 360px bar pushes the
+   bell and avatar off-screen for any route named longer than "Bookings". */
+@media (max-width: 768px) {
+  .admin-main {
+    /* A min-content flex/grid child refuses to shrink below its widest table,
+       which is what dragged the whole admin page sideways. */
+    min-width: 0;
+  }
+
+  .admin-topbar__title {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .admin-sidebar {
+    height: 100dvh;
+    overflow-y: auto;
+  }
+}
+
 @media (max-width: 560px) {
   .admin-topbar__notif-panel {
     width: 260px;

@@ -35,3 +35,26 @@
   box-shadow: var(--shadow-sm);
   transform: scale(1.02);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  /* Three or more segments overflow their pill at this width; scrolling the
+     track keeps every option reachable without wrapping the rounded frame. */
+  .ui-segmented {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .ui-segmented::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ui-segmented > * {
+    flex: 1 0 auto;
+    white-space: nowrap;
+  }
+}

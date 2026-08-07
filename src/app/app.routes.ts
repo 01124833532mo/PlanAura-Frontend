@@ -110,6 +110,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'bookings/cancellation-requests',
+        data: { title: 'Cancellation Requests' },
+        loadComponent: () =>
+          import(
+            './features/admin-dashboard/pages/bookings/cancellation-requests/cancellation-requests'
+          ).then((m) => m.CancellationRequests),
+      },
+      {
         path: 'disputes',
         data: { title: 'Disputes' },
         loadComponent: () =>

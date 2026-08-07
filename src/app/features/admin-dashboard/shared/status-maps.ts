@@ -1,4 +1,4 @@
-import { BookingPaymentStatus, BookingStatus, DisputeStatus } from '../../../core/interfaces/booking-request.model';
+import { BookingPaymentStatus, BookingStatus, DisputeStatus, RefundStatus } from '../../../core/interfaces/booking-request.model';
 import { PaymentStatus } from '../../../core/interfaces/payment.model';
 
 export type AdminBadgeTone =
@@ -45,8 +45,25 @@ export function mapBookingStatus(status: BookingStatus): AdminStatusPresentation
       return { label: 'Completed', tone: 'success' };
     case BookingStatus.Expired:
       return { label: 'Expired', tone: 'neutral' };
+    case BookingStatus.AwaitingConfirmation:
+      return { label: 'Awaiting Confirmation', tone: 'warning' };
+    case BookingStatus.CancellationRequested:
+      return { label: 'Cancellation Requested', tone: 'warning' };
     default:
       return { label: 'Unknown', tone: 'neutral' };
+  }
+}
+
+export function mapRefundStatus(status: RefundStatus): AdminStatusPresentation {
+  switch (status) {
+    case RefundStatus.PendingReview:
+      return { label: 'Pending Review', tone: 'warning' };
+    case RefundStatus.Processed:
+      return { label: 'Processed', tone: 'cyan' };
+    case RefundStatus.Rejected:
+      return { label: 'Rejected', tone: 'danger' };
+    default:
+      return { label: 'None', tone: 'neutral' };
   }
 }
 

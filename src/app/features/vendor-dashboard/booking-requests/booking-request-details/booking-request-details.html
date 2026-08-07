@@ -10,7 +10,14 @@
         <span class="details-dialog__icon material-symbols-outlined" aria-hidden="true">event</span>
         <div>
           <h4 class="text-headline-sm">Booking request #{{ booking.id }}</h4>
-          <p class="text-body-md details-dialog__subtitle">{{ booking.eventDate | date: 'EEEE, MMMM d, y' }}</p>
+          <p class="text-body-md details-dialog__subtitle">
+            {{ booking.eventDate | date: 'EEEE, MMMM d, y' }}
+            @if (booking.slotStartAt) {
+              <span class="details-dialog__time">
+                {{ booking.slotStartAt | date: 'shortTime' }}@if (booking.slotEndAt) { – {{ booking.slotEndAt | date: 'shortTime' }} }
+              </span>
+            }
+          </p>
         </div>
       </div>
       <button class="icon-btn" type="button" title="Close" (click)="closed.emit()">
@@ -123,5 +130,11 @@
         </button>
       </div>
     }
+
+    <app-booking-timeline
+      [entries]="timelineEntries()"
+      [loading]="timelineLoading()"
+      [error]="timelineError()"
+    />
   </div>
 </div>

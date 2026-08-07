@@ -5,6 +5,7 @@ import { AppError } from '../../../../core/interfaces/api-response.model';
 import { BookingRequest } from '../../../../core/interfaces/booking-request.model';
 import {
   AvailabilityStatus,
+  CreateRecurringAvailabilityPayload,
   CreateVendorAvailabilityPayload,
   UpdateVendorAvailabilityPayload,
   VendorAvailability,
@@ -14,6 +15,7 @@ import { VendorBookingRequestService } from '../../../../core/services/vendor-bo
 import { VendorProfileStateService } from '../../../../core/services/vendor-profile-state.service';
 import { AvailabilityForm } from '../availability-form/availability-form';
 import { BookingRequestDetails } from '../../booking-requests/booking-request-details/booking-request-details';
+import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
 
 /** One slot as it appears on a single day cell (a multi-day slot yields one per covered day). */
 interface DaySlot {
@@ -67,6 +69,17 @@ export class AvailabilityList {
   protected readonly editingSlot = signal<VendorAvailability | null>(null);
   protected readonly initialDate = signal<string | null>(null);
   protected readonly savingId = signal<number | 'new' | null>(null);
+
+  // Recurring-availability modal: generate slots from a weekly pattern instead of one at a time.
+  protected readonly recurringOpen = signal(false);
+  protected readonly recurringSaving = signal(false);
+  protected readonly recurringError = signal<AppError | null>(null);
+  protected readonly weekdayCheckboxes = WEEKDAY_LABELS.map((label, index) => ({ index, label }));
+  protected readonly recurringDays = signal<Set<number>>(new Set());
+  protected readonly recurringStartTime = signal('12:00');
+  protected readonly recurringEndTime = signal('13:00');
+  protected readonly recurringStartDate = signal(toDateInputValue(new Date()));
+  protected readonly recurringRepeatMonths = signal(3);
 
   // Read-only booking view opened when the vendor clicks a Booked slot. Errors
   // (load/accept/reject) surface through the page-level `error` alert banner.
@@ -384,6 +397,71 @@ export class AvailabilityList {
     });
   }
 
+  protected openRecurring(): void {
+    this.recurringError.set(null);
+    this.recurringDays.set(new Set());
+    this.recurringOpen.set(true);
+  }
+
+  protected closeRecurring(): void {
+    this.recurringOpen.set(false);
+  }
+
+  protected toggleRecurringDay(dayIndex: number): void {
+    this.recurringDays.update((days) => {
+      const next = new Set(days);
+      if (next.has(dayIndex)) {
+        next.delete(dayIndex);
+      } else {
+        next.add(dayIndex);
+      }
+      return next;
+    });
+  }
+
+  protected submitRecurring(): void {
+    const daysOfWeek = [...this.recurringDays()];
+    if (daysOfWeek.length === 0) {
+      this.recurringError.set({
+        status: 400,
+        message: 'Select at least one day of the week.',
+        fieldErrors: [],
+      });
+      return;
+    }
+
+    const payload: CreateRecurringAvailabilityPayload = {
+      daysOfWeek,
+      startTime: this.recurringStartTime(),
+      endTime: this.recurringEndTime(),
+      startDate: this.recurringStartDate(),
+      repeatMonths: this.recurringRepeatMonths(),
+    };
+
+    this.recurringSaving.set(true);
+    this.recurringError.set(null);
+
+    this.availabilityService.generateRecurring(payload).subscribe({
+      next: (result) => {
+        this.recurringSaving.set(false);
+        this.recurringOpen.set(false);
+        notifySuccess(
+          `Created ${result.createdCount} slot(s)` +
+            (result.skippedCount > 0 ? ` (${result.skippedCount} skipped — already had a slot then).` : '.'),
+        );
+        const vendorId = this.vendorProfileState.vendorId();
+        if (vendorId !== null) {
+          this.fetchSlots(vendorId);
+        }
+      },
+      error: (err: AppError) => {
+        this.recurringError.set(err);
+        this.recurringSaving.set(false);
+        notifyError('Could not generate recurring availability', err.message);
+      },
+    });
+  }
+
   protected deleteSlot(slot: VendorAvailability): void {
     if (!confirm('Delete this availability slot?')) {
       return;
@@ -419,6 +497,10 @@ function startOfDay(d: Date): Date {
 
 function formatTime(d: Date): string {
   return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+function toDateInputValue(d: Date): string {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 function formatDateTime(d: Date): string {

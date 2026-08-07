@@ -55,7 +55,14 @@
               <span class="material-symbols-outlined">event</span>
             </span>
             <div class="request-row__info">
-              <p class="text-body-md request-row__date">{{ req.eventDate | date: 'EEE, MMM d, y' }}</p>
+              <p class="text-body-md request-row__date">
+                {{ req.eventDate | date: 'EEE, MMM d, y' }}
+                @if (req.slotStartAt) {
+                  <span class="request-row__time">
+                    {{ req.slotStartAt | date: 'shortTime' }}@if (req.slotEndAt) { – {{ req.slotEndAt | date: 'shortTime' }} }
+                  </span>
+                }
+              </p>
               <div class="request-row__meta">
                 @if (packageTitle(req); as title) {
                   <span class="request-row__chip">

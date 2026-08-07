@@ -27,6 +27,8 @@ export interface VendorBrowseFilter {
   minPrice?: number;
   maxPrice?: number;
   minRating?: number;
+  /** Only vendors with at least one Available slot starting on this date (yyyy-MM-dd), e.g. "a photographer available on August 12". */
+  availableOn?: string;
   sortBy?: 'featured' | 'rating' | 'priceAsc' | 'priceDesc';
   page?: number;
   pageSize?: number;

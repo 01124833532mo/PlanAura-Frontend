@@ -207,6 +207,20 @@
       </div>
     </div>
 
+    <!-- Availability date -->
+    <label class="filter-segment filter-segment--date">
+      <span class="material-symbols-outlined filter-segment__icon" aria-hidden="true">event_available</span>
+      <span class="filter-segment__text">
+        <span class="filter-segment__label">Available on</span>
+        <input
+          type="date"
+          class="filter-segment__date-input"
+          [value]="availableOnDate() ?? ''"
+          (change)="setAvailableOnDate($any($event.target).value)"
+        />
+      </span>
+    </label>
+
     <!-- Sort -->
     <div
       class="filter-segment"

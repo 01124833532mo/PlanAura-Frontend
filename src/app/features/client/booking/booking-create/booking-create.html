@@ -159,6 +159,10 @@
               </div>
             }
 
+            @if (dateMismatchWarning(); as warning) {
+              <ui-alert-banner variant="info" [message]="warning" />
+            }
+
             @if (needsEventPlanPicker()) {
               <ui-select-field
                 label="Which event plan is this for?"
@@ -232,6 +236,10 @@
                 </div>
               }
             </div>
+
+            @if (dateMismatchWarning(); as warning) {
+              <ui-alert-banner variant="info" [message]="warning" />
+            }
 
             <div class="booking-create-payment">
               @if (paymentLoadError()) {

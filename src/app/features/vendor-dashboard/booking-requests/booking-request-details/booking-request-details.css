@@ -33,6 +33,10 @@
   color: var(--color-secondary);
 }
 
+.details-dialog__time {
+  margin-left: 0.35rem;
+}
+
 .details-dialog__status {
   display: flex;
 }

@@ -5,8 +5,12 @@ import { API_BASE_URL } from '../config/app-config';
 import {
   AdminBookingFilter,
   AdminBookingListItem,
+  AdminBookingPaymentDetail,
   AdminDisputeDetails,
   AdminDisputeListItem,
+  ApproveCancellationRequest,
+  CancellationRequestListItem,
+  RejectCancellationRequest,
   ResolveDisputeRequest,
 } from '../interfaces/admin-booking.model';
 import { PagedResult } from '../interfaces/paged-result.model';
@@ -44,6 +48,36 @@ export class AdminBookingService {
     return this.http.post<void>(
       `${API_BASE_URL}/admin/bookings/disputes/${bookingId}/resolve`,
       request,
+    );
+  }
+
+  /** GET /api/admin/bookings/cancellation-requests */
+  getCancellationRequests(): Observable<CancellationRequestListItem[]> {
+    return this.http.get<CancellationRequestListItem[]>(
+      `${API_BASE_URL}/admin/bookings/cancellation-requests`,
+    );
+  }
+
+  /** POST /api/admin/bookings/{bookingId}/approve-cancellation */
+  approveCancellation(bookingId: number, request: ApproveCancellationRequest): Observable<AdminBookingListItem> {
+    return this.http.post<AdminBookingListItem>(
+      `${API_BASE_URL}/admin/bookings/${bookingId}/approve-cancellation`,
+      request,
+    );
+  }
+
+  /** POST /api/admin/bookings/{bookingId}/reject-cancellation */
+  rejectCancellation(bookingId: number, request: RejectCancellationRequest): Observable<AdminBookingListItem> {
+    return this.http.post<AdminBookingListItem>(
+      `${API_BASE_URL}/admin/bookings/${bookingId}/reject-cancellation`,
+      request,
+    );
+  }
+
+  /** GET /api/admin/bookings/{bookingId}/payment-detail */
+  getPaymentDetail(bookingId: number): Observable<AdminBookingPaymentDetail> {
+    return this.http.get<AdminBookingPaymentDetail>(
+      `${API_BASE_URL}/admin/bookings/${bookingId}/payment-detail`,
     );
   }
 }

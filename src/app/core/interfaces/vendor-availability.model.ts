@@ -28,3 +28,23 @@ export interface UpdateVendorAvailabilityPayload {
   startAt: string;
   endAt: string;
 }
+
+/**
+ * Mirrors Planura.Core.Application.Models.CreateRecurringAvailabilityDto. StartTime/EndTime are
+ * "HH:mm" strings (TimeOnly on the backend), interpreted as UTC — matching how single-slot
+ * startAt/endAt already arrive as UTC ISO strings.
+ */
+export interface CreateRecurringAvailabilityPayload {
+  /** 0=Sunday .. 6=Saturday (JS Date#getDay() numbering, matches System.DayOfWeek). */
+  daysOfWeek: number[];
+  startTime: string;
+  endTime: string;
+  startDate: string;
+  repeatMonths: number;
+}
+
+/** Mirrors Planura.Core.Application.Models.GenerateRecurringAvailabilityResultDto. */
+export interface GenerateRecurringAvailabilityResult {
+  createdCount: number;
+  skippedCount: number;
+}

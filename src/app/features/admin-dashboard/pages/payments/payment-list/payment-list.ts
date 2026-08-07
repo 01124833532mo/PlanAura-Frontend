@@ -1,8 +1,10 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AdminBookingService } from '../../../../../core/services/admin-booking.service';
 import { AdminPaymentService } from '../../../../../core/services/admin-payment.service';
 import { AppError } from '../../../../../core/interfaces/api-response.model';
+import { AdminBookingPaymentDetail } from '../../../../../core/interfaces/admin-booking.model';
 import { AdminPaymentFilter, AdminPaymentListItem, AdminPaymentSummary } from '../../../../../core/interfaces/admin-payment.model';
 import { PaymentStatus } from '../../../../../core/interfaces/payment.model';
 import { AdminBadge } from '../../../shared/admin-badge/admin-badge';
@@ -12,7 +14,7 @@ import { adminNotifyError, adminNotifySuccess } from '../../../shared/admin-noti
 import { AdminPagination } from '../../../shared/admin-pagination/admin-pagination';
 import { AdminSkeletonRows } from '../../../shared/admin-skeleton/admin-skeleton';
 import { AdminStatCard } from '../../../shared/admin-stat-card/admin-stat-card';
-import { mapPaymentStatus } from '../../../shared/status-maps';
+import { mapBookingPaymentStatus, mapPaymentStatus, mapRefundStatus } from '../../../shared/status-maps';
 
 const STATUS_OPTIONS: { label: string; value: PaymentStatus | undefined }[] = [
   { label: 'All statuses', value: undefined },
@@ -34,10 +36,17 @@ const STATUS_OPTIONS: { label: string; value: PaymentStatus | undefined }[] = [
 })
 export class PaymentList implements OnInit {
   private readonly adminPaymentService = inject(AdminPaymentService);
+  private readonly adminBookingService = inject(AdminBookingService);
+
+  protected readonly paymentDetail = signal<AdminBookingPaymentDetail | null>(null);
+  protected readonly paymentDetailLoading = signal(false);
+  protected readonly paymentDetailError = signal<AppError | null>(null);
 
   protected readonly statusOptions = STATUS_OPTIONS;
   protected readonly PaymentStatus = PaymentStatus;
   protected readonly mapPaymentStatus = mapPaymentStatus;
+  protected readonly mapBookingPaymentStatus = mapBookingPaymentStatus;
+  protected readonly mapRefundStatus = mapRefundStatus;
 
   protected readonly payments = signal<AdminPaymentListItem[]>([]);
   protected readonly totalCount = signal(0);
@@ -85,6 +94,28 @@ export class PaymentList implements OnInit {
   protected onPageChange(page: number): void {
     this.filter.update((f) => ({ ...f, page }));
     this.load();
+  }
+
+  protected openPaymentDetail(payment: AdminPaymentListItem): void {
+    this.paymentDetail.set(null);
+    this.paymentDetailError.set(null);
+    this.paymentDetailLoading.set(true);
+
+    this.adminBookingService.getPaymentDetail(payment.bookingRequestId).subscribe({
+      next: (detail) => {
+        this.paymentDetail.set(detail);
+        this.paymentDetailLoading.set(false);
+      },
+      error: (err: AppError) => {
+        this.paymentDetailError.set(err);
+        this.paymentDetailLoading.set(false);
+      },
+    });
+  }
+
+  protected closePaymentDetail(): void {
+    this.paymentDetail.set(null);
+    this.paymentDetailError.set(null);
   }
 
   protected openRefund(payment: AdminPaymentListItem): void {

@@ -58,6 +58,84 @@
       }
     </header>
 
+    <section class="card-luxe luxe-shadow event-plan-detail-section animate-fade-up">
+      <p class="text-label-sm event-plan-detail-section__eyebrow">
+        <span class="material-symbols-outlined">payments</span>
+        Budget
+      </p>
+      <div class="event-plan-detail-header__grid">
+        <div class="event-plan-detail-header__field">
+          <span class="text-label-sm event-plan-detail-header__label">Total budget</span>
+          <span class="text-body-md event-plan-detail-header__value">{{ p.budgetTotal | number: '1.0-2' }}</span>
+        </div>
+        <div class="event-plan-detail-header__field">
+          <span class="text-label-sm event-plan-detail-header__label">Booked so far</span>
+          <span class="text-body-md event-plan-detail-header__value">{{ p.totalBookedCost | number: '1.0-2' }}</span>
+        </div>
+        @if (p.remainingBudget !== null) {
+          <div class="event-plan-detail-header__field">
+            <span class="text-label-sm event-plan-detail-header__label">Remaining</span>
+            <span
+              class="text-body-md event-plan-detail-header__value"
+              [class.event-plan-detail-header__value--over]="p.remainingBudget < 0"
+            >
+              {{ p.remainingBudget | number: '1.0-2' }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <p class="text-label-sm event-plan-detail-section__eyebrow" style="margin-top: 1.5rem;">
+        <span class="material-symbols-outlined">checklist</span>
+        Vendor checklist
+      </p>
+      @if (p.checklist.length === 0) {
+        <p class="text-body-md">Add the categories you still need to book (venue, photographer, catering…).</p>
+      } @else {
+        <ul class="checklist-list">
+          @for (item of p.checklist; track item.serviceCategoryId) {
+            <li class="checklist-list__item" [class.checklist-list__item--satisfied]="item.isSatisfied">
+              <span class="material-symbols-outlined">{{ item.isSatisfied ? 'check_circle' : 'radio_button_unchecked' }}</span>
+              <span class="text-body-md">{{ item.categoryName }}</span>
+              <button
+                class="checklist-list__remove"
+                type="button"
+                [disabled]="checklistUpdatingId() === item.serviceCategoryId"
+                (click)="removeChecklistCategory(item.serviceCategoryId)"
+                title="Remove from checklist"
+              >
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (availableCategoriesToAdd().length > 0) {
+        <div class="checklist-add">
+          <select
+            class="checklist-add__select"
+            [value]="selectedCategoryToAdd() ?? ''"
+            (change)="selectCategoryToAdd($any($event.target).value ? +$any($event.target).value : null)"
+          >
+            <option value="" disabled selected>Add a category…</option>
+            @for (category of availableCategoriesToAdd(); track category.id) {
+              <option [value]="category.id">{{ category.nameEn }}</option>
+            }
+          </select>
+          <ui-button
+            variant="outline"
+            [fullWidth]="false"
+            [disabled]="!selectedCategoryToAdd()"
+            [loading]="checklistUpdatingId() === selectedCategoryToAdd()"
+            (click)="addChecklistCategory()"
+          >
+            Add
+          </ui-button>
+        </div>
+      }
+    </section>
+
     <section class="event-plan-detail-section animate-fade-up stagger-1">
       <p class="text-label-sm event-plan-detail-section__eyebrow">
         <span class="material-symbols-outlined">calendar_month</span>
@@ -97,6 +175,12 @@
                   <span>
                     <span class="material-symbols-outlined">event</span>
                     {{ booking.eventDate | date: 'mediumDate' }}
+                    @if (booking.slotStartAt) {
+                      , {{ booking.slotStartAt | date: 'shortTime' }}
+                      @if (booking.slotEndAt) {
+                        – {{ booking.slotEndAt | date: 'shortTime' }}
+                      }
+                    }
                   </span>
                   @if (booking.guestCount) {
                     <span>
@@ -140,6 +224,31 @@
                       Cancel request
                     </ui-button>
                   }
+                  @if (booking.status === BookingStatus.Accepted) {
+                    <ui-button
+                      variant="outline"
+                      [fullWidth]="false"
+                      (click)="openRequestCancellation(booking)"
+                    >
+                      Request cancellation
+                    </ui-button>
+                  }
+                  @if (booking.status === BookingStatus.CancellationRequested) {
+                    <p class="text-label-sm booking-row__status-note">
+                      Cancellation requested{{ booking.cancellationRefundPercent !== null
+                        ? ' — estimated refund ' + booking.cancellationRefundPercent + '%'
+                        : '' }}. Waiting on admin review.
+                    </p>
+                  }
+                  @if (booking.status === BookingStatus.AwaitingConfirmation) {
+                    <ui-button
+                      [fullWidth]="false"
+                      [loading]="confirmingCompletionId() === booking.id"
+                      (click)="confirmServiceDelivered(booking)"
+                    >
+                      Confirm service delivered
+                    </ui-button>
+                  }
                   @if (booking.status === BookingStatus.Completed) {
                     <ui-button variant="outline" [fullWidth]="false" (click)="openReview(booking)">
                       {{ booking.reviewId ? 'Edit your review' : 'Leave a review' }}
@@ -147,6 +256,7 @@
                   }
                   @if (
                     (booking.status === BookingStatus.Accepted ||
+                      booking.status === BookingStatus.AwaitingConfirmation ||
                       booking.status === BookingStatus.Completed) &&
                     booking.disputeStatus !== DisputeStatus.Open
                   ) {
@@ -154,8 +264,24 @@
                       Report a problem
                     </button>
                   }
+
+                  <button
+                    class="booking-row__report"
+                    type="button"
+                    (click)="toggleTimeline(booking)"
+                  >
+                    {{ timelineOpenId() === booking.id ? 'Hide activity' : 'View activity' }}
+                  </button>
                 </div>
               </div>
+
+              @if (timelineOpenId() === booking.id) {
+                <app-booking-timeline
+                  [entries]="timelines().get(booking.id) ?? null"
+                  [loading]="timelineLoading() === booking.id"
+                  [error]="timelineError()"
+                />
+              }
             </div>
           }
         </div>
@@ -207,6 +333,51 @@
     (confirmed)="confirmCancel()"
     (cancelled)="closeCancel()"
   />
+}
+
+@if (cancellationTarget(); as target) {
+  <div class="modal-backdrop" (click)="closeRequestCancellation()">
+    <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
+      <div class="event-plan-detail-modal__header">
+        <span class="material-symbols-outlined event-plan-detail-modal__icon" aria-hidden="true">event_busy</span>
+        <h4 class="text-headline-sm">Request cancellation</h4>
+      </div>
+
+      @if (cancellationQuoteLoading()) {
+        <p class="text-body-md">Calculating your estimated refund…</p>
+      } @else if (cancellationQuote(); as quote) {
+        <p class="text-body-md">
+          Based on our cancellation policy ({{ quote.daysUntilEvent }} day(s) before the event), you're
+          estimated to receive a <strong>{{ quote.refundPercent }}%</strong> refund
+          ({{ quote.refundAmount | number: '1.0-2' }} {{ priceCurrency(target) }}).
+          This request will be reviewed by an admin before anything is charged or released.
+        </p>
+      }
+
+      <form [formGroup]="cancellationForm" (ngSubmit)="submitCancellationRequest()">
+        <ui-alert-banner
+          [message]="cancellationError()?.message ?? null"
+          [details]="cancellationError()?.fieldErrors ?? []"
+        />
+        <ui-text-field
+          label="Why are you cancelling?"
+          formControlName="reason"
+          [multiline]="true"
+          [errorMessage]="
+            cancellationForm.get('reason')!.touched && cancellationForm.get('reason')!.invalid
+              ? 'Please provide a reason.'
+              : null
+          "
+        />
+        <div class="event-plan-detail-modal__actions">
+          <ui-button variant="outline" type="button" (click)="closeRequestCancellation()">Keep booking</ui-button>
+          <ui-button type="submit" [loading]="cancellationSubmitting()">
+            Request cancellation
+          </ui-button>
+        </div>
+      </form>
+    </div>
+  </div>
 }
 
 @if (reviewTargetId(); as id) {

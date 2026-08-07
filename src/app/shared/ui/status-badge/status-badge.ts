@@ -51,6 +51,10 @@ export class StatusBadge {
         return { label: 'Expired — no charge made', tone: 'muted' };
       case BookingStatus.Completed:
         return { label: 'Completed', tone: 'gold' };
+      case BookingStatus.AwaitingConfirmation:
+        return { label: 'Please confirm service delivery', tone: 'pending' };
+      case BookingStatus.CancellationRequested:
+        return { label: 'Cancellation requested — pending review', tone: 'pending' };
       default:
         return { label: 'Unknown', tone: 'muted' };
     }

@@ -240,6 +240,11 @@ export class EventPlanDetail implements OnInit {
     );
   }
 
+  /** The outstanding remainder on a deposit booking (total − deposit), server-recorded on the DTO. */
+  protected remainderAmount(booking: BookingRequest): number {
+    return (booking.totalAmount ?? 0) - (booking.depositAmount ?? 0);
+  }
+
   protected cancelBooking(booking: BookingRequest): void {
     this.cancelTarget.set(booking);
   }

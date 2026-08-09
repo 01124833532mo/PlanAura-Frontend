@@ -21,7 +21,10 @@ import { StepperHeader } from '../../../../shared/ui/stepper-header/stepper-head
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { STRIPE_PUBLISHABLE_KEY } from '../../../../core/config/app-config';
 import { AppError } from '../../../../core/interfaces/api-response.model';
-import { CreateBookingRequest } from '../../../../core/interfaces/booking-request.model';
+import {
+  CreateBookingRequest,
+  PaymentPreview,
+} from '../../../../core/interfaces/booking-request.model';
 import { EventPlan } from '../../../../core/interfaces/event-plan.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
 import { VendorProfile } from '../../../../core/interfaces/vendor-profile.model';
@@ -145,6 +148,11 @@ export class BookingCreate implements OnInit, OnDestroy {
   protected readonly agreementError = signal<string | null>(null);
   protected readonly agreed = signal(false);
   private agreementToken: string | null = null;
+
+  // Deposit breakdown (Phase 4) — the server-side full-vs-deposit split for the chosen slot, shown at the
+  // payment step before the client pays. Best-effort: if it fails to load the price recap still shows.
+  protected readonly paymentPreview = signal<PaymentPreview | null>(null);
+  protected readonly paymentPreviewLoading = signal(false);
 
   /** True while Stripe.js/Elements is loading — the payment section stays present but visually hidden. */
   protected readonly mountingPayment = signal(true);
@@ -645,6 +653,40 @@ export class BookingCreate implements OnInit, OnDestroy {
     // review and agree before confirming. Regenerated on every entry to this step,
     // so a details change picks up a fresh agreement (no persistent draft is kept).
     this.loadAgreement();
+    // Show the deposit-vs-full breakdown for these (now-fixed) details before they pay.
+    this.loadPaymentPreview();
+  }
+
+  /** Fetches the server-side payment split for the fixed details so the payment step can show the
+   * deposit breakdown. Best-effort — a failure leaves the price recap as the fallback. */
+  private loadPaymentPreview(): void {
+    const slotId = this.selectedSlotId();
+    const raw = this.form.getRawValue();
+    const eventPlanId = this.eventPlanIdFromQuery ?? raw.eventPlanId;
+    if (!slotId || !eventPlanId) {
+      return;
+    }
+
+    const guestCount = raw.guestCount.trim() === '' ? undefined : Number(raw.guestCount);
+
+    this.paymentPreviewLoading.set(true);
+    this.paymentPreview.set(null);
+    this.bookingService
+      .getPaymentPreview({
+        eventPlanId,
+        availabilityId: slotId,
+        vendorPackageId: this.packageId,
+        guestCount,
+      })
+      .subscribe({
+        next: (preview) => {
+          this.paymentPreview.set(preview);
+          this.paymentPreviewLoading.set(false);
+        },
+        error: () => {
+          this.paymentPreviewLoading.set(false);
+        },
+      });
   }
 
   /**

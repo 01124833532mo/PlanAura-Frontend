@@ -210,8 +210,50 @@
                   <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
                   @if (booking.paymentStatus === BookingPaymentStatus.Refunded) {
                     <p class="text-label-sm booking-row__status-note">
-                      Your refund is on its way to your account.
+                      @if (booking.cancellationRefundAmount != null) {
+                        @if ((booking.cancellationRefundPercent ?? 0) >= 100) {
+                          Your full refund of {{ booking.cancellationRefundAmount | number: '1.0-2' }}
+                          {{ priceCurrency(booking) }} is on its way to your account.
+                        } @else {
+                          Your refund of {{ booking.cancellationRefundAmount | number: '1.0-2' }}
+                          {{ priceCurrency(booking) }} is on its way to your account.
+                        }
+                      } @else {
+                        Your refund is on its way to your account.
+                      }
                     </p>
+                  } @else if (booking.paymentStatus === BookingPaymentStatus.DepositPaid) {
+                    <p class="text-label-sm booking-row__status-note">
+                      Remaining {{ priceCurrency(booking) }} {{ remainderAmount(booking) | number: '1.0-2' }}
+                      due before your event.
+                    </p>
+                    <ui-button
+                      variant="outline"
+                      [fullWidth]="false"
+                      [loading]="payingRemainderId() === booking.id"
+                      (click)="payRemainder(booking)"
+                    >
+                      Pay remainder now
+                    </ui-button>
+                    @if (payingRemainderId() === booking.id && remainderStatusMessage(); as msg) {
+                      <p class="text-label-sm booking-row__status-note">{{ msg }}</p>
+                    }
+                  } @else if (booking.paymentStatus === BookingPaymentStatus.RemainderFailed) {
+                    <p class="text-label-sm booking-row__status-note">
+                      We couldn't charge the remaining {{ priceCurrency(booking) }}
+                      {{ remainderAmount(booking) | number: '1.0-2' }}. Please pay to keep your booking.
+                    </p>
+                    <ui-button
+                      variant="outline"
+                      [fullWidth]="false"
+                      [loading]="payingRemainderId() === booking.id"
+                      (click)="payRemainder(booking)"
+                    >
+                      Pay remainder now
+                    </ui-button>
+                    @if (payingRemainderId() === booking.id && remainderStatusMessage(); as msg) {
+                      <p class="text-label-sm booking-row__status-note">{{ msg }}</p>
+                    }
                   }
                 </div>
 
@@ -334,7 +376,7 @@
   <ui-confirm-dialog
     icon="event_busy"
     title="Cancel this booking request?"
-    message="Are you sure you want to cancel this request?"
+    message="The booking is cancelled and any held amount is released."
     confirmLabel="Cancel request"
     cancelLabel="Keep it"
     variant="danger"
@@ -349,18 +391,35 @@
     <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
       <div class="event-plan-detail-modal__header">
         <span class="material-symbols-outlined event-plan-detail-modal__icon" aria-hidden="true">event_busy</span>
-        <h4 class="text-headline-sm">Request cancellation</h4>
+        <h4 class="text-headline-sm">
+          {{ isDepositOnly(target) ? 'Cancel booking' : 'Request cancellation' }}
+        </h4>
       </div>
 
-      @if (cancellationQuoteLoading()) {
-        <p class="text-body-md">Calculating your estimated refund…</p>
-      } @else if (cancellationQuote(); as quote) {
+      @if (isDepositOnly(target)) {
+        <!-- TYPE 1 — deposit-only paid (DepositPaid/RemainderFailed): the deposit is forfeited on cancel. -->
         <p class="text-body-md">
-          Based on our cancellation policy ({{ quote.daysUntilEvent }} day(s) before the event), you're
-          estimated to receive a <strong>{{ quote.refundPercent }}%</strong> refund
-          ({{ quote.refundAmount | number: '1.0-2' }} {{ priceCurrency(target) }}).
-          This request will be reviewed by an admin before anything is charged or released.
+          <strong>
+            If you cancel, your booking is cancelled immediately and your deposit@if (
+              target.depositAmount != null
+            ) {&nbsp;({{ target.depositAmount | number: '1.0-2' }} {{ priceCurrency(target) }})}
+            is non-refundable.
+          </strong>
         </p>
+      } @else {
+        <!-- TYPE 2 — fully paid (Paid): goes to admin review. Branch on paymentStatus, not on whether the
+             estimated-refund quote has loaded — the policy text must always show. The quote (when it loads)
+             is an optional detail underneath. -->
+        <p class="text-body-md">If you cancel, your request goes to an admin who will decide your refund.</p>
+        @if (cancellationQuoteLoading()) {
+          <p class="text-body-md">Calculating your estimated refund…</p>
+        } @else if (cancellationQuote(); as quote) {
+          <p class="text-body-md">
+            Estimated refund based on our cancellation policy: <strong>{{ quote.refundPercent }}%</strong>
+            ({{ quote.refundAmount | number: '1.0-2' }} {{ priceCurrency(target) }}),
+            {{ quote.daysUntilEvent }} day(s) before the event.
+          </p>
+        }
       }
 
       <form [formGroup]="cancellationForm" (ngSubmit)="submitCancellationRequest()">
@@ -381,7 +440,7 @@
         <div class="event-plan-detail-modal__actions">
           <ui-button variant="outline" type="button" (click)="closeRequestCancellation()">Keep booking</ui-button>
           <ui-button type="submit" [loading]="cancellationSubmitting()">
-            Request cancellation
+            {{ isDepositOnly(target) ? 'Cancel & forfeit deposit' : 'Request cancellation' }}
           </ui-button>
         </div>
       </form>

@@ -7,13 +7,11 @@ import {
 type BadgeTone = 'pending' | 'gold' | 'success' | 'error' | 'muted';
 
 /**
- * Under the authorize-then-capture payment model, a booking's card is
- * authorized at submit time — Accepted always implies Paid (capture happens
- * atomically on vendor accept) and Rejected/Cancelled/Expired always imply no
- * charge was made. There is no longer an "Accepted but unpaid" state, so the
- * booking status alone is enough for every case except a refund, which is
- * tracked separately on paymentStatus and can apply on top of any booking
- * status (e.g. a Completed or Cancelled booking can later be refunded).
+ * For a full-payment booking the card is authorized at submit and captured on vendor accept, so Accepted
+ * implies Paid and the booking status alone drives the badge. Deposit bookings break that: an Accepted
+ * booking can be DepositPaid (deposit captured, remainder still due), RemainderFailed (the auto remainder
+ * charge failed), or Paid (remainder collected → fully paid) — so the Accepted case reads paymentStatus.
+ * Refunded still overrides everything (it can apply on top of any status).
  */
 @Component({
   selector: 'ui-status-badge',
@@ -42,10 +40,25 @@ export class StatusBadge {
       case BookingStatus.Pending:
         return { label: 'Awaiting vendor response — payment authorized', tone: 'pending' };
       case BookingStatus.Accepted:
+        if (this.paymentStatus === BookingPaymentStatus.DepositPaid) {
+          return { label: 'Deposit paid', tone: 'gold' };
+        }
+        if (this.paymentStatus === BookingPaymentStatus.RemainderFailed) {
+          return { label: 'Payment failed', tone: 'error' };
+        }
         return { label: 'Confirmed & Paid', tone: 'success' };
       case BookingStatus.Rejected:
         return { label: 'Declined — no charge made', tone: 'error' };
       case BookingStatus.Cancelled:
+        // A deposit-only booking cancelled while the remainder was still owed keeps its DepositPaid/
+        // RemainderFailed paymentStatus — the deposit was captured and is forfeited, so "no charge made"
+        // is wrong here. Only a pre-accept (Unpaid/Authorized) cancel truly captured nothing.
+        if (
+          this.paymentStatus === BookingPaymentStatus.DepositPaid ||
+          this.paymentStatus === BookingPaymentStatus.RemainderFailed
+        ) {
+          return { label: 'Cancelled — deposit non-refundable', tone: 'muted' };
+        }
         return { label: 'Cancelled — no charge made', tone: 'muted' };
       case BookingStatus.Expired:
         return { label: 'Expired — no charge made', tone: 'muted' };

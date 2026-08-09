@@ -117,6 +117,11 @@ export class MyBookings implements OnInit {
     return pkg?.currency ?? 'EGP';
   }
 
+  /** The outstanding remainder on a deposit booking (total − deposit), server-recorded on the DTO. */
+  protected remainderAmount(booking: BookingRequest): number {
+    return (booking.totalAmount ?? 0) - (booking.depositAmount ?? 0);
+  }
+
   protected openPlan(booking: BookingRequest): void {
     this.router.navigate(['/client/event-plans', booking.eventPlanId]);
   }

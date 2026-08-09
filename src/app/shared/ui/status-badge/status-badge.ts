@@ -50,6 +50,15 @@ export class StatusBadge {
       case BookingStatus.Rejected:
         return { label: 'Declined — no charge made', tone: 'error' };
       case BookingStatus.Cancelled:
+        // A deposit-only booking cancelled while the remainder was still owed keeps its DepositPaid/
+        // RemainderFailed paymentStatus — the deposit was captured and is forfeited, so "no charge made"
+        // is wrong here. Only a pre-accept (Unpaid/Authorized) cancel truly captured nothing.
+        if (
+          this.paymentStatus === BookingPaymentStatus.DepositPaid ||
+          this.paymentStatus === BookingPaymentStatus.RemainderFailed
+        ) {
+          return { label: 'Cancelled — deposit non-refundable', tone: 'muted' };
+        }
         return { label: 'Cancelled — no charge made', tone: 'muted' };
       case BookingStatus.Expired:
         return { label: 'Expired — no charge made', tone: 'muted' };

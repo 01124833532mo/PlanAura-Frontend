@@ -344,7 +344,8 @@ export class EventPlanDetail implements OnInit {
         this.bookings.update((list) => list.map((b) => (b.id === updated.id ? updated : b)));
         this.actioningId.set(null);
         this.cancelTarget.set(null);
-        notifySuccess('Booking request cancelled.');
+        // Pre-accept cancel: the card was only authorized, never captured, so nothing was charged.
+        notifySuccess('Booking cancelled — no charge made.');
       },
       error: (err: AppError) => {
         this.error.set(err);
@@ -405,11 +406,12 @@ export class EventPlanDetail implements OnInit {
           this.bookings.update((list) => list.map((b) => (b.id === updated.id ? updated : b)));
           this.cancellationSubmitting.set(false);
           this.cancellationTarget.set(null);
-          // Deposit-only forfeit cancels immediately (Cancelled); fully-paid goes to admin review.
+          // TYPE 1 (deposit-only) forfeits the deposit and cancels immediately (status → Cancelled) — NOT
+          // "no charge made". TYPE 2 (fully paid) goes to admin review (status → CancellationRequested).
           notifySuccess(
             updated.status === BookingStatus.Cancelled
-              ? 'Booking cancelled.'
-              : 'Cancellation requested — an admin will review it shortly.',
+              ? 'Booking cancelled. Your deposit was non-refundable.'
+              : 'Cancellation request submitted — an admin will review your refund.',
           );
         },
         error: (err: AppError) => {

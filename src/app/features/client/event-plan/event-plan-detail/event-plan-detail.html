@@ -210,7 +210,17 @@
                   <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
                   @if (booking.paymentStatus === BookingPaymentStatus.Refunded) {
                     <p class="text-label-sm booking-row__status-note">
-                      Your refund is on its way to your account.
+                      @if (booking.cancellationRefundAmount != null) {
+                        @if ((booking.cancellationRefundPercent ?? 0) >= 100) {
+                          Your full refund of {{ booking.cancellationRefundAmount | number: '1.0-2' }}
+                          {{ priceCurrency(booking) }} is on its way to your account.
+                        } @else {
+                          Your refund of {{ booking.cancellationRefundAmount | number: '1.0-2' }}
+                          {{ priceCurrency(booking) }} is on its way to your account.
+                        }
+                      } @else {
+                        Your refund is on its way to your account.
+                      }
                     </p>
                   } @else if (booking.paymentStatus === BookingPaymentStatus.DepositPaid) {
                     <p class="text-label-sm booking-row__status-note">
@@ -366,7 +376,7 @@
   <ui-confirm-dialog
     icon="event_busy"
     title="Cancel this booking request?"
-    message="If you cancel, the booking is cancelled and any amount held on your card is released."
+    message="The booking is cancelled and any held amount is released."
     confirmLabel="Cancel request"
     cancelLabel="Keep it"
     variant="danger"
@@ -387,24 +397,29 @@
       </div>
 
       @if (isDepositOnly(target)) {
+        <!-- TYPE 1 — deposit-only paid (DepositPaid/RemainderFailed): the deposit is forfeited on cancel. -->
         <p class="text-body-md">
           <strong>
-            If you cancel now, your booking is cancelled immediately and your deposit@if (
+            If you cancel, your booking is cancelled immediately and your deposit@if (
               target.depositAmount != null
             ) {&nbsp;({{ target.depositAmount | number: '1.0-2' }} {{ priceCurrency(target) }})}
             is non-refundable.
           </strong>
-          The remaining balance hasn't been paid, so there is no refund to review.
         </p>
-      } @else if (cancellationQuoteLoading()) {
-        <p class="text-body-md">Calculating your estimated refund…</p>
-      } @else if (cancellationQuote(); as quote) {
-        <p class="text-body-md">
-          Based on our cancellation policy ({{ quote.daysUntilEvent }} day(s) before the event), you're
-          estimated to receive a <strong>{{ quote.refundPercent }}%</strong> refund
-          ({{ quote.refundAmount | number: '1.0-2' }} {{ priceCurrency(target) }}).
-          This request will be reviewed by an admin before anything is charged or released.
-        </p>
+      } @else {
+        <!-- TYPE 2 — fully paid (Paid): goes to admin review. Branch on paymentStatus, not on whether the
+             estimated-refund quote has loaded — the policy text must always show. The quote (when it loads)
+             is an optional detail underneath. -->
+        <p class="text-body-md">If you cancel, your request goes to an admin who will decide your refund.</p>
+        @if (cancellationQuoteLoading()) {
+          <p class="text-body-md">Calculating your estimated refund…</p>
+        } @else if (cancellationQuote(); as quote) {
+          <p class="text-body-md">
+            Estimated refund based on our cancellation policy: <strong>{{ quote.refundPercent }}%</strong>
+            ({{ quote.refundAmount | number: '1.0-2' }} {{ priceCurrency(target) }}),
+            {{ quote.daysUntilEvent }} day(s) before the event.
+          </p>
+        }
       }
 
       <form [formGroup]="cancellationForm" (ngSubmit)="submitCancellationRequest()">

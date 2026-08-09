@@ -162,6 +162,18 @@ export interface BookingRequestFilter {
   pageSize?: number;
 }
 
+/** Mirrors Planura.Core.Application.Models.PaymentPreviewDto — the full-vs-deposit split shown before the
+ * client pays, so booking-create can show the deposit breakdown. Computed server-side (source of truth). */
+export interface PaymentPreview {
+  isDeposit: boolean;
+  depositAmount: number;
+  totalAmount: number;
+  remainderAmount: number;
+  /** Date the remainder is auto-charged (event date − lead days); null on the full-payment path. "yyyy-MM-dd". */
+  remainderChargeDate: string | null;
+  currency: string;
+}
+
 /** Mirrors Planura.Core.Application.Models.CancellationQuoteDto. */
 export interface CancellationQuote {
   daysUntilEvent: number;

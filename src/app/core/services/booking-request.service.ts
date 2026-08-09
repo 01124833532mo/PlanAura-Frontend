@@ -11,6 +11,7 @@ import {
   CancellationQuote,
   CreateBookingRequest,
   PagedBookingRequestList,
+  PaymentPreview,
 } from '../interfaces/booking-request.model';
 
 /** Wraps the client-facing endpoints on BookingRequestsController (ClientOnly). */
@@ -28,6 +29,14 @@ export class BookingRequestService {
       `${API_BASE_URL}/booking-requests/agreement-preview`,
       dto,
     );
+  }
+
+  /**
+   * POST /api/booking-requests/payment-preview — the server-side full-vs-deposit split for the chosen
+   * slot + package, so the payment step can show the deposit breakdown before the client pays. Read-only.
+   */
+  getPaymentPreview(dto: AgreementPreviewRequest): Observable<PaymentPreview> {
+    return this.http.post<PaymentPreview>(`${API_BASE_URL}/booking-requests/payment-preview`, dto);
   }
 
   /** POST /api/booking-requests */

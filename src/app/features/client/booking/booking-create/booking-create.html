@@ -237,6 +237,27 @@
               }
             </div>
 
+            <!-- Deposit breakdown (Phase 4): only for deposit bookings; full-payment shows the price above as today. -->
+            @if (paymentPreview(); as preview) {
+              @if (preview.isDeposit) {
+                <div class="booking-create-recap">
+                  <p class="text-body-md">
+                    <strong>
+                      Pay {{ (preview.depositAmount / preview.totalAmount) * 100 | number: '1.0-0' }}% deposit
+                      now: {{ preview.depositAmount | number: '1.0-2' }} {{ preview.currency }}
+                    </strong>
+                  </p>
+                  <p class="text-body-sm">
+                    The remaining {{ preview.remainderAmount | number: '1.0-2' }} {{ preview.currency }} will be
+                    charged automatically on
+                    <strong>{{ preview.remainderChargeDate | date: 'mediumDate' }}</strong>
+                    (about 4 days before your event) from this card.
+                  </p>
+                  <p class="text-label-sm">Your card will be saved securely for the remaining payment.</p>
+                </div>
+              }
+            }
+
             @if (dateMismatchWarning(); as warning) {
               <ui-alert-banner variant="info" [message]="warning" />
             }

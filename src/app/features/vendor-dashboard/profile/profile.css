@@ -1030,3 +1030,68 @@
     height: 38px;
   }
 }
+
+/* ==========================================================================
+   Responsive (see also the 720px block above, which handles the hero)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .vp-panel {
+    padding: var(--space-md);
+  }
+
+  .vp-hero__info {
+    min-width: 0;
+  }
+
+  /* Seven profile tabs never fit one row; a swipeable strip beats four stacked
+     rows of pills pushing the panel below the fold. */
+  .vp-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .vp-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vp-tabs > * {
+    flex: 0 0 auto;
+  }
+
+  .vp-edit-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vp-edit-form__previews {
+    flex-direction: column;
+  }
+
+  .vp-availability-item {
+    flex-wrap: wrap;
+  }
+
+  .vp-package-card__meta {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Two thumbnails per row instead of the 180px auto-fill, which collapses to
+     one very tall column at this width. */
+  .vp-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-sm);
+  }
+
+  .vp-gallery__image {
+    height: 120px;
+  }
+
+  .vp-packages-grid,
+  .vp-about__facts {
+    grid-template-columns: 1fr;
+  }
+}

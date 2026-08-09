@@ -58,3 +58,23 @@
   font-size: 34px;
   color: var(--admin-slate-300);
 }
+
+@media (max-width: 768px) {
+  .admin-chart-card {
+    padding: var(--admin-space-md);
+  }
+
+  .admin-chart-card__header {
+    /* Title + the trend/legend chip stop competing for a 360px row. */
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: var(--admin-space-md);
+  }
+
+  /* A chart that reports its own intrinsic width would otherwise widen the
+     card past the viewport instead of scaling down into it. */
+  .admin-chart-card__body {
+    min-width: 0;
+    overflow-x: auto;
+  }
+}

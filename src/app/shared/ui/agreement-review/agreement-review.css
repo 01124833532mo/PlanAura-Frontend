@@ -87,3 +87,23 @@
   cursor: pointer;
   accent-color: var(--color-primary, #6b4eff);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .agreement-review {
+    padding: var(--space-sm);
+  }
+
+  .agreement-review__header {
+    flex-wrap: wrap;
+  }
+
+  /* A PDF <iframe> at 45vh is unreadable on a phone; give it more of the
+     screen since it is the whole point of the component. */
+  .agreement-review__viewer {
+    height: clamp(16rem, 60vh, 28rem);
+  }
+}

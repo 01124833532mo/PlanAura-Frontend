@@ -102,3 +102,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Responsive (see also the 900px block above, which single-columns the filters)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .browser-filters {
+    padding: var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .browser-filters__actions {
+    flex-wrap: wrap;
+  }
+
+  .browser-filters__actions > * {
+    flex: 1 1 auto;
+  }
+
+  .browser-page__state {
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  .browser-page__empty {
+    max-width: 100%;
+  }
+}

@@ -92,3 +92,31 @@
   background: var(--gradient-primary-soft);
   color: var(--color-primary);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .package-page__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .package-page__header ui-button {
+    display: block;
+  }
+
+  .package-page__header ::ng-deep .ui-btn {
+    width: 100%;
+  }
+
+  .package-page__state {
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  .package-page__empty {
+    max-width: 100%;
+  }
+}

@@ -4,18 +4,20 @@
       <span class="material-symbols-outlined home-topbar__brand-icon" aria-hidden="true">celebration</span>
       Planura
     </span>
+    <!-- Labels are wrapped so the mobile layer can collapse these to icon-only
+         buttons; the aria-labels keep them announced either way. -->
     <nav class="home-topbar__actions">
-      <a class="home-topbar__link" routerLink="/client/vendors">
+      <a class="home-topbar__link" routerLink="/client/vendors" aria-label="Browse Vendors">
         <span class="material-symbols-outlined">storefront</span>
-        Browse Vendors
+        <span class="home-topbar__link-label">Browse Vendors</span>
       </a>
-      <button class="home-topbar__link" type="button" (click)="goToDashboard()">
+      <button class="home-topbar__link" type="button" (click)="goToDashboard()" aria-label="Dashboard">
         <span class="material-symbols-outlined">dashboard</span>
-        Dashboard
+        <span class="home-topbar__link-label">Dashboard</span>
       </button>
-      <button class="home-topbar__link" type="button" (click)="logout()">
+      <button class="home-topbar__link" type="button" (click)="logout()" aria-label="Log Out">
         <span class="material-symbols-outlined">logout</span>
-        Log Out
+        <span class="home-topbar__link-label">Log Out</span>
       </button>
     </nav>
   </header>

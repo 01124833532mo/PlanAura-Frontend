@@ -68,3 +68,22 @@
 .ui-field__error-icon {
   font-size: 1rem;
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .availability-form__actions {
+    flex-direction: column-reverse;
+    gap: var(--space-sm);
+  }
+
+  .availability-form__actions ui-button {
+    display: block;
+  }
+
+  .availability-form__actions ::ng-deep .ui-btn {
+    width: 100%;
+  }
+}

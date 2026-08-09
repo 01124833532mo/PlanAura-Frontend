@@ -48,13 +48,20 @@
     @if (loading()) {
       <div class="calendar__loading skeleton"></div>
     } @else {
-      <div class="calendar__weekdays">
-        @for (label of weekdayLabels; track label) {
-          <div class="calendar__weekday text-label-sm">{{ label }}</div>
-        }
-      </div>
+      <!--
+        Weekday header and day grid share ONE scroll container so they scroll in
+        lockstep. Below 768px a 7-column month grid gives ~44px cells, which is
+        narrower than the time label inside a slot pill ("9:00 AM"); the columns
+        keep a readable minimum width here and the container scrolls instead.
+      -->
+      <div class="calendar__scroll">
+        <div class="calendar__weekdays">
+          @for (label of weekdayLabels; track label) {
+            <div class="calendar__weekday text-label-sm">{{ label }}</div>
+          }
+        </div>
 
-      <div class="calendar__grid">
+        <div class="calendar__grid">
         @for (week of weeks(); track $index) {
           @for (day of week; track day.key) {
             <div
@@ -95,6 +102,7 @@
             </div>
           }
         }
+        </div>
       </div>
     }
   </div>

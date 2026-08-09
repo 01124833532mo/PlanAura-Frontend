@@ -105,3 +105,36 @@
   background: var(--color-surface-container);
   color: var(--color-secondary);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .package-details__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .package-details__actions {
+    flex-direction: column-reverse;
+    gap: var(--space-sm);
+  }
+
+  .package-details__actions ui-button {
+    display: block;
+  }
+
+  .package-details__actions ::ng-deep .ui-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Two fixed columns give each field ~150px, which truncates every price and
+     duration value. */
+  .package-details__grid {
+    grid-template-columns: 1fr;
+  }
+}

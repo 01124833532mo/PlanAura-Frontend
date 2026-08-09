@@ -295,3 +295,45 @@
 .request-row__reported .material-symbols-outlined {
   font-size: 1rem;
 }
+
+/* ==========================================================================
+   Responsive (see also the 640px block above, which stacks the row)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .requests-page__header {
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .request-row {
+    padding: var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  /* Accept / Decline / Details on one row gives each ~90px including padding. */
+  .request-row__actions {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .request-row__actions > * {
+    flex: 1 1 auto;
+  }
+
+  /* Filter pills become a swipeable strip rather than three wrapped rows. */
+  .requests-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .requests-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .requests-filters > * {
+    flex: 0 0 auto;
+  }
+}

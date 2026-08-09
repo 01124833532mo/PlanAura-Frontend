@@ -9,7 +9,10 @@
   top: 0;
   left: 0;
   height: 100vh;
-  width: 264px;
+  /* Falls back to dvh where supported so mobile browser chrome (the collapsing
+     URL bar) doesn't leave the drawer's footer cropped below the fold. */
+  height: 100dvh;
+  width: var(--nav-rail-width);
   background: linear-gradient(180deg, var(--color-surface-container-lowest) 0%, var(--color-soft-beige) 100%);
   border-right: 1px solid var(--color-subtle-border);
   display: flex;
@@ -136,15 +139,20 @@
 }
 
 .vendor-main {
-  margin-left: 264px;
+  margin-left: var(--nav-rail-width);
   min-height: 100vh;
+  /* Without this the fixed rail's width can't be subtracted from a min-content
+     main, and wide children (tables, chart rows) push the whole page sideways
+     instead of scrolling inside their own container. */
+  min-width: 0;
 }
 
 .vendor-topbar {
-  height: 80px;
+  min-height: var(--topbar-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-sm);
   padding: 0 var(--margin-desktop);
   background: var(--glass-bg-strong);
   backdrop-filter: var(--glass-blur);
@@ -155,10 +163,39 @@
   z-index: 5;
 }
 
+.vendor-topbar__lead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+/* Hamburger — only rendered below the drawer breakpoint. */
+.vendor-topbar__menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-charcoal);
+  cursor: pointer;
+}
+
 .vendor-topbar__title {
   font-family: var(--font-family-display);
   color: var(--color-charcoal);
   letter-spacing: -0.01em;
+  /* One line, ellipsised — a wrapping page title would grow the sticky bar and
+     shove the content down on every long route name. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .vendor-topbar__actions {
@@ -204,11 +241,24 @@
   padding: var(--margin-desktop);
 }
 
-@media (max-width: 900px) {
-  .vendor-nav {
-    width: 76px;
-  }
+/* ---- Backdrop behind the mobile drawer ---- */
+.vendor-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(36, 31, 28, 0.45);
+  backdrop-filter: blur(2px);
+  /* Above the chatbot FAB (z-index 1000), which otherwise floats over the open
+     drawer in the strip of screen the drawer doesn't cover — and stays tappable
+     through the backdrop. */
+  z-index: 1090;
+  animation: fade-in var(--dur-fast) var(--ease-smooth) both;
+}
 
+/* ==========================================================================
+   <= 1024px — tablet: the rail keeps its place but drops to icons only.
+   Width comes from --nav-rail-width, which the global layer sets to 76px here.
+   ========================================================================== */
+@media (max-width: 1024px) {
   .vendor-nav__brand-name,
   .vendor-nav__link span:last-child,
   .vendor-nav__logout span:last-child {
@@ -224,14 +274,75 @@
   .vendor-nav__logout {
     justify-content: center;
   }
+}
 
-  .vendor-main {
-    margin-left: 76px;
+/* ==========================================================================
+   <= 768px — mobile: the rail leaves the flow entirely and slides in over the
+   content as a drawer. --nav-rail-width is 0 here, so .vendor-main reclaims
+   the full width automatically.
+   ========================================================================== */
+@media (max-width: 768px) {
+  .vendor-nav {
+    width: min(80vw, 288px);
+    /* Parked off-screen rather than display:none so the slide reads as motion
+       and the links stay in the a11y tree order they had on desktop. */
+    transform: translateX(-100%);
+    transition: transform var(--dur-base) var(--ease-out-expo);
+    z-index: 1100;
+    box-shadow: none;
+    overflow-y: auto;
   }
 
-  .vendor-topbar,
+  .vendor-nav--open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-xl);
+  }
+
+  /* Labels come back — inside the drawer there is room for them again. */
+  .vendor-nav__brand-name,
+  .vendor-nav__link span:last-child,
+  .vendor-nav__logout span:last-child {
+    display: inline;
+  }
+
+  .vendor-nav__brand {
+    justify-content: flex-start;
+    padding: 0 var(--space-lg);
+  }
+
+  .vendor-nav__link,
+  .vendor-nav__logout {
+    justify-content: flex-start;
+    min-height: 48px;
+  }
+
+  .vendor-topbar__menu-btn {
+    display: inline-flex;
+  }
+
+  /* Business name is dropped; the logo alone identifies the account and the
+     two together eat most of a 360px bar. */
+  .vendor-topbar__name {
+    display: none;
+  }
+
+  .vendor-topbar__avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .vendor-topbar__actions {
+    gap: var(--space-sm);
+  }
+
   .vendor-content {
-    padding-left: var(--margin-mobile);
-    padding-right: var(--margin-mobile);
+    padding: var(--space-lg) var(--margin-mobile) var(--space-xl);
+  }
+}
+
+/* Drawer motion is decorative — honour the OS setting. */
+@media (prefers-reduced-motion: reduce) {
+  .vendor-nav {
+    transition: none;
   }
 }

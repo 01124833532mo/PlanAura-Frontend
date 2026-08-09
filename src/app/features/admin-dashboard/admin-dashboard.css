@@ -128,3 +128,19 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Responsive (see also the 1100px block above, which single-columns the grid)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .admin-panel__header {
+    flex-wrap: wrap;
+    gap: var(--admin-space-xs);
+  }
+
+  .admin-mini-list__item {
+    flex-wrap: wrap;
+    gap: var(--admin-space-xs);
+  }
+}

@@ -141,3 +141,19 @@
   font-size: var(--font-label-sm-size);
   color: var(--color-error);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .ui-dropzone__prompt {
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  /* 160px of filename plus the size and remove button overflow the chip's row
+     once the card is only ~300px wide. */
+  .ui-dropzone__chip-name {
+    max-width: 55vw;
+  }
+}

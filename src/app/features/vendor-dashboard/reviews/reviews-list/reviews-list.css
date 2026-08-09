@@ -365,3 +365,60 @@
   gap: 0.85rem;
   color: var(--color-secondary);
 }
+
+/* ==========================================================================
+   Responsive (see also the 560px block above, which stacks the score summary)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .summary,
+  .review-row {
+    padding: var(--space-md);
+  }
+
+  /* Name and date sit on one justified row; at this width the date wraps under
+     a long name and the 24px gutter looks like a layout bug. */
+  .review-row__head {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .review-row__reply-actions {
+    flex-direction: column-reverse;
+  }
+
+  .review-row__reply-actions ui-button {
+    display: block;
+  }
+
+  .review-row__reply-actions ::ng-deep .ui-btn {
+    width: 100%;
+  }
+
+  /* Filter pills become a swipeable strip rather than three wrapped rows. */
+  .reviews-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .reviews-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .reviews-filter {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .review-row {
+    gap: 0.6rem;
+  }
+
+  .review-row__avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}

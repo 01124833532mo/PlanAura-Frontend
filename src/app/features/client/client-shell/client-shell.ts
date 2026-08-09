@@ -24,6 +24,13 @@ export class ClientShell implements OnInit {
   /** Flips true if the avatar image fails to load, forcing the initial-letter fallback. */
   protected readonly avatarBroken = signal(false);
 
+  /**
+   * Drives the off-canvas nav drawer below the 768px breakpoint. Above it the
+   * rail is always visible and this flag is inert, so nothing needs to reset
+   * it on resize — the CSS simply stops reading the `--open` class.
+   */
+  protected readonly mobileNavOpen = signal(false);
+
   ngOnInit(): void {
     // clientGuard only fetches /me on a cold load when role signals are
     // empty; a same-session login already has isClient() true without ever
@@ -32,6 +39,15 @@ export class ClientShell implements OnInit {
       this.authService.fetchCurrentUser().subscribe();
     }
     this.clientProfileState.load();
+  }
+
+  protected toggleMobileNav(): void {
+    this.mobileNavOpen.update((open) => !open);
+  }
+
+  /** Called from every drawer link so tapping one navigates *and* dismisses. */
+  protected closeMobileNav(): void {
+    this.mobileNavOpen.set(false);
   }
 
   protected async logout(): Promise<void> {

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { VendorProfileStateService } from '../../../core/services/vendor-profile-state.service';
@@ -20,8 +20,24 @@ export class VendorShell implements OnInit {
   protected readonly vendorProfileState = inject(VendorProfileStateService);
   protected readonly pageTitle = createActiveRouteTitle('Booking Requests');
 
+  /**
+   * Drives the off-canvas nav drawer below the 768px breakpoint. Above it the
+   * rail is always visible and this flag is inert, so nothing needs to reset
+   * it on resize — the CSS simply stops reading the `--open` class.
+   */
+  protected readonly mobileNavOpen = signal(false);
+
   ngOnInit(): void {
     this.vendorProfileState.load();
+  }
+
+  protected toggleMobileNav(): void {
+    this.mobileNavOpen.update((open) => !open);
+  }
+
+  /** Called from every drawer link so tapping one navigates *and* dismisses. */
+  protected closeMobileNav(): void {
+    this.mobileNavOpen.set(false);
   }
 
   protected async logout(): Promise<void> {

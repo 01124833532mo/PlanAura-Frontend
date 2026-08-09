@@ -83,10 +83,14 @@
   --font-label-md-weight: 600;
   --font-body-md-size: 16px;
   --font-body-lg-size: 18px;
-  --font-headline-sm-size: 24px;
-  --font-headline-md-size: 30px;
-  --font-display-lg-size: 48px;
-  --font-display-xl-size: 64px;
+  /* Headline/display sizes are fluid: they hit the historical desktop value at
+     the top of the clamp and shrink with the viewport, so a 64px hero headline
+     never forces horizontal scroll on a 360px phone. Body/label sizes stay
+     fixed — shrinking them below 14px hurts readability more than it helps. */
+  --font-headline-sm-size: clamp(20px, 1.2rem + 0.7vw, 24px);
+  --font-headline-md-size: clamp(22px, 1.25rem + 1.3vw, 30px);
+  --font-display-lg-size: clamp(30px, 1.6rem + 3.4vw, 48px);
+  --font-display-xl-size: clamp(34px, 1.75rem + 5vw, 64px);
 
   /* ---- Elevation ---- */
   --shadow-xs: 0 2px 6px rgba(36, 31, 28, 0.05);
@@ -110,7 +114,26 @@
   --dur-fast: 160ms;
   --dur-base: 320ms;
   --dur-slow: 560ms;
+
+  /* ---- Layout chrome consumed by the app shells ----
+     The shells offset their <main> by these instead of hard-coded pixels, so
+     the mobile layer below can zero the rail width in one place. */
+  --nav-rail-width: 260px;
+  --topbar-height: 88px;
 }
+
+/* ==========================================================================
+   Responsive breakpoints — the single scale the whole app uses.
+
+     <= 1024px   lg   tablet landscape / small laptop
+     <=  768px   md   tablet portrait / large phone  <- the "mobile" switch
+     <=  480px   sm   phones
+     <=  380px   xs   small phones (iPhone SE / Galaxy S-mini)
+
+   Media queries can't read custom properties, so these live as a documented
+   convention rather than tokens. Always use these four values — mixing in
+   ad-hoc 900px/992px queries is what made the layout drift in the first place.
+   ========================================================================== */
 
 * {
   box-sizing: border-box;
@@ -988,5 +1011,240 @@ a {
 
   .legal-toc__heading {
     width: 100%;
+  }
+}
+
+/* ==========================================================================
+   GLOBAL RESPONSIVE LAYER
+   Everything below is app-wide mobile behaviour. Per-component tweaks stay in
+   the component's own .css; this file only holds rules that would otherwise be
+   copy-pasted into all 85 of them.
+   ========================================================================== */
+
+/* ---- Overflow guards -------------------------------------------------------
+   One over-wide element used to drag the entire page sideways. `clip` (rather
+   than `hidden`) contains it WITHOUT turning <html> into a scroll container,
+   which would silently break every `position: sticky` topbar in the app.
+   `hidden` is declared first as the fallback for browsers without `clip`. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+/* Replaced elements never push the layout wider than their column. */
+img,
+video,
+canvas,
+svg,
+iframe {
+  max-width: 100%;
+}
+
+img,
+video,
+canvas {
+  height: auto;
+}
+
+/* Long unbroken strings (emails, URLs, IDs, base64 previews) are the other
+   classic source of horizontal overflow on narrow screens. */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+dd,
+dt,
+td,
+th,
+label,
+figcaption {
+  overflow-wrap: break-word;
+}
+
+/* Form controls inherit the app font instead of the UA's, and never exceed
+   their container — several forms set explicit `size`/`cols` attributes. */
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  max-width: 100%;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* ---- Utilities -------------------------------------------------------------
+   `.table-scroll` is the wrapper every data table should sit in: the table
+   keeps its natural column widths and the WRAPPER scrolls, instead of columns
+   collapsing into unreadable slivers. */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* Escape hatches for markup that genuinely can't be reflowed (e.g. a secondary
+   column with no mobile home). `revert` restores the element's own UA display
+   so a flex container doesn't come back as an inline box. */
+.show-on-mobile {
+  display: none !important;
+}
+
+/* ==========================================================================
+   <= 1024px — tablet landscape
+   ========================================================================== */
+@media (max-width: 1024px) {
+  :root {
+    --space-xl: 44px;
+    --space-2xl: 64px;
+    --margin-desktop: 40px;
+    --gutter: 20px;
+    /* Tablet: the client/vendor rails drop their labels and become a 76px
+       icon rail. Below 768px they leave the flow entirely (see each shell). */
+    --nav-rail-width: 76px;
+  }
+}
+
+/* ==========================================================================
+   <= 768px — THE mobile switch. Side rails become drawers, multi-column grids
+   become single column, and the page gutter drops to the mobile margin.
+   ========================================================================== */
+@media (max-width: 768px) {
+  :root {
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 44px;
+    --margin-desktop: var(--margin-mobile);
+    --gutter: 16px;
+    --topbar-height: 64px;
+    --nav-rail-width: 0px;
+
+    /* Softer corners: a 2.25rem radius on a full-bleed mobile card reads as a
+       mistake rather than a style. */
+    --radius-xl: 1.25rem;
+    --radius-2xl: 1.5rem;
+  }
+
+  /* iOS Safari zooms the whole viewport when a focused input's font-size is
+     under 16px. This is the fix — it must be exactly 16px, not 1rem. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Modals become bottom sheets: full-bleed, anchored to the bottom edge where
+     a thumb can reach them, and capped so the sheet can't cover the whole
+     screen with no way back. */
+  .modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-card {
+    max-width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
+    padding: var(--space-md);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    border-bottom: none;
+    animation: slide-up var(--dur-base) var(--ease-out-expo) both;
+  }
+
+  /* Data tables scroll horizontally rather than crushing their columns. */
+  .package-table {
+    min-width: 640px;
+  }
+
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  /* `revert` restores the element's own UA display, so a flex container comes
+     back as a flex container — `initial` would force it to inline. */
+  .show-on-mobile {
+    display: revert !important;
+  }
+
+  /* Hover-lift is meaningless on touch and leaves cards stuck in the lifted
+     state after a tap. */
+  .hover-lift:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Decorative blur blobs are the single biggest paint cost on mobile GPUs and
+     are frequently what pushes the page sideways. */
+  .floating-blob {
+    filter: blur(40px);
+    opacity: 0.35;
+  }
+}
+
+/* ==========================================================================
+   <= 480px — phones
+   ========================================================================== */
+@media (max-width: 480px) {
+  :root {
+    --space-lg: 20px;
+    --space-xl: 26px;
+    --space-2xl: 34px;
+    --margin-mobile: 14px;
+  }
+
+  .modal-card {
+    padding: var(--space-md) var(--space-md) var(--space-lg);
+    gap: var(--space-sm);
+  }
+}
+
+/* ==========================================================================
+   Touch pointers — applies to every phone/tablet regardless of width.
+   Apple's HIG and Material both put the minimum tap target at ~44px; several
+   icon-only controls in the app were 32px.
+   ========================================================================== */
+@media (hover: none) and (pointer: coarse) {
+  /* Deliberately NOT a blanket `button { min-height: 44px }`: min-height beats
+     an explicit height, so that rule stretches every fixed-size square icon
+     button (32x32 favourite/close/nav chips) into a distorted oval. Only
+     padding-sized controls are grown here; fixed-size ones are bumped
+     individually in their own component's mobile block. */
+  .ui-btn,
+  .admin-btn,
+  .icon-btn {
+    min-height: 44px;
+  }
+
+  .icon-btn {
+    min-width: 44px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* :hover styles latch on after a tap on touch devices — neutralise the ones
+     that move things around. */
+  .hover-lift:hover,
+  .card-luxe:hover {
+    transform: none;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

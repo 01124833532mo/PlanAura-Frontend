@@ -114,3 +114,77 @@
   background: var(--color-surface-container);
   color: var(--color-secondary);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .stat-card {
+    padding: var(--space-md);
+    gap: 0.6rem;
+  }
+
+  /* The chevron only becomes visible on :hover, which never fires on touch —
+     so on a phone it is pure dead space pushed right by margin-left: auto,
+     stealing ~20px from the label at the width where it matters most. */
+  .stat-card__chevron {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   <= 560px — the tiles go vertical.
+
+   Keeping the desktop icon-beside-text layout at two columns leaves roughly
+   70px for the text: "Upcoming bookings" wraps to four lines and "12,345 EGP"
+   overflows. Stacking icon / value / label gives the text the tile's full
+   width instead of what is left after the icon, which is what makes a 2-up
+   grid readable at all at this size.
+   ========================================================================== */
+@media (max-width: 560px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-sm);
+  }
+
+  .stat-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+    padding: var(--space-md) 0.85rem;
+  }
+
+  .stat-card__icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .stat-card__icon .material-symbols-outlined {
+    font-size: 1.2rem;
+  }
+
+  /* Explicit size instead of .text-headline-sm's clamp: a value like
+     "12,345 EGP" at 24px does not fit a ~125px tile. */
+  .stat-card__value {
+    font-size: 1.15rem;
+  }
+
+  /* The hint is a restatement of the label ("Confirmed & in the future" under
+     "Upcoming bookings") — the first thing to drop when space is scarce. */
+  .stat-card__hint {
+    display: none;
+  }
+
+  .stat-card--skeleton {
+    height: 6.5rem;
+  }
+}
+
+/* The lift latches on after a tap on touch devices, leaving the tile floating. */
+@media (hover: none) and (pointer: coarse) {
+  .stat-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm, 0 1px 2px rgb(0 0 0 / 0.04));
+  }
+}

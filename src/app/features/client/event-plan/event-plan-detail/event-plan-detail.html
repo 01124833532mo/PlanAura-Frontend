@@ -334,7 +334,7 @@
   <ui-confirm-dialog
     icon="event_busy"
     title="Cancel this booking request?"
-    message="Are you sure you want to cancel this request?"
+    message="If you cancel, the booking is cancelled and any amount held on your card is released."
     confirmLabel="Cancel request"
     cancelLabel="Keep it"
     variant="danger"
@@ -349,10 +349,22 @@
     <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
       <div class="event-plan-detail-modal__header">
         <span class="material-symbols-outlined event-plan-detail-modal__icon" aria-hidden="true">event_busy</span>
-        <h4 class="text-headline-sm">Request cancellation</h4>
+        <h4 class="text-headline-sm">
+          {{ isDepositOnly(target) ? 'Cancel booking' : 'Request cancellation' }}
+        </h4>
       </div>
 
-      @if (cancellationQuoteLoading()) {
+      @if (isDepositOnly(target)) {
+        <p class="text-body-md">
+          <strong>
+            If you cancel now, your booking is cancelled immediately and your deposit@if (
+              target.depositAmount != null
+            ) {&nbsp;({{ target.depositAmount | number: '1.0-2' }} {{ priceCurrency(target) }})}
+            is non-refundable.
+          </strong>
+          The remaining balance hasn't been paid, so there is no refund to review.
+        </p>
+      } @else if (cancellationQuoteLoading()) {
         <p class="text-body-md">Calculating your estimated refund…</p>
       } @else if (cancellationQuote(); as quote) {
         <p class="text-body-md">
@@ -381,7 +393,7 @@
         <div class="event-plan-detail-modal__actions">
           <ui-button variant="outline" type="button" (click)="closeRequestCancellation()">Keep booking</ui-button>
           <ui-button type="submit" [loading]="cancellationSubmitting()">
-            Request cancellation
+            {{ isDepositOnly(target) ? 'Cancel & forfeit deposit' : 'Request cancellation' }}
           </ui-button>
         </div>
       </form>

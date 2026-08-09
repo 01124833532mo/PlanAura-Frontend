@@ -228,6 +228,18 @@ export class EventPlanDetail implements OnInit {
     return pkg?.currency ?? 'EGP';
   }
 
+  /**
+   * A deposit-path booking whose remainder has NOT been paid (DepositPaid or RemainderFailed). Cancelling
+   * such a booking forfeits the deposit immediately — no admin review — so the warning is strong. A
+   * fully-paid booking (Paid) instead goes to admin refund review.
+   */
+  protected isDepositOnly(booking: BookingRequest): boolean {
+    return (
+      booking.paymentStatus === BookingPaymentStatus.DepositPaid ||
+      booking.paymentStatus === BookingPaymentStatus.RemainderFailed
+    );
+  }
+
   protected cancelBooking(booking: BookingRequest): void {
     this.cancelTarget.set(booking);
   }
@@ -266,8 +278,14 @@ export class EventPlanDetail implements OnInit {
     this.cancellationForm.reset({ reason: '' });
     this.cancellationError.set(null);
     this.cancellationQuote.set(null);
-    this.cancellationQuoteLoading.set(true);
 
+    // Deposit-only cancel is an immediate forfeit — there is no refund quote to fetch or show.
+    if (this.isDepositOnly(booking)) {
+      this.cancellationQuoteLoading.set(false);
+      return;
+    }
+
+    this.cancellationQuoteLoading.set(true);
     this.bookingService.getCancellationQuote(booking.id).subscribe({
       next: (quote) => {
         this.cancellationQuote.set(quote);
@@ -305,7 +323,12 @@ export class EventPlanDetail implements OnInit {
           this.bookings.update((list) => list.map((b) => (b.id === updated.id ? updated : b)));
           this.cancellationSubmitting.set(false);
           this.cancellationTarget.set(null);
-          notifySuccess('Cancellation requested — an admin will review it shortly.');
+          // Deposit-only forfeit cancels immediately (Cancelled); fully-paid goes to admin review.
+          notifySuccess(
+            updated.status === BookingStatus.Cancelled
+              ? 'Booking cancelled.'
+              : 'Cancellation requested — an admin will review it shortly.',
+          );
         },
         error: (err: AppError) => {
           this.cancellationError.set(err);

@@ -17,6 +17,10 @@ export enum BookingPaymentStatus {
   Unpaid = 1,
   Paid = 2,
   Refunded = 3,
+  /** Deposit path: the deposit was captured on accept; the remainder is still owed. */
+  DepositPaid = 4,
+  /** Deposit path: the automatic remainder charge failed; awaiting client payment or grace expiry. */
+  RemainderFailed = 5,
 }
 
 /** Mirrors Planura.Core.Domain.Enums.RefundStatus (int-backed enum). */
@@ -81,6 +85,10 @@ export interface BookingRequest {
   /** Server-derived from the package's BasePrice — never sent by the client. */
   agreedPrice: number | null;
   clientMessage: string | null;
+  /** Deposit split (Phase 3) — surfaced for the cancel warning. isDeposit false / amounts null on the full-payment path. */
+  isDeposit: boolean;
+  depositAmount: number | null;
+  totalAmount: number | null;
   status: BookingStatus;
   paymentStatus: BookingPaymentStatus;
   vendorResponse: string | null;

@@ -2,7 +2,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, forkJoin, of } from 'rxjs';
+import { catchError, firstValueFrom, forkJoin, of } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
 import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
@@ -17,7 +17,10 @@ import {
   BookingStatusHistoryEntry,
   CancellationQuote,
   DisputeStatus,
+  PayRemainderResult,
 } from '../../../../core/interfaces/booking-request.model';
+import { STRIPE_PUBLISHABLE_KEY } from '../../../../core/config/app-config';
+import { StripeService } from '../../../../core/services/stripe.service';
 import { EventPlan } from '../../../../core/interfaces/event-plan.model';
 import { ServiceCategory } from '../../../../core/interfaces/vendor.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
@@ -59,6 +62,7 @@ export class EventPlanDetail implements OnInit {
   private readonly vendorService = inject(VendorService);
   private readonly packageService = inject(VendorPackageService);
   private readonly categoryService = inject(ServiceCategoryService);
+  private readonly stripeService = inject(StripeService);
 
   // Exposed so the template can reference enum members directly.
   protected readonly BookingStatus = BookingStatus;
@@ -243,6 +247,79 @@ export class EventPlanDetail implements OnInit {
   /** The outstanding remainder on a deposit booking (total − deposit), server-recorded on the DTO. */
   protected remainderAmount(booking: BookingRequest): number {
     return (booking.totalAmount ?? 0) - (booking.depositAmount ?? 0);
+  }
+
+  // Pay-remainder (on-session, SCA) — Phase 4. payingRemainderId marks the booking whose remainder payment
+  // is in flight; remainderStatusMessage shows SCA / finalizing progress next to the button.
+  protected readonly payingRemainderId = signal<number | null>(null);
+  protected readonly remainderStatusMessage = signal<string | null>(null);
+
+  /**
+   * Client pays the outstanding remainder on-session. Calls the backend; if SCA is required, completes 3-D
+   * Secure with Stripe.js (the saved card is already on the PaymentIntent, so no card input), then polls the
+   * booking until the webhook finalizes it as Paid. A decline/error leaves the booking RemainderFailed and
+   * lets the client retry.
+   */
+  protected async payRemainder(booking: BookingRequest): Promise<void> {
+    this.payingRemainderId.set(booking.id);
+    this.remainderStatusMessage.set(null);
+
+    try {
+      const result: PayRemainderResult = await firstValueFrom(this.bookingService.payRemainder(booking.id));
+
+      if (result.requiresAction && result.clientSecret) {
+        // Browser-only: getStripe returns null during SSR, but this only runs on a user click.
+        const stripe = await this.stripeService.getStripe(STRIPE_PUBLISHABLE_KEY);
+        if (!stripe) {
+          throw new Error('Payments are unavailable right now. Please try again.');
+        }
+        this.remainderStatusMessage.set('Confirming your payment…');
+        const { error, paymentIntent } = await stripe.confirmCardPayment(result.clientSecret);
+        if (error) {
+          throw new Error(error.message ?? 'Card authentication failed.');
+        }
+        if (paymentIntent?.status !== 'succeeded') {
+          throw new Error('The payment was not completed. Please try again.');
+        }
+        // The webhook finalizes the booking asynchronously — wait for it to read Paid.
+        this.remainderStatusMessage.set('Finalizing payment…');
+        await this.pollUntilPaid(booking.id);
+      } else {
+        // No SCA — the backend already charged and recorded it; just refresh.
+        await this.refreshBooking(booking.id);
+      }
+
+      this.payingRemainderId.set(null);
+      this.remainderStatusMessage.set(null);
+      notifySuccess('Payment complete — your booking is fully paid.');
+    } catch (err: unknown) {
+      this.payingRemainderId.set(null);
+      this.remainderStatusMessage.set(null);
+      const message = (err as { message?: string })?.message ?? 'The payment could not be completed.';
+      notifyError('Could not complete payment', message);
+    }
+  }
+
+  /** Polls the booking (2s × up to 8 ≈ 16s) until the webhook marks it Paid, refreshing the row each time. */
+  private async pollUntilPaid(id: number): Promise<void> {
+    for (let attempt = 0; attempt < 8; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const updated = await this.refreshBooking(id);
+      if (updated?.paymentStatus === BookingPaymentStatus.Paid) {
+        return;
+      }
+    }
+    // Timed out waiting for the webhook — the payment did succeed at Stripe; the row will catch up on reload.
+  }
+
+  private async refreshBooking(id: number): Promise<BookingRequest | null> {
+    try {
+      const updated = await firstValueFrom(this.bookingService.getBooking(id));
+      this.bookings.update((list) => list.map((b) => (b.id === id ? updated : b)));
+      return updated;
+    } catch {
+      return null;
+    }
   }
 
   protected cancelBooking(booking: BookingRequest): void {

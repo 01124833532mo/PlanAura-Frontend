@@ -217,12 +217,33 @@
                       Remaining {{ priceCurrency(booking) }} {{ remainderAmount(booking) | number: '1.0-2' }}
                       due before your event.
                     </p>
+                    <ui-button
+                      variant="outline"
+                      [fullWidth]="false"
+                      [loading]="payingRemainderId() === booking.id"
+                      (click)="payRemainder(booking)"
+                    >
+                      Pay remainder now
+                    </ui-button>
+                    @if (payingRemainderId() === booking.id && remainderStatusMessage(); as msg) {
+                      <p class="text-label-sm booking-row__status-note">{{ msg }}</p>
+                    }
                   } @else if (booking.paymentStatus === BookingPaymentStatus.RemainderFailed) {
                     <p class="text-label-sm booking-row__status-note">
                       We couldn't charge the remaining {{ priceCurrency(booking) }}
                       {{ remainderAmount(booking) | number: '1.0-2' }}. Please pay to keep your booking.
                     </p>
-                    <!-- "Pay remainder" button — coming in the next piece. -->
+                    <ui-button
+                      variant="outline"
+                      [fullWidth]="false"
+                      [loading]="payingRemainderId() === booking.id"
+                      (click)="payRemainder(booking)"
+                    >
+                      Pay remainder now
+                    </ui-button>
+                    @if (payingRemainderId() === booking.id && remainderStatusMessage(); as msg) {
+                      <p class="text-label-sm booking-row__status-note">{{ msg }}</p>
+                    }
                   }
                 </div>
 

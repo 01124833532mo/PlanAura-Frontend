@@ -162,6 +162,18 @@ export interface BookingRequestFilter {
   pageSize?: number;
 }
 
+/** Mirrors Planura.Core.Application.Models.PayRemainderResultDto — the result of a client on-session
+ * "pay remainder now". When requiresAction is true, complete SCA with clientSecret (Stripe.js
+ * confirmCardPayment); success is finalized server-side via webhook. */
+export interface PayRemainderResult {
+  /** Stripe PaymentIntent status: "succeeded" | "requires_action" | ... */
+  status: string;
+  paymentIntentId: string;
+  /** Present when requiresAction is true — pass to Stripe.js to complete 3-D Secure. */
+  clientSecret: string | null;
+  requiresAction: boolean;
+}
+
 /** Mirrors Planura.Core.Application.Models.PaymentPreviewDto — the full-vs-deposit split shown before the
  * client pays, so booking-create can show the deposit breakdown. Computed server-side (source of truth). */
 export interface PaymentPreview {

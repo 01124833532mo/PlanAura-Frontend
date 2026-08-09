@@ -12,6 +12,7 @@ import {
   CreateBookingRequest,
   PagedBookingRequestList,
   PaymentPreview,
+  PayRemainderResult,
 } from '../interfaces/booking-request.model';
 
 /** Wraps the client-facing endpoints on BookingRequestsController (ClientOnly). */
@@ -94,6 +95,15 @@ export class BookingRequestService {
     return this.http.post<BookingRequest>(`${API_BASE_URL}/booking-requests/${id}/request-cancellation`, {
       reason,
     });
+  }
+
+  /**
+   * POST /api/booking-requests/{id}/pay-remainder — client pays the outstanding remainder on their deposit
+   * booking on-session. If requiresAction is true, complete SCA with the returned clientSecret; success is
+   * finalized server-side via webhook.
+   */
+  payRemainder(id: number): Observable<PayRemainderResult> {
+    return this.http.post<PayRemainderResult>(`${API_BASE_URL}/booking-requests/${id}/pay-remainder`, {});
   }
 
   /** POST /api/booking-requests/{id}/confirm-completion — confirms service delivery, completing an AwaitingConfirmation booking. */

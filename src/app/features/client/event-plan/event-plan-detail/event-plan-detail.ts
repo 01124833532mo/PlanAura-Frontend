@@ -460,7 +460,7 @@ export class EventPlanDetail implements OnInit {
   }
 
   protected goToVendors(): void {
-    this.router.navigate(['/client/vendors'], { queryParams: { eventPlanId: this.planId } });
+    this.router.navigate(['/explore/vendors'], { queryParams: { eventPlanId: this.planId } });
   }
 
   protected goToEdit(): void {

@@ -10,12 +10,12 @@ import { AuthService } from '../services/auth.service';
  * storage before the Router's first navigation, so isClient() is accurate
  * here even on a cold page load/refresh — no lazy /me fetch needed.
  */
-export const clientGuard: CanActivateFn = () => {
+export const clientGuard: CanActivateFn = (_route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
   if (!authService.isAuthenticated()) {
-    return router.parseUrl('/auth');
+    return router.createUrlTree(['/auth'], { queryParams: { returnUrl: state.url } });
   }
 
   return authService.isClient() ? true : router.parseUrl('/auth');

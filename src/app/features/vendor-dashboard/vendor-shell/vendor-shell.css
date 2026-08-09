@@ -55,6 +55,16 @@
   padding: 0 var(--space-md);
 }
 
+.vendor-nav__group-label {
+  padding: 0.9rem 1rem 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-secondary);
+  opacity: 0.7;
+}
+
 .vendor-nav__link {
   position: relative;
   display: flex;
@@ -155,10 +165,43 @@
   z-index: 5;
 }
 
+.vendor-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
 .vendor-topbar__title {
   font-family: var(--font-family-display);
   color: var(--color-charcoal);
   letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vendor-topbar__burger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-charcoal);
+  cursor: pointer;
+}
+
+.vendor-topbar__burger:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.vendor-nav__backdrop {
+  display: none;
 }
 
 .vendor-topbar__actions {
@@ -211,7 +254,8 @@
 
   .vendor-nav__brand-name,
   .vendor-nav__link span:last-child,
-  .vendor-nav__logout span:last-child {
+  .vendor-nav__logout span:last-child,
+  .vendor-nav__group-label {
     display: none;
   }
 
@@ -233,5 +277,59 @@
   .vendor-content {
     padding-left: var(--margin-mobile);
     padding-right: var(--margin-mobile);
+  }
+}
+
+/* Below phone width, collapse the icon-rail entirely into an off-canvas
+ * drawer triggered by the topbar burger button — an icon-only rail is still
+ * too cramped alongside real content at this size. */
+@media (max-width: 640px) {
+  .vendor-nav {
+    width: 264px;
+    transform: translateX(-100%);
+    transition: transform var(--dur-base) var(--ease-out-expo);
+    z-index: 30;
+  }
+
+  .vendor-nav--open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-xl, 0 20px 40px rgb(0 0 0 / 0.25));
+  }
+
+  .vendor-nav__brand-name,
+  .vendor-nav__link span:last-child,
+  .vendor-nav__logout span:last-child,
+  .vendor-nav__group-label {
+    display: inline;
+  }
+
+  .vendor-nav__brand {
+    justify-content: flex-start;
+    padding: 0 var(--space-lg);
+  }
+
+  .vendor-nav__link,
+  .vendor-nav__logout {
+    justify-content: flex-start;
+  }
+
+  .vendor-main {
+    margin-left: 0;
+  }
+
+  .vendor-topbar__burger {
+    display: inline-flex;
+  }
+
+  .vendor-nav__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(36, 31, 28, 0.45);
+    z-index: 20;
+  }
+
+  .vendor-topbar__profile .vendor-topbar__name {
+    display: none;
   }
 }

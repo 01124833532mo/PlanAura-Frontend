@@ -1,0 +1,242 @@
+.pay-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ---------------------------------------------------------------- headline */
+
+.pay-breakdown__headline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  padding: var(--space-md);
+  border-radius: var(--radius-md, 14px);
+  background: var(--gradient-primary);
+  color: var(--color-on-primary, #fff);
+}
+
+.pay-breakdown__primary-label {
+  margin: 0;
+  font-size: var(--font-label-sm-size);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.pay-breakdown__primary-amount {
+  margin: 0.15rem 0 0;
+  font-size: clamp(1.75rem, 5vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  /* Amounts must never wrap mid-number on narrow screens. */
+  white-space: nowrap;
+}
+
+.pay-breakdown__currency {
+  font-size: 0.55em;
+  font-weight: 600;
+  opacity: 0.85;
+  margin-right: 0.15em;
+}
+
+.pay-breakdown__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: var(--font-label-sm-size);
+  font-weight: 600;
+  background: rgb(255 255 255 / 0.18);
+  border: 1px solid rgb(255 255 255 / 0.35);
+  color: inherit;
+}
+
+.pay-breakdown__status .material-symbols-outlined {
+  font-size: 16px;
+}
+
+/* ---------------------------------------------------------------- figures */
+
+.pay-breakdown__figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-sm);
+  margin: 0;
+}
+
+.pay-breakdown__figure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-surface-container-lowest, #fff);
+}
+
+.pay-breakdown__figure dt {
+  font-size: var(--font-label-sm-size);
+  color: var(--color-secondary);
+}
+
+.pay-breakdown__figure dd {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  white-space: nowrap;
+}
+
+.pay-breakdown__figure--muted dd {
+  color: var(--color-dark-gray);
+}
+
+/* ---------------------------------------------------------------- schedule */
+
+.pay-breakdown__schedule {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pay-breakdown__stage {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-surface-container-lowest, #fff);
+}
+
+.pay-breakdown__stage-icon {
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--color-secondary);
+  flex: 0 0 auto;
+}
+
+.pay-breakdown__stage-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.pay-breakdown__stage-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pay-breakdown__stage-label {
+  font-weight: 600;
+  color: var(--color-charcoal);
+}
+
+.pay-breakdown__stage-amount {
+  font-weight: 600;
+  color: var(--color-charcoal);
+  white-space: nowrap;
+}
+
+.pay-breakdown__stage-note {
+  font-size: var(--font-label-sm-size);
+  color: var(--color-secondary);
+}
+
+/* State colouring. Held and due are deliberately distinct from paid: money held on a card is not
+   money taken, and the UI must not blur the two. */
+.pay-breakdown__stage[data-state='paid'] {
+  border-color: var(--color-success-container, #cfe8d4);
+  background: var(--color-success-fixed, #f2f9f3);
+}
+
+.pay-breakdown__stage[data-state='paid'] .pay-breakdown__stage-icon {
+  color: var(--color-success, #2e7d4f);
+}
+
+.pay-breakdown__stage[data-state='held'],
+.pay-breakdown__stage[data-state='due'] {
+  border-color: var(--color-primary-container, #f3d3c8);
+  background: var(--color-primary-fixed, #fdf1ec);
+}
+
+.pay-breakdown__stage[data-state='held'] .pay-breakdown__stage-icon,
+.pay-breakdown__stage[data-state='due'] .pay-breakdown__stage-icon {
+  color: var(--color-primary);
+}
+
+.pay-breakdown__stage[data-state='upcoming'],
+.pay-breakdown__stage[data-state='unscheduled'] {
+  border-style: dashed;
+}
+
+.pay-breakdown__stage[data-state='upcoming'] .pay-breakdown__stage-label,
+.pay-breakdown__stage[data-state='unscheduled'] .pay-breakdown__stage-label,
+.pay-breakdown__stage[data-state='upcoming'] .pay-breakdown__stage-amount,
+.pay-breakdown__stage[data-state='unscheduled'] .pay-breakdown__stage-amount {
+  color: var(--color-dark-gray);
+}
+
+.pay-breakdown__stage[data-state='refunded'] .pay-breakdown__stage-icon,
+.pay-breakdown__stage[data-state='cancelled'] .pay-breakdown__stage-icon {
+  color: var(--color-secondary);
+}
+
+/* ---------------------------------------------------------------- notes */
+
+.pay-breakdown__explain {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: 0;
+  font-size: var(--font-label-sm-size);
+  line-height: 1.45;
+  color: var(--color-secondary);
+}
+
+.pay-breakdown__explain .material-symbols-outlined {
+  font-size: 17px;
+  flex: 0 0 auto;
+}
+
+.pay-breakdown__explain--warn {
+  color: var(--color-dark-gray);
+}
+
+/* ---------------------------------------------------------------- compact */
+
+.pay-breakdown--compact {
+  gap: var(--space-sm);
+}
+
+.pay-breakdown--compact .pay-breakdown__headline {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.pay-breakdown--compact .pay-breakdown__primary-amount {
+  font-size: 1.4rem;
+}
+
+@media (max-width: 640px) {
+  .pay-breakdown__headline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .pay-breakdown__figures {
+    grid-template-columns: 1fr;
+  }
+}

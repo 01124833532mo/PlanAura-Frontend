@@ -5,6 +5,8 @@ import { API_BASE_URL } from '../config/app-config';
 import {
   AgreementPreviewRequest,
   AgreementPreviewResult,
+  BookingPaymentQuote,
+  BookingPaymentQuoteRequest,
   BookingRequest,
   BookingRequestFilter,
   BookingStatusHistoryEntry,
@@ -17,6 +19,15 @@ import {
 @Injectable({ providedIn: 'root' })
 export class BookingRequestService {
   private readonly http = inject(HttpClient);
+
+  /**
+   * POST /api/booking-requests/payment-quote — the server's pricing for the booking as configured so
+   * far: total, amount due now, remaining balance. Cheap and AI-free, unlike previewAgreement, so it
+   * can be called as soon as a slot is picked to show real figures before the contract is drafted.
+   */
+  paymentQuote(dto: BookingPaymentQuoteRequest): Observable<BookingPaymentQuote> {
+    return this.http.post<BookingPaymentQuote>(`${API_BASE_URL}/booking-requests/payment-quote`, dto);
+  }
 
   /**
    * POST /api/booking-requests/agreement-preview — generates the Booking Agreement for the current

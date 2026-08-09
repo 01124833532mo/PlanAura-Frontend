@@ -1,4 +1,8 @@
-<aside class="vendor-nav">
+@if (mobileNavOpen()) {
+  <div class="vendor-nav__backdrop" (click)="closeMobileNav()"></div>
+}
+
+<aside class="vendor-nav" [class.vendor-nav--open]="mobileNavOpen()">
   <div class="vendor-nav__brand">
     <span class="vendor-nav__logo material-symbols-outlined" aria-hidden="true">celebration</span>
     <span class="text-headline-sm vendor-nav__brand-name">Planura</span>
@@ -13,6 +17,8 @@
       <span class="material-symbols-outlined vendor-nav__link-icon">dashboard</span>
       <span class="text-label-md">Overview</span>
     </a>
+
+    <span class="vendor-nav__group-label">Business</span>
     <a
       class="vendor-nav__link"
       routerLink="/vendor/dashboard/requests"
@@ -39,19 +45,21 @@
     </a>
     <a
       class="vendor-nav__link"
-      routerLink="/vendor/dashboard/browse-packages"
-      routerLinkActive="vendor-nav__link--active"
-    >
-      <span class="material-symbols-outlined vendor-nav__link-icon">search</span>
-      <span class="text-label-md">Browse Packages</span>
-    </a>
-    <a
-      class="vendor-nav__link"
       routerLink="/vendor/dashboard/reviews"
       routerLinkActive="vendor-nav__link--active"
     >
       <span class="material-symbols-outlined vendor-nav__link-icon">reviews</span>
       <span class="text-label-md">Reviews</span>
+    </a>
+
+    <span class="vendor-nav__group-label">Account</span>
+    <a
+      class="vendor-nav__link"
+      routerLink="/vendor/dashboard/browse-packages"
+      routerLinkActive="vendor-nav__link--active"
+    >
+      <span class="material-symbols-outlined vendor-nav__link-icon">search</span>
+      <span class="text-label-md">Browse Packages</span>
     </a>
     <a
       class="vendor-nav__link"
@@ -73,7 +81,17 @@
 
 <main class="vendor-main">
   <header class="vendor-topbar">
-    <h2 class="text-headline-md vendor-topbar__title">{{ pageTitle() }}</h2>
+    <div class="vendor-topbar__left">
+      <button
+        type="button"
+        class="vendor-topbar__burger"
+        aria-label="Toggle navigation menu"
+        (click)="toggleMobileNav()"
+      >
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <h2 class="text-headline-md vendor-topbar__title">{{ pageTitle() }}</h2>
+    </div>
 
     <div class="vendor-topbar__actions">
       <app-notification-bell />

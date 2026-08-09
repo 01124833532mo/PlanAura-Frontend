@@ -11,7 +11,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import type { Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
 import { AgreementReview } from '../../../../shared/ui/agreement-review/agreement-review';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
@@ -21,7 +21,14 @@ import { StepperHeader } from '../../../../shared/ui/stepper-header/stepper-head
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { STRIPE_PUBLISHABLE_KEY } from '../../../../core/config/app-config';
 import { AppError } from '../../../../core/interfaces/api-response.model';
-import { CreateBookingRequest } from '../../../../core/interfaces/booking-request.model';
+import {
+  BookingPaymentQuote,
+  BookingRequest,
+  ClientRequirements,
+  CreateBookingRequest,
+} from '../../../../core/interfaces/booking-request.model';
+import { PaymentBreakdown } from '../../../../shared/ui/payment-breakdown/payment-breakdown';
+import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { EventPlan } from '../../../../core/interfaces/event-plan.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
 import { VendorProfile } from '../../../../core/interfaces/vendor-profile.model';
@@ -47,9 +54,21 @@ import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
  */
 const STRIPE_LOAD_TIMEOUT_MS = 15000;
 
-/** Two visual steps over the same form/submission — the booking is still only ever created in step 2's confirmBooking(). */
-type WizardStep = 'details' | 'payment';
-const WIZARD_STEP_LABELS = ['Details', 'Payment'];
+/**
+ * Five visual steps over the same form/submission — the booking is still only ever created in
+ * confirmBooking(). The split mirrors what the backend actually does at each stage: details are
+ * chosen, then priced (payment-quote), then a contract is drafted from those fixed details
+ * (agreement-preview), then the card is authorized, and only then does a booking exist to report on.
+ */
+type WizardStep = 'details' | 'summary' | 'contract' | 'payment' | 'confirmation';
+const WIZARD_STEP_ORDER: WizardStep[] = [
+  'details',
+  'summary',
+  'contract',
+  'payment',
+  'confirmation',
+];
+const WIZARD_STEP_LABELS = ['Details', 'Summary', 'Contract', 'Payment', 'Confirmation'];
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -92,12 +111,15 @@ function dayKey(d: Date): string {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     TextField,
     SelectField,
     Button,
     AlertBanner,
     StepperHeader,
     AgreementReview,
+    PaymentBreakdown,
+    StatusBadge,
     DecimalPipe,
     DatePipe,
   ],
@@ -137,14 +159,57 @@ export class BookingCreate implements OnInit, OnDestroy {
 
   protected readonly currentStep = signal<WizardStep>('details');
   protected readonly wizardStepLabels = WIZARD_STEP_LABELS;
-  protected readonly stepIndex = computed(() => (this.currentStep() === 'details' ? 0 : 1));
+  protected readonly stepIndex = computed(() => WIZARD_STEP_ORDER.indexOf(this.currentStep()));
 
-  // Booking Agreement (generated when the client reaches the payment step; must be agreed before booking).
+  // Booking Agreement (generated when the client reaches the contract step; must be agreed before booking).
   protected readonly agreementLoading = signal(false);
   protected readonly agreementUrl = signal<string | null>(null);
   protected readonly agreementError = signal<string | null>(null);
   protected readonly agreed = signal(false);
   private agreementToken: string | null = null;
+
+  /**
+   * The server's pricing for this booking. Fetched on entry to the Summary step via the cheap,
+   * AI-free payment-quote endpoint, then refreshed from the agreement response so the figures shown
+   * at checkout are the ones the contract was drafted against. Never computed locally.
+   */
+  protected readonly paymentQuote = signal<BookingPaymentQuote | null>(null);
+  protected readonly quoteLoading = signal(false);
+  protected readonly quoteError = signal<string | null>(null);
+
+  /** The created booking, available only on the confirmation step. Drives every figure shown there. */
+  protected readonly confirmedBooking = signal<BookingRequest | null>(null);
+
+  /**
+   * Requirement lines the client entered, for the read-only summary. A method rather than a computed
+   * because the source is a reactive form, not a signal — a computed would cache the first read and
+   * go stale the moment the client stepped back and edited something.
+   */
+  /** Guest count as entered, or null when left blank — for the read-only summary. */
+  protected guestCountValue(): number | null {
+    const raw = this.form.getRawValue().guestCount.trim();
+    return raw === '' ? null : Number(raw);
+  }
+
+  protected requirementSummary(): { label: string; value: string }[] {
+    const raw = this.form.getRawValue();
+    const entries: { label: string; value: string }[] = [];
+
+    const add = (label: string, value: string) => {
+      if (value.trim()) {
+        entries.push({ label, value: value.trim() });
+      }
+    };
+
+    add('Deliverables', raw.reqDeliverables);
+    add('Style preferences', raw.reqStyle);
+    add('Timing', raw.reqTiming);
+    add('Location details', raw.reqLocation);
+    add('Special requests', raw.reqSpecial);
+    add('Message to vendor', raw.clientMessage);
+
+    return entries;
+  }
 
   /** True while Stripe.js/Elements is loading — the payment section stays present but visually hidden. */
   protected readonly mountingPayment = signal(true);
@@ -309,7 +374,34 @@ export class BookingCreate implements OnInit, OnDestroy {
     eventPlanId: this.fb.control<number | null>(null),
     guestCount: this.fb.nonNullable.control(''),
     clientMessage: this.fb.nonNullable.control(''),
+    // What this client actually wants. All optional — a blank field is omitted from the agreement
+    // rather than filled in with an assumption — but the more of it is filled, the more the generated
+    // contract describes this booking specifically instead of the service in general.
+    reqDeliverables: this.fb.nonNullable.control(''),
+    reqStyle: this.fb.nonNullable.control(''),
+    reqTiming: this.fb.nonNullable.control(''),
+    reqLocation: this.fb.nonNullable.control(''),
+    reqSpecial: this.fb.nonNullable.control(''),
   });
+
+  /**
+   * Collects the requirement fields into the payload shape, dropping blanks. Returns undefined when
+   * the client stated nothing, so the backend records "no requirements given" rather than a set of
+   * empty strings.
+   */
+  private buildRequirements(): ClientRequirements | undefined {
+    const raw = this.form.getRawValue();
+
+    const requirements: ClientRequirements = {
+      deliverables: raw.reqDeliverables.trim() || undefined,
+      stylePreferences: raw.reqStyle.trim() || undefined,
+      timingRequirements: raw.reqTiming.trim() || undefined,
+      locationDetails: raw.reqLocation.trim() || undefined,
+      specialRequests: raw.reqSpecial.trim() || undefined,
+    };
+
+    return Object.values(requirements).some((value) => value !== undefined) ? requirements : undefined;
+  }
 
   ngOnInit(): void {
     const vendorIdParam = this.route.snapshot.queryParamMap.get('vendorId');
@@ -602,7 +694,7 @@ export class BookingCreate implements OnInit, OnDestroy {
   }
 
   protected goToVendors(): void {
-    this.router.navigateByUrl('/client/vendors');
+    this.router.navigateByUrl('/explore/vendors');
   }
 
   /** Shared by both the Step 1 -> Step 2 advance and confirmBooking()'s own defensive re-check — same checks either way, just triggered from two places. */
@@ -631,20 +723,88 @@ export class BookingCreate implements OnInit, OnDestroy {
     return true;
   }
 
-  protected goToPayment(): void {
+  /**
+   * Step 1 -> 2. Details are now fixed, so the booking can be priced. The quote is cheap and
+   * AI-free, which is exactly why it happens here rather than being bundled with the contract: the
+   * client sees the real total and what is due now before committing to anything.
+   */
+  protected goToSummary(): void {
     if (!this.validateBookingDetails()) {
       return;
     }
+
+    this.currentStep.set('summary');
+    this.loadPaymentQuote();
+  }
+
+  /**
+   * Step 2 -> 3. Generates the Booking Agreement for the (now-confirmed) details. Regenerated on
+   * every entry, so stepping back to edit details always produces a fresh contract rather than
+   * leaving the client agreeing to a stale one.
+   */
+  protected goToContract(): void {
+    this.currentStep.set('contract');
+    this.loadAgreement();
+  }
+
+  /**
+   * Step 3 -> 4. Gated on the agreement being read and accepted, matching the backend, which rejects
+   * a create without a valid agreement token and AgreementAccepted.
+   */
+  protected goToPayment(): void {
+    if (!this.agreed() || !this.agreementUrl()) {
+      return;
+    }
+
     this.currentStep.set('payment');
     // The payment step (and its #paymentElementContainer) becomes visible on the
     // next render — mount the already-prepared element into it now. No-op if
     // Stripe.js is still loading; setupPayment() mounts once it finishes, since
     // currentStep is now 'payment'.
     void this.mountPaymentElement();
-    // Generate the Booking Agreement for the (now-fixed) details so the client can
-    // review and agree before confirming. Regenerated on every entry to this step,
-    // so a details change picks up a fresh agreement (no persistent draft is kept).
-    this.loadAgreement();
+  }
+
+  protected goToStep(step: WizardStep): void {
+    this.currentStep.set(step);
+  }
+
+  /**
+   * Asks the server what this booking costs. Nothing here derives an amount: the deposit rule lives
+   * in BookingService.ResolvePaymentPlan and must stay the single source of truth, or checkout would
+   * eventually disagree with the actual charge.
+   */
+  private loadPaymentQuote(): void {
+    const slotId = this.selectedSlotId();
+    const raw = this.form.getRawValue();
+    const eventPlanId = this.eventPlanIdFromQuery ?? raw.eventPlanId;
+    if (!slotId || !eventPlanId) {
+      return;
+    }
+
+    const guestCount = raw.guestCount.trim() === '' ? undefined : Number(raw.guestCount);
+
+    this.quoteLoading.set(true);
+    this.quoteError.set(null);
+
+    this.bookingService
+      .paymentQuote({
+        eventPlanId,
+        availabilityId: slotId,
+        vendorPackageId: this.packageId,
+        guestCount,
+      })
+      .subscribe({
+        next: (quote) => {
+          this.paymentQuote.set(quote);
+          this.quoteLoading.set(false);
+        },
+        error: (err: AppError) => {
+          this.quoteError.set(
+            err.message || 'The payment details for this booking could not be loaded.',
+          );
+          this.quoteLoading.set(false);
+        },
+      });
   }
 
   /**
@@ -674,11 +834,15 @@ export class BookingCreate implements OnInit, OnDestroy {
         vendorPackageId: this.packageId,
         guestCount,
         clientMessage: raw.clientMessage.trim() || undefined,
+        requirements: this.buildRequirements(),
       })
       .subscribe({
         next: (res) => {
           this.agreementToken = res.token;
           this.agreementUrl.set(res.documentUrl);
+          // Authoritative: this is the pricing the contract itself was drafted against, so the
+          // payment step and the document the client just read cannot state different amounts.
+          this.paymentQuote.set(res.paymentPlan);
           this.agreementLoading.set(false);
         },
         error: (err: AppError) => {
@@ -690,8 +854,12 @@ export class BookingCreate implements OnInit, OnDestroy {
       });
   }
 
-  protected backToDetails(): void {
-    this.currentStep.set('details');
+  protected goToMyBookings(): void {
+    this.router.navigateByUrl('/client/bookings');
+  }
+
+  protected goToEventPlans(): void {
+    this.router.navigateByUrl('/client/event-plans?bookingSuccess=1');
   }
 
   protected async confirmBooking(): Promise<void> {
@@ -781,6 +949,9 @@ export class BookingCreate implements OnInit, OnDestroy {
       vendorPackageId: this.packageId,
       guestCount,
       clientMessage: raw.clientMessage.trim() || undefined,
+      // Same requirements the previewed agreement was drafted from — the token binds that exact
+      // document, and these persist them onto the booking the vendor accepts.
+      requirements: this.buildRequirements(),
       paymentMethodId: paymentMethod.id,
       requestId: crypto.randomUUID(),
       agreementToken: this.agreementToken,
@@ -788,10 +959,14 @@ export class BookingCreate implements OnInit, OnDestroy {
     };
 
     this.bookingService.createBooking(dto).subscribe({
-      next: () => {
+      next: (booking) => {
         this.submitting.set(false);
         notifySuccess('Your booking request has been sent!');
-        this.router.navigateByUrl('/client/event-plans?bookingSuccess=1');
+        // Advance to the confirmation step rather than navigating away, so the client sees the real
+        // resulting state — what was actually held, the reference, and that the booking is still
+        // pending the vendor's acceptance — instead of a toast that overstates what just happened.
+        this.confirmedBooking.set(booking);
+        this.currentStep.set('confirmation');
       },
       error: (err: AppError) => {
         this.submitting.set(false);

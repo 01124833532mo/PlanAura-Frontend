@@ -210,17 +210,47 @@
 }
 
 /* Was `position: absolute` at a fixed top offset, with the content below it
-   vertically centered independently. That worked by coincidence when the
-   card was tall enough to leave a gap above the centered block — but once
-   the card's height is capped to fit the viewport (see the fix above), a
-   tall register form centers itself high enough to collide with the
-   brand mark sitting on top of it. Making the brand a normal in-flow flex
-   item — first child, pinned to the start — means it always reserves its
-   own row and the content below can never overlap it, at any height. */
+   vertically centered independently — collided with a tall register form.
+   Then was a normal in-flow flex item, which fixed the layout math but the
+   overlap kept happening anyway: Chromium has a known compositing bug where
+   an element with BOTH `background-clip: text` (a transparent-fill gradient
+   mark) AND a `transform`-based entrance animation on the very same element
+   can paint at the wrong offset while its layout box stays correct — so
+   DevTools/the box model look fine, but the rendered pixels land on top of
+   the next row. Root fix: split the two concerns across two elements. The
+   outer `.auth-shell__brand` gets the entrance animation (opacity/transform)
+   and a real bottom border to anchor it as its own header row; the inner
+   `.auth-shell__brand-name` gets the gradient-clipped text and nothing else
+   — no animation, no transform, ever, on the clipped element itself. */
 .auth-shell__brand {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   align-self: flex-start;
   flex-shrink: 0;
-  margin-bottom: var(--space-md);
+  width: 100%;
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-subtle-border);
+}
+
+.auth-shell__brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  font-size: 20px;
+}
+
+.auth-shell__brand-name {
+  line-height: 1.3;
   font-family: var(--font-family-display);
   font-size: var(--font-headline-sm-size);
   font-weight: 600;

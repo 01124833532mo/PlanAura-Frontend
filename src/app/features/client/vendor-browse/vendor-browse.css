@@ -1,26 +1,33 @@
-/* .client-content (the shared shell wrapper every client page sits inside)
-   already applies max-width, centering, and var(--margin-desktop) padding on
-   all sides — this page must not redeclare any of that, or the padding
-   compounds and the hero ends up floating in ~150px of dead space before a
-   single word of content appears. This page owns only its internal rhythm:
-   one consistent gap between major sections, on the 8px grid. */
+/* This page now lives under PublicShell (a bare, unpadded router-outlet —
+   see public-shell.css), not the old client-shell, whose .client-content
+   used to supply max-width/centering/padding for free. This page owns that
+   container itself now. Section-to-section gaps are intentionally uneven
+   rather than one repeated value: hero-to-filters is tight (the filter bar
+   is really a continuation of "search", not a new page section), while
+   filters-to-results gets a hair more room to read as the start of the
+   results themselves. */
 .browse-page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--margin-desktop) var(--space-2xl);
 }
 
-/* ============ Hero — premium marketplace opener, no background box ============ */
-/* No extra padding here either — the parent's padding is the only offset
-   from the topbar, and the section gap above handles everything else. */
+/* ============ Hero — compact page intro, not a marketing hero ============ */
+/* This is a utility/listing page, not the homepage — the hero's job is to
+   orient and hand off to the search bar quickly, so it stays short (no
+   large top/bottom padding) rather than competing with the filter bar and
+   results for vertical space. */
 
 .browse-hero {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-sm);
-  max-width: 720px;
+  gap: 0.6rem;
+  max-width: 640px;
 }
 
 .browse-hero__eyebrow {
@@ -45,10 +52,10 @@
 .browse-hero__title {
   margin: 0;
   font-family: var(--font-family-display);
-  font-size: clamp(2.15rem, 3.6vw, 3.1rem);
+  font-size: clamp(1.9rem, 2.8vw, 2.5rem);
   font-weight: 500;
   letter-spacing: -0.02em;
-  line-height: 1.08;
+  line-height: 1.1;
   color: var(--color-charcoal);
 }
 
@@ -61,10 +68,9 @@
 }
 
 .browse-hero__search {
-  /* Extra breathing room above — this is the first interactive element on
-     the page, so it gets a clearly bigger gap than the tight text cluster
-     above it (eyebrow/title/subtitle use var(--space-sm) between each other). */
-  margin-top: var(--space-sm);
+  /* A little breathing room above — this is the first interactive element on
+     the page — but not so much that it reads as a new section. */
+  margin-top: 0.25rem;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -318,6 +324,15 @@
   transform: none;
 }
 
+/* Used by the Sort control in .browse-results-bar, which sits at the far
+   right of its row — opening left-aligned like the filter-bar segments do
+   would push the panel past the viewport edge. */
+.filter-segment__panel--right {
+  left: auto;
+  right: 0;
+  transform-origin: top right;
+}
+
 .dropdown-option {
   display: flex;
   align-items: center;
@@ -476,6 +491,31 @@
   }
 }
 
+/* ============ Results bar — count + sort, the hinge between filters and
+   the grid. Kept visually lighter than the filter bar (no shadowed chip for
+   the count) so the hierarchy reads Filters -> Results -> Grid rather than
+   two identical-weight toolbars stacked on top of each other. ============ */
+
+.browse-results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-top: var(--space-xs);
+  border-top: 1px solid var(--color-subtle-border);
+}
+
+.browse-results-bar__count {
+  margin: 0;
+  color: var(--color-secondary);
+  font-size: var(--font-label-md-size);
+}
+
+.browse-results-bar__count strong {
+  color: var(--color-charcoal);
+  font-weight: 700;
+}
+
 /* ============ Results grid — breathes on the plain page background ============ */
 
 .browse-empty {
@@ -512,7 +552,8 @@
 }
 
 .browse-grid__skeleton {
-  aspect-ratio: 1 / 1.35;
+  /* Matches ui-vendor-card's proportions: 4:3 media + body text block. */
+  aspect-ratio: 4 / 3.6;
   border-radius: var(--radius-lg);
 }
 
@@ -547,10 +588,19 @@
   font-weight: 700;
 }
 
+@media (max-width: 900px) {
+  .browse-page {
+    padding-left: var(--margin-mobile);
+    padding-right: var(--margin-mobile);
+  }
+}
+
 @media (max-width: 640px) {
-  /* No padding override needed — .client-content already switches to
-     var(--margin-mobile) padding at this breakpoint (client-shell.css). */
   .browse-hero__search {
     max-width: 100%;
+  }
+
+  .browse-results-bar {
+    flex-wrap: wrap;
   }
 }

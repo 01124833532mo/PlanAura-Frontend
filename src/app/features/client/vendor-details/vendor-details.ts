@@ -142,7 +142,10 @@ export class VendorDetails implements OnInit {
   }
 
   protected bookPackage(pkg: VendorPackage): void {
-    this.router.navigate(['/client/booking/new'], {
+    // Guests hit authGuard/clientGuard here, which redirect to /auth with a
+    // returnUrl back to this exact request — see auth.guard.ts /
+    // auth-page.ts's navigateAfterAuth(). No guest-specific handling needed.
+    this.router.navigate(['/booking/new'], {
       queryParams: {
         vendorId: this.vendorId,
         packageId: pkg.id,
@@ -152,6 +155,6 @@ export class VendorDetails implements OnInit {
   }
 
   protected goBack(): void {
-    this.router.navigateByUrl('/client/vendors');
+    this.router.navigateByUrl('/explore/vendors');
   }
 }

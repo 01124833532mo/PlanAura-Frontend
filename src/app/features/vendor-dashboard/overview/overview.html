@@ -1,45 +1,390 @@
 <div class="overview-page">
+  <!-- ============ Header ============ -->
   <div class="overview-page__header animate-fade-up">
     <div>
       <p class="text-label-sm overview-page__eyebrow">
         <span class="material-symbols-outlined">dashboard</span>
         Overview
       </p>
-      <h3 class="text-headline-sm">
+      <div class="overview-page__title-row">
+        <h3 class="text-headline-sm">
+          @if (vendorProfileState.profile(); as profile) {
+            Welcome back, {{ profile.businessName }}
+          } @else {
+            Welcome back
+          }
+        </h3>
         @if (vendorProfileState.profile(); as profile) {
-          Welcome back, {{ profile.businessName }}
-        } @else {
-          Welcome back
+          <span
+            class="overview-verified-badge"
+            [class.overview-verified-badge--trusted]="profile.verificationStatus === 'trusted'"
+          >
+            <span class="material-symbols-outlined">{{
+              profile.verificationStatus === 'trusted' ? 'workspace_premium' : 'verified'
+            }}</span>
+            {{ profile.verificationStatus === 'trusted' ? 'Trusted vendor' : 'Verified' }}
+          </span>
         }
-      </h3>
-      <p class="text-body-md">Here's where your business stands today.</p>
+      </div>
+      <p class="text-body-md">Here's how your business is performing today.</p>
     </div>
   </div>
 
-  <app-dashboard-stats />
-
-  <!--
-    No entrance-animation class on this section: the embedded booking list renders its details
-    modal (a position:fixed .modal-backdrop) inside here. An animated wrapper establishes a
-    stacking context / containing block that traps the fixed overlay - pinning it to the section
-    (breaking centering) and painting it beneath the sticky topbar. The list animates its own
-    rows internally, and the header below keeps its fade-up since it's a sibling of the list,
-    not an ancestor of the modal.
-  -->
-  <section class="overview-section">
-    <div class="overview-section__header animate-fade-up">
-      <div>
-        <h4 class="text-title-md">Pending requests</h4>
-        <p class="text-body-sm overview-section__hint">
-          Clients waiting on your response — accept to confirm and capture payment.
-        </p>
+  @if (isBrandNewVendor()) {
+    <!-- ============ Brand-new vendor empty state (Part 15) ============ -->
+    <section class="overview-getting-started animate-fade-up">
+      <span class="material-symbols-outlined overview-getting-started__icon">storefront</span>
+      <h4 class="text-title-md">Let's get your business started</h4>
+      <p class="text-body-md">
+        You haven't added any packages or received any bookings yet. Once your catalog is live and
+        clients start booking, your performance — revenue, booking pipeline, top packages — will
+        appear right here.
+      </p>
+      <div class="overview-getting-started__actions">
+        <a class="btn-gold-gradient" routerLink="/vendor/dashboard/packages">
+          <span class="material-symbols-outlined">add</span>
+          Add Your First Package
+        </a>
+        <a class="overview-getting-started__link" routerLink="/vendor/dashboard/availability">
+          Set your availability
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
       </div>
-      <a class="overview-section__link text-label-md" routerLink="/vendor/dashboard/requests">
-        View all requests
-        <span class="material-symbols-outlined">arrow_forward</span>
-      </a>
-    </div>
+    </section>
+  } @else {
+    <!-- ============ Primary KPI cards ============ -->
+    <app-dashboard-stats [stats]="stats()" [loading]="statsLoading()" />
 
-    <app-booking-request-list fixedTab="pending" [pageSize]="5" />
-  </section>
+    <!--
+      No entrance-animation class on this section: the embedded booking list renders its details
+      modal (a position:fixed .modal-backdrop) inside here. An animated wrapper establishes a
+      stacking context / containing block that traps the fixed overlay.
+    -->
+    <section class="overview-section">
+      <div class="overview-section__header animate-fade-up">
+        <div>
+          <h4 class="text-title-md">Needs your action</h4>
+          <p class="text-body-sm overview-section__hint">
+            Clients waiting on your response — accept to confirm and capture payment.
+          </p>
+        </div>
+        <a class="overview-section__link text-label-md" routerLink="/vendor/dashboard/requests">
+          View all requests
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
+      </div>
+
+      <app-booking-request-list fixedTab="pending" [pageSize]="5" />
+    </section>
+
+    <!-- ============ Analytics: Revenue + Booking pipeline ============ -->
+    <section class="overview-charts animate-fade-up">
+      <vendor-chart-card
+        class="overview-charts__item"
+        title="Revenue Analytics"
+        [subtitle]="hasAnyPaidBooking() ? 'Captured payments over time' : null"
+        [config]="revenueChartConfig()"
+        [loading]="bookingsLoading()"
+        emptyTitle="No revenue data yet"
+        emptyMessage="Once clients start paying for bookings, your revenue trend will appear here."
+        emptyIcon="payments"
+        [height]="300"
+      >
+        <div card-actions class="overview-range-toggle">
+          @for (option of revenueRangeOptions; track option.value) {
+            <button
+              type="button"
+              class="overview-range-toggle__btn"
+              [class.overview-range-toggle__btn--active]="revenueRange() === option.value"
+              (click)="setRevenueRange(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          }
+        </div>
+      </vendor-chart-card>
+
+      <vendor-chart-card
+        class="overview-charts__item"
+        title="Booking Overview"
+        subtitle="Your pipeline across every status"
+        [config]="bookingStatusChartConfig()"
+        [loading]="statsLoading()"
+        emptyTitle="No bookings yet"
+        emptyMessage="Once requests start coming in, your booking pipeline will appear here."
+        emptyIcon="donut_large"
+        [height]="300"
+      />
+    </section>
+
+    <!-- ============ Top Packages + Upcoming Bookings ============ -->
+    <section class="overview-split animate-fade-up">
+      <div class="overview-panel">
+        <div class="overview-panel__header">
+          <h4 class="text-title-md">Top Packages</h4>
+          <a class="overview-section__link text-label-sm" routerLink="/vendor/dashboard/packages">
+            Manage packages
+          </a>
+        </div>
+
+        @if (packagesLoading() || bookingsLoading()) {
+          <div class="overview-panel__skeletons">
+            @for (i of [1, 2, 3]; track i) {
+              <div class="skeleton overview-package-row--skeleton"></div>
+            }
+          </div>
+        } @else if (packages().length === 0) {
+          <div class="overview-panel__empty">
+            <span class="material-symbols-outlined">inventory_2</span>
+            <p class="text-body-sm">You haven't added any packages yet.</p>
+            <a class="overview-section__link text-label-sm" routerLink="/vendor/dashboard/packages">
+              Add a package
+            </a>
+          </div>
+        } @else if (topPackages().length === 0) {
+          <div class="overview-panel__empty">
+            <span class="material-symbols-outlined">query_stats</span>
+            <p class="text-body-sm">
+              No package performance yet — once your packages get booked, the best performers will
+              show up here.
+            </p>
+          </div>
+        } @else {
+          <ol class="overview-package-list">
+            @for (item of topPackages(); track item.pkg.id; let i = $index) {
+              <li class="overview-package-row">
+                <span class="overview-package-row__rank">{{ i + 1 }}</span>
+                <div class="overview-package-row__body">
+                  <p class="text-label-md overview-package-row__title">{{ item.pkg.title }}</p>
+                  <p class="text-label-sm overview-package-row__meta">
+                    {{ item.pkg.basePrice | number: '1.0-0' }} {{ item.pkg.currency }} ·
+                    {{ item.bookingCount }} booking{{ item.bookingCount === 1 ? '' : 's' }}
+                  </p>
+                </div>
+                @if (item.revenue > 0) {
+                  <span class="overview-package-row__revenue">
+                    {{ item.revenue | number: '1.0-0' }} EGP
+                  </span>
+                }
+              </li>
+            }
+          </ol>
+        }
+      </div>
+
+      <div class="overview-panel">
+        <div class="overview-panel__header">
+          <h4 class="text-title-md">Upcoming Bookings</h4>
+          <a class="overview-section__link text-label-sm" routerLink="/vendor/dashboard/requests" [queryParams]="{ status: 'accepted' }">
+            View all bookings
+          </a>
+        </div>
+
+        @if (bookingsLoading()) {
+          <div class="overview-panel__skeletons">
+            @for (i of [1, 2, 3]; track i) {
+              <div class="skeleton overview-package-row--skeleton"></div>
+            }
+          </div>
+        } @else if (upcomingBookings().length === 0) {
+          <div class="overview-panel__empty">
+            <span class="material-symbols-outlined">event_available</span>
+            <p class="text-body-sm">No upcoming bookings right now.</p>
+          </div>
+        } @else {
+          <ul class="overview-booking-list">
+            @for (booking of upcomingBookings(); track booking.id) {
+              <li class="overview-booking-row">
+                <div class="overview-booking-row__date">
+                  <span class="overview-booking-row__day">{{ booking.eventDate | date: 'd' }}</span>
+                  <span class="overview-booking-row__month">{{ booking.eventDate | date: 'MMM' }}</span>
+                </div>
+                <div class="overview-booking-row__body">
+                  <p class="text-label-md overview-booking-row__title">
+                    {{ booking.clientName ?? 'Client' }} · {{ packageTitleFor(booking) }}
+                  </p>
+                  <p class="text-label-sm overview-booking-row__meta">
+                    @if (booking.slotStartAt) {
+                      {{ booking.slotStartAt | date: 'shortTime' }} ·
+                    }
+                    {{ booking.guestCount ?? '—' }} guests
+                  </p>
+                </div>
+                @if (booking.agreedPrice) {
+                  <span class="overview-booking-row__price">{{ booking.agreedPrice | number: '1.0-0' }} EGP</span>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </section>
+
+    <!-- ============ Availability + Quick Actions ============ -->
+    <section class="overview-split animate-fade-up">
+      <div class="overview-panel">
+        <div class="overview-panel__header">
+          <h4 class="text-title-md">Availability Overview</h4>
+          <a class="overview-section__link text-label-sm" routerLink="/vendor/dashboard/availability">
+            Manage Availability
+          </a>
+        </div>
+
+        @if (availabilityLoading()) {
+          <div class="overview-panel__skeletons">
+            <div class="skeleton overview-package-row--skeleton"></div>
+          </div>
+        } @else if (availabilitySummary().availableCount === 0 && availabilitySummary().bookedCount === 0 && availabilitySummary().blockedCount === 0) {
+          <div class="overview-panel__empty">
+            <span class="material-symbols-outlined">event_busy</span>
+            <p class="text-body-sm">You haven't set any availability yet.</p>
+            <a class="overview-section__link text-label-sm" routerLink="/vendor/dashboard/availability">
+              Set your availability
+            </a>
+          </div>
+        } @else {
+          <div class="overview-availability">
+            <div class="overview-availability__counts">
+              <div class="overview-availability__count overview-availability__count--available">
+                <span class="text-headline-sm">{{ availabilitySummary().availableCount }}</span>
+                <span class="text-label-sm">Open slots</span>
+              </div>
+              <div class="overview-availability__count overview-availability__count--booked">
+                <span class="text-headline-sm">{{ availabilitySummary().bookedCount }}</span>
+                <span class="text-label-sm">Booked</span>
+              </div>
+              <div class="overview-availability__count overview-availability__count--blocked">
+                <span class="text-headline-sm">{{ availabilitySummary().blockedCount }}</span>
+                <span class="text-label-sm">Blocked</span>
+              </div>
+            </div>
+
+            @if (availabilitySummary().nextAvailable.length > 0) {
+              <div class="overview-availability__next">
+                <p class="text-label-sm overview-availability__next-label">Next open slots</p>
+                @for (slot of availabilitySummary().nextAvailable; track slot.id) {
+                  <p class="text-body-sm overview-availability__slot">
+                    {{ slot.startAt | date: 'EEE, MMM d · h:mm a' }}
+                  </p>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="overview-panel overview-panel--actions">
+        <div class="overview-panel__header">
+          <h4 class="text-title-md">Quick Actions</h4>
+        </div>
+
+        <div class="overview-quick-actions">
+          <a class="overview-quick-action" routerLink="/vendor/dashboard/packages">
+            <span class="material-symbols-outlined">add_business</span>
+            Add Package
+          </a>
+          <a class="overview-quick-action" routerLink="/vendor/dashboard/availability">
+            <span class="material-symbols-outlined">event_available</span>
+            Manage Availability
+          </a>
+          <a class="overview-quick-action" routerLink="/vendor/dashboard/requests">
+            <span class="material-symbols-outlined">mail</span>
+            View Bookings
+          </a>
+          <a class="overview-quick-action" routerLink="/vendor/dashboard/profile">
+            <span class="material-symbols-outlined">edit</span>
+            Edit Profile
+          </a>
+          @if (vendorProfileState.vendorId(); as vendorId) {
+            <a class="overview-quick-action" [routerLink]="['/vendors', vendorId]">
+              <span class="material-symbols-outlined">visibility</span>
+              View Public Profile
+            </a>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Recent Activity + Business Summary ============ -->
+    <section class="overview-split animate-fade-up">
+      <div class="overview-panel">
+        <div class="overview-panel__header">
+          <h4 class="text-title-md">Recent Activity</h4>
+        </div>
+
+        @if (notificationService.loading()) {
+          <div class="overview-panel__skeletons">
+            @for (i of [1, 2, 3]; track i) {
+              <div class="skeleton overview-package-row--skeleton"></div>
+            }
+          </div>
+        } @else if (recentActivity().length === 0) {
+          <div class="overview-panel__empty">
+            <span class="material-symbols-outlined">notifications</span>
+            <p class="text-body-sm">No recent activity yet.</p>
+          </div>
+        } @else {
+          <ul class="overview-activity-list">
+            @for (item of recentActivity(); track item.id) {
+              <li class="overview-activity-row" [class.overview-activity-row--unread]="!item.isRead">
+                <span class="overview-activity-row__icon material-symbols-outlined">
+                  {{ activityIcon(item.type) }}
+                </span>
+                <div class="overview-activity-row__body">
+                  <p class="text-label-md overview-activity-row__title">{{ item.title ?? 'Activity' }}</p>
+                  @if (item.body) {
+                    <p class="text-label-sm overview-activity-row__message">{{ item.body }}</p>
+                  }
+                  <p class="text-label-sm overview-activity-row__time">{{ item.createdAt | date: 'MMM d, h:mm a' }}</p>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="overview-panel">
+        <div class="overview-panel__header">
+          <h4 class="text-title-md">Business Summary</h4>
+        </div>
+
+        @if (stats(); as s) {
+          <ul class="overview-summary-list">
+            <li>
+              <span class="text-label-md">Completed bookings</span>
+              <span class="text-label-md overview-summary-value">{{ s.totalCompletedBookings }}</span>
+            </li>
+            <li>
+              <span class="text-label-md">Cancellation rate</span>
+              <span class="text-label-md overview-summary-value">
+                {{ cancellationRate() !== null ? (cancellationRate() | number: '1.0-1') + '%' : '—' }}
+              </span>
+            </li>
+            <li>
+              <span class="text-label-md">Average booking value</span>
+              <span class="text-label-md overview-summary-value">
+                {{ averageBookingValue() !== null ? (averageBookingValue() | number: '1.0-0') + ' EGP' : '—' }}
+              </span>
+            </li>
+            <li>
+              <span class="text-label-md">Most popular package</span>
+              <span class="text-label-md overview-summary-value">
+                {{ mostPopularPackage()?.pkg?.title ?? '—' }}
+              </span>
+            </li>
+            <li>
+              <span class="text-label-md">Average rating</span>
+              <span class="text-label-md overview-summary-value">
+                {{ s.totalReviews > 0 ? (s.avgRating | number: '1.1-1') + ' / 5' : '—' }}
+              </span>
+            </li>
+            <li>
+              <span class="text-label-md">Active packages</span>
+              <span class="text-label-md overview-summary-value">{{ s.activePackages }}</span>
+            </li>
+          </ul>
+        }
+      </div>
+    </section>
+  }
 </div>

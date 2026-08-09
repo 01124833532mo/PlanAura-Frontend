@@ -1,0 +1,49 @@
+<div class="services-page">
+  <header class="services-hero animate-fade-up">
+    <p class="services-hero__eyebrow"><span class="services-hero__eyebrow-dot" aria-hidden="true"></span>Catalog</p>
+    <h1 class="services-hero__title">Explore Services</h1>
+    <p class="services-hero__subtitle">
+      Every kind of service Planura vendors offer, organized by category. Pick one to see the
+      vendors behind it.
+    </p>
+
+    <label class="services-hero__search">
+      <span class="material-symbols-outlined" aria-hidden="true">search</span>
+      <input
+        type="text"
+        placeholder="Search services — e.g. Photography, Catering, Decor"
+        aria-label="Search services"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </label>
+  </header>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <div class="services-body">
+    @if (loading()) {
+      <div class="services-grid">
+        @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+          <div class="skeleton services-grid__skeleton"></div>
+        }
+      </div>
+    } @else if (filteredCategories().length > 0) {
+      <div class="services-grid">
+        @for (category of filteredCategories(); track category.id) {
+          <ui-category-card class="animate-fade-up" [category]="category" />
+        }
+      </div>
+    } @else if (categories().length > 0) {
+      <div class="services-empty">
+        <span class="material-symbols-outlined">search_off</span>
+        <p class="text-body-md">No services match "{{ searchTerm() }}".</p>
+      </div>
+    } @else {
+      <div class="services-empty">
+        <span class="material-symbols-outlined">category</span>
+        <p class="text-body-md">Service categories will appear here soon.</p>
+      </div>
+    }
+  </div>
+</div>

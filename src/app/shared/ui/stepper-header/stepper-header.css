@@ -1,7 +1,11 @@
+.ui-stepper-wrap {
+  margin: 0 0 var(--space-lg);
+}
+
 .ui-stepper {
   display: flex;
   list-style: none;
-  margin: 0 0 var(--space-lg);
+  margin: 0;
   padding: 0;
   gap: 0.5rem;
 }
@@ -9,6 +13,7 @@
 .ui-stepper__item {
   position: relative;
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -37,6 +42,7 @@
   z-index: 1;
   width: 28px;
   height: 28px;
+  flex: 0 0 auto;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -74,6 +80,7 @@
 
 .ui-stepper__label {
   font-size: var(--font-label-sm-size);
+  line-height: 1.25;
   color: var(--color-secondary);
   transition: color var(--dur-base) var(--ease-smooth);
 }
@@ -87,8 +94,61 @@
   color: var(--color-dark-gray);
 }
 
+/* Announced, never shown - the dot's colour is the only visual completion cue. */
+.ui-stepper__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Redundant with the per-step labels on desktop; the only wayfinding on mobile. */
+.ui-stepper__caption {
+  display: none;
+  margin: 0.75rem 0 0;
+  text-align: center;
+}
+
+.ui-stepper__caption-step {
+  font-size: var(--font-label-sm-size);
+  color: var(--color-secondary);
+}
+
+.ui-stepper__caption-label {
+  display: block;
+  font-size: var(--font-title-sm-size, 1rem);
+  font-weight: 600;
+  color: var(--color-charcoal);
+}
+
 @media (max-width: 640px) {
+  .ui-stepper {
+    gap: 0.25rem;
+  }
+
+  /* Five labels cannot sit side by side at this width without wrapping into an unreadable stack,
+     so the dots carry position and the caption below carries meaning. */
   .ui-stepper__label {
     display: none;
+  }
+
+  .ui-stepper__caption {
+    display: block;
+  }
+
+  .ui-stepper__dot {
+    width: 24px;
+    height: 24px;
+  }
+
+  .ui-stepper__item:not(:last-child)::after {
+    top: 12px;
+    left: calc(50% + 15px);
+    width: calc(100% - 30px);
   }
 }

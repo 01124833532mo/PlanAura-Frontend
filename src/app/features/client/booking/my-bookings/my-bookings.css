@@ -151,6 +151,13 @@
   color: var(--color-charcoal);
 }
 
+/* The compact breakdown is a block-level card inside the row body; it needs its own vertical
+   rhythm since .booking-row__meta above it is a wrapping inline flex list. */
+.booking-row__payment {
+  display: block;
+  margin-top: var(--space-sm);
+}
+
 /* Status + actions: their own full-width row beneath .booking-row__main —
    the Pending badge's label ("Awaiting vendor response — payment
    authorized") is long and never wraps (ui-status-badge forces

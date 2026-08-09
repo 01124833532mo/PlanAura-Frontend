@@ -64,6 +64,9 @@
   --margin-mobile: 16px;
   --margin-desktop: 64px;
   --container-max: 1280px;
+  /* Narrower cap for single-column/form-heavy pages (e.g. account profile)
+     that would otherwise stretch uncomfortably wide on large screens. */
+  --container-narrow: 1080px;
 
   /* ---- Radius scale (large, soft corners) ---- */
   --radius-sm: 0.5rem;

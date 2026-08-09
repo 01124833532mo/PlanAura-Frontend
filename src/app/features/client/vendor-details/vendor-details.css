@@ -1,13 +1,20 @@
-/* .client-content (the shared client-shell wrapper) already applies
-   max-width, centering, and var(--margin-desktop) padding on all sides —
-   redeclaring the same values here was doubling the padding on every edge,
-   which is what left ~128px of dead space above "Back to vendors" instead
-   of a normal 64px offset from the topbar. This page owns only its
-   section rhythm now. */
+/* This page lives under PublicShell now (a bare, unpadded router-outlet —
+   see public-shell.css), not the old client-shell/.client-content wrapper,
+   so it owns its own max-width/centering/padding directly. */
 .vendor-details-page {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--margin-desktop) var(--space-2xl);
+}
+
+@media (max-width: 900px) {
+  .vendor-details-page {
+    padding-left: var(--margin-mobile);
+    padding-right: var(--margin-mobile);
+  }
 }
 
 .vendor-details-back {
@@ -574,8 +581,6 @@
 }
 
 @media (max-width: 640px) {
-  /* No padding override needed — .client-content already switches to
-     var(--margin-mobile) padding at the 900px breakpoint (client-shell.css). */
   .vendor-reviews__summary {
     flex-direction: column;
     gap: var(--space-md);

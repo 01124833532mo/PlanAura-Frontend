@@ -1,5 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { VendorProfileStateService } from '../../../core/services/vendor-profile-state.service';
 import { createActiveRouteTitle } from '../../../shared/utils/active-route-title';
@@ -20,8 +21,25 @@ export class VendorShell implements OnInit {
   protected readonly vendorProfileState = inject(VendorProfileStateService);
   protected readonly pageTitle = createActiveRouteTitle('Booking Requests');
 
+  /** Off-canvas sidebar state on small screens (<640px) — desktop/tablet always show the sidebar
+   * (full or icon-rail), this only matters below the phone breakpoint. */
+  protected readonly mobileNavOpen = signal(false);
+
   ngOnInit(): void {
     this.vendorProfileState.load();
+    // Close the drawer automatically on navigation so tapping a link doesn't
+    // leave it open over the next page.
+    this.router.events.pipe(filter((e) => e instanceof NavigationStart)).subscribe(() => {
+      this.mobileNavOpen.set(false);
+    });
+  }
+
+  protected toggleMobileNav(): void {
+    this.mobileNavOpen.update((open) => !open);
+  }
+
+  protected closeMobileNav(): void {
+    this.mobileNavOpen.set(false);
   }
 
   protected async logout(): Promise<void> {

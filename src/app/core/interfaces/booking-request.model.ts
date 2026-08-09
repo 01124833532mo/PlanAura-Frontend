@@ -33,6 +33,22 @@ export enum DisputeStatus {
   Resolved = 2,
 }
 
+/**
+ * Mirrors Planura.Core.Application.Models.ClientRequirementsDto.
+ *
+ * What this client specifically wants from this booking. These reach the AI that drafts the Booking
+ * Agreement, and are the main reason two clients booking the same package get materially different
+ * contracts. Every field is optional; anything left blank is omitted from the contract rather than
+ * filled in with a default.
+ */
+export interface ClientRequirements {
+  deliverables?: string;
+  stylePreferences?: string;
+  timingRequirements?: string;
+  locationDetails?: string;
+  specialRequests?: string;
+}
+
 /** Mirrors Planura.Core.Application.Models.CreateBookingRequestDto. */
 export interface CreateBookingRequest {
   eventPlanId: number;
@@ -40,6 +56,7 @@ export interface CreateBookingRequest {
   vendorPackageId?: number;
   guestCount?: number;
   clientMessage?: string;
+  requirements?: ClientRequirements;
   /** Stripe PaymentMethod id (pm_...) collected client-side via Stripe Elements. */
   paymentMethodId: string;
   /** Client-generated id, reused as the Stripe idempotency key to dedupe retried submits. */
@@ -57,6 +74,76 @@ export interface AgreementPreviewRequest {
   vendorPackageId?: number;
   guestCount?: number;
   clientMessage?: string;
+  requirements?: ClientRequirements;
+}
+
+/** Mirrors Planura.Core.Domain.Enums.PaymentStatus (int-backed enum). */
+export enum PaymentStatus {
+  Pending = 1,
+  Completed = 2,
+  Failed = 3,
+  Refunded = 4,
+  /** Card hold placed at booking; nothing charged yet. */
+  Authorized = 5,
+  Cancelled = 6,
+  /** Deposit captured on vendor accept; the balance is outstanding. */
+  DepositPaid_RemainderDue = 7,
+  /** Deposit-path counterpart of Authorized — only the deposit is held. */
+  DepositAuthorized = 8,
+}
+
+/**
+ * Mirrors Planura.Core.Application.Models.BookingPaymentQuoteDto.
+ *
+ * The server's pricing of a booking that has not been submitted yet. Every figure is computed by
+ * BookingService.ResolvePaymentPlan — never recomputed here, so checkout cannot drift from the
+ * amount actually charged.
+ */
+export interface BookingPaymentQuote {
+  currency: string;
+  totalAmount: number;
+  amountDueNow: number;
+  remainingAmount: number;
+  isDeposit: boolean;
+  depositPercentage: number | null;
+  daysUntilEvent: number;
+  fullPaymentThresholdDays: number;
+  vendorResponseWindowHours: number;
+  /** False today: the deposit split exists but no automatic remainder collection does. */
+  remainderCollectionScheduled: boolean;
+}
+
+/**
+ * Mirrors Planura.Core.Application.Models.BookingPaymentSummaryDto.
+ *
+ * `amountAuthorized` and `amountPaid` are deliberately separate: Planura holds the card at booking
+ * and only captures when the vendor accepts, so for the whole pending window money is held but not
+ * taken. Never present an authorized amount as paid.
+ */
+export interface BookingPaymentSummary {
+  paymentId: number;
+  currency: string;
+  totalAmount: number;
+  amountAuthorized: number;
+  amountPaid: number;
+  remainingAmount: number;
+  isDeposit: boolean;
+  depositAmount: number | null;
+  remainderCollectionScheduled: boolean;
+  status: PaymentStatus;
+  reference: string | null;
+  authorizedAt: string | null;
+  paidAt: string | null;
+  refundedAt: string | null;
+  createdAt: string;
+}
+
+/** Mirrors Planura.Core.Application.Models.BookingPaymentQuoteRequestDto. */
+export interface BookingPaymentQuoteRequest {
+  eventPlanId: number;
+  availabilityId: number;
+  vendorPackageId?: number;
+  guestCount?: number;
 }
 
 /** Mirrors Planura.Core.Application.Models.AgreementPreviewResultDto. */
@@ -66,6 +153,8 @@ export interface AgreementPreviewResult {
   /** Absolute URL of the generated agreement PDF, for the embedded viewer. */
   documentUrl: string;
   generatedAt: string;
+  /** The same pricing the contract was drafted against. */
+  paymentPlan: BookingPaymentQuote;
 }
 
 /** Mirrors Planura.Core.Application.Models.BookingRequestDto. */
@@ -117,6 +206,12 @@ export interface BookingRequest {
   /** The booked slot's exact start/end — lets any "date" display also show the time. */
   slotStartAt: string | null;
   slotEndAt: string | null;
+
+  /**
+   * The booking's real financial state. Null only when no payment row exists. Use this rather than
+   * `agreedPrice` whenever showing what has been held, charged, or is still outstanding.
+   */
+  payment: BookingPaymentSummary | null;
 
   /** Non-null only once the client has left a review for this (Completed) booking. */
   reviewId: number | null;

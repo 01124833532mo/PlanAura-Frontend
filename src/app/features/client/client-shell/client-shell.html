@@ -1,9 +1,12 @@
 <aside class="client-nav">
-  <div class="client-nav__brand">
+  <a class="client-nav__brand" routerLink="/">
     <span class="client-nav__logo material-symbols-outlined" aria-hidden="true">celebration</span>
     <span class="text-headline-sm client-nav__brand-name">Planura</span>
-  </div>
+  </a>
 
+  <!-- Account area, not the discovery experience — vendor/service browsing
+       lives in the public top navbar (see public-navbar.html), so it's
+       deliberately not duplicated as a primary link down here. -->
   <nav class="client-nav__links">
     <a
       class="client-nav__link"
@@ -20,14 +23,6 @@
     >
       <span class="material-symbols-outlined client-nav__link-icon">event_note</span>
       <span class="text-label-md">My Event Plans</span>
-    </a>
-    <a
-      class="client-nav__link"
-      routerLink="/client/vendors"
-      routerLinkActive="client-nav__link--active"
-    >
-      <span class="material-symbols-outlined client-nav__link-icon">storefront</span>
-      <span class="text-label-md">Browse Vendors</span>
     </a>
     <a
       class="client-nav__link"
@@ -56,6 +51,10 @@
   </nav>
 
   <div class="client-nav__footer">
+    <a class="client-nav__explore-link" routerLink="/explore/vendors">
+      <span class="material-symbols-outlined">storefront</span>
+      <span class="text-label-md">Explore Vendors</span>
+    </a>
     <a class="btn-gold-gradient client-nav__new-event" routerLink="/client/event-plans/new">
       <span class="material-symbols-outlined">add</span>
       <span class="text-label-md">New Event</span>

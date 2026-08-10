@@ -1,0 +1,184 @@
+<section class="admin-page-header admin-animate-fade-up">
+  <div>
+    <p class="admin-eyebrow">Financial Management</p>
+    <h2 class="admin-page-header__title">Vendor Payables</h2>
+    <p class="admin-page-header__subtitle">
+      What each vendor is owed, based on actual collected payments — vendor payouts are handled manually.
+    </p>
+  </div>
+</section>
+
+<section class="admin-section admin-animate-fade-up admin-stagger-1">
+  <div class="admin-stat-grid">
+    <admin-stat-card label="Collected (this page)" [value]="(totalCollected() | number: '1.0-0') + ' EGP'" icon="payments" accent="success" />
+    <admin-stat-card label="Refunded (this page)" [value]="(totalRefunded() | number: '1.0-0') + ' EGP'" icon="undo" accent="warning" />
+    <admin-stat-card label="Payable (this page)" [value]="(totalPayable() | number: '1.0-0') + ' EGP'" icon="account_balance_wallet" accent="indigo" />
+  </div>
+</section>
+
+<div class="admin-card admin-animate-fade-up admin-stagger-2">
+  <div class="admin-table-toolbar">
+    <form class="payment-filter" (ngSubmit)="onSearchSubmit()">
+      <span class="material-symbols-outlined payment-filter__icon">search</span>
+      <input class="admin-select" type="text" placeholder="Search vendor…" [(ngModel)]="search" name="search" />
+      <button type="submit" class="admin-btn admin-btn--secondary admin-btn--sm">Search</button>
+    </form>
+  </div>
+
+  @if (loading()) {
+    <admin-skeleton-rows [rows]="6" [columns]="8" />
+  } @else if (error()) {
+    <admin-error-state [message]="error()!.message" (retry)="load()" />
+  } @else if (vendors().length === 0) {
+    <admin-empty-state icon="account_balance_wallet" title="No vendors found" message="Try adjusting your search." />
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Vendor</th>
+            <th>Bookings</th>
+            <th>Booking Value</th>
+            <th>Collected</th>
+            <th>Refunded</th>
+            <th>Net Collected</th>
+            <th>Paid Out</th>
+            <th>Payable</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (vendor of vendors(); track vendor.vendorId) {
+            <tr>
+              <td>{{ vendor.vendorName }}</td>
+              <td>{{ vendor.totalBookings }}</td>
+              <td>{{ vendor.totalBookingValue | number: '1.0-0' }} EGP</td>
+              <td>{{ vendor.totalCollected | number: '1.0-0' }} EGP</td>
+              <td>{{ vendor.totalRefunded > 0 ? (vendor.totalRefunded | number: '1.0-0') + ' EGP' : '—' }}</td>
+              <td>{{ vendor.netCollected | number: '1.0-0' }} EGP</td>
+              <td>{{ vendor.amountPaidOut | number: '1.0-0' }} EGP</td>
+              <td><strong>{{ vendor.amountPayable | number: '1.0-0' }} EGP</strong></td>
+              <td>
+                <div style="display:flex;gap:0.5rem;">
+                  <button type="button" class="admin-btn admin-btn--secondary admin-btn--sm" (click)="openHistory(vendor)">
+                    History
+                  </button>
+                  @if (vendor.amountPayable > 0) {
+                    <button type="button" class="admin-btn admin-btn--secondary admin-btn--sm" (click)="openPayout(vendor)">
+                      Record Payout
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <admin-pagination [page]="filter().page ?? 1" [pageSize]="filter().pageSize ?? 20" [totalCount]="totalCount()" (pageChange)="onPageChange($event)" />
+  }
+</div>
+
+@if (payoutTarget(); as target) {
+  <div class="admin-modal-backdrop" (click)="cancelPayout()">
+    <div class="admin-modal-card admin-modal-card--wide admin-animate-scale-in" style="text-align: left;" (click)="$event.stopPropagation()">
+      <h3 class="admin-modal-card__title" style="text-align: left;">Record Payout</h3>
+      <p class="admin-modal-card__message" style="text-align: left;">
+        {{ target.vendorName }} — {{ target.amountPayable | number: '1.0-0' }} EGP currently payable
+      </p>
+
+      @if (recordError()?.message) {
+        <p class="admin-modal-card__error">{{ recordError()?.message }}</p>
+      }
+
+      <div style="margin-top: var(--admin-space-md);">
+        <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">
+          Amount (EGP)
+        </label>
+        <input type="number" class="admin-input" min="0.01" [max]="target.amountPayable" [(ngModel)]="payoutAmount" [disabled]="recording()" />
+      </div>
+
+      <div style="margin-top: var(--admin-space-md);">
+        <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">
+          Payout date
+        </label>
+        <input type="date" class="admin-input" [(ngModel)]="payoutDate" [disabled]="recording()" />
+      </div>
+
+      <div style="margin-top: var(--admin-space-md);">
+        <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">
+          Reference (optional)
+        </label>
+        <input type="text" class="admin-input" maxlength="100" placeholder="Bank transfer ref, cheque no…" [(ngModel)]="payoutReference" [disabled]="recording()" />
+      </div>
+
+      <div style="margin-top: var(--admin-space-md);">
+        <label style="font-size: var(--admin-text-sm); font-weight: 600; color: var(--admin-text-secondary); display: block; margin-bottom: 6px;">
+          Notes (optional)
+        </label>
+        <textarea
+          class="admin-input"
+          rows="3"
+          maxlength="1000"
+          style="resize: vertical; min-height: 70px;"
+          [(ngModel)]="payoutNotes"
+          [disabled]="recording()"
+        ></textarea>
+      </div>
+
+      <div class="admin-modal-card__actions">
+        <button type="button" class="admin-btn admin-btn--secondary" [disabled]="recording()" (click)="cancelPayout()">Cancel</button>
+        <button type="button" class="admin-btn admin-btn--primary" [disabled]="!canSubmitPayout" (click)="submitPayout()">
+          @if (recording()) { <span class="admin-spinner"></span> }
+          Record Payout
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (historyTarget(); as target) {
+  <div class="admin-modal-backdrop" (click)="closeHistory()">
+    <div class="admin-modal-card admin-modal-card--wide admin-animate-scale-in" style="text-align: left;" (click)="$event.stopPropagation()">
+      <h3 class="admin-modal-card__title" style="text-align: left;">Payout History — {{ target.vendorName }}</h3>
+
+      @if (historyLoading()) {
+        <p class="admin-modal-card__message">Loading…</p>
+      } @else if (historyError()) {
+        <admin-error-state [message]="historyError()!.message" (retry)="openHistory(target)" />
+      } @else if (history().length === 0) {
+        <admin-empty-state icon="account_balance_wallet" title="No payouts yet" message="No manual payouts have been recorded for this vendor." />
+      } @else {
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Reference</th>
+                <th>Notes</th>
+                <th>Recorded By</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (payout of history(); track payout.id) {
+                <tr>
+                  <td>{{ payout.payoutDate | date: 'mediumDate' }}</td>
+                  <td>{{ payout.amount | number: '1.0-2' }} EGP</td>
+                  <td>{{ payout.reference ?? '—' }}</td>
+                  <td>{{ payout.notes ?? '—' }}</td>
+                  <td>{{ payout.recordedByAdminName ?? '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <div class="admin-modal-card__actions">
+        <button type="button" class="admin-btn admin-btn--secondary" style="flex: 1;" (click)="closeHistory()">Close</button>
+      </div>
+    </div>
+  </div>
+}

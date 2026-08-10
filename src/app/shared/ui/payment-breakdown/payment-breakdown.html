@@ -34,6 +34,22 @@
         <dd>{{ currency() }} {{ remaining() | number: '1.2-2' }}</dd>
       </div>
     }
+
+    <!-- Vendor mode: the deposit/remainder split behind the single "paid" figure above. -->
+    @if (detailed && isDeposit()) {
+      <div class="pay-breakdown__figure">
+        <dt>Deposit paid</dt>
+        <dd>{{ currency() }} {{ depositPaidAmount() | number: '1.2-2' }}</dd>
+      </div>
+      <div class="pay-breakdown__figure">
+        <dt>Remainder paid</dt>
+        <dd>{{ currency() }} {{ remainderPaidAmount() | number: '1.2-2' }}</dd>
+      </div>
+      <div class="pay-breakdown__figure">
+        <dt>Total collected</dt>
+        <dd>{{ currency() }} {{ totalCollected() | number: '1.2-2' }}</dd>
+      </div>
+    }
   </dl>
 
   @if (!compact) {

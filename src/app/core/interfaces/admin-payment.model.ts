@@ -11,6 +11,14 @@ export interface AdminPaymentListItem {
   vendorId: number;
   vendorName: string | null;
   amount: number;
+
+  // Derived from Payment.GetAmountCaptured()/TotalAmount on the backend, not from amount above (which is
+  // deposit-only on the deposit path) — the correct "amount collected so far" figures for this payment.
+  totalAmount: number;
+  amountPaid: number;
+  remainingAmount: number;
+  refundedAmount: number;
+
   status: PaymentStatus;
   paymentMethod: string | null;
   gatewayReference: string | null;

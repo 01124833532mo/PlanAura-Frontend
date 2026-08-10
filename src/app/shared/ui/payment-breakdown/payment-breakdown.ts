@@ -1,10 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, Input, computed, signal } from '@angular/core';
-import {
-  BookingPaymentQuote,
-  BookingPaymentSummary,
-  PaymentStatus,
-} from '../../../core/interfaces/booking-request.model';
+import { BookingPaymentQuote, BookingPaymentSummary } from '../../../core/interfaces/booking-request.model';
+import { PaymentStatus } from '../../../core/interfaces/payment.model';
 
 /** One line of the payment schedule, in the order the money is actually taken. */
 interface ScheduleStage {
@@ -47,6 +44,9 @@ export class PaymentBreakdown {
   /** Hides the schedule list, e.g. in the compact my-bookings context. */
   @Input() compact = false;
 
+  /** Shows the vendor-facing deposit/remainder collected breakdown below the headline figures. */
+  @Input() detailed = false;
+
   protected readonly quoteSignal = signal<BookingPaymentQuote | null>(null);
   protected readonly summarySignal = signal<BookingPaymentSummary | null>(null);
 
@@ -65,6 +65,9 @@ export class PaymentBreakdown {
   protected readonly primaryAmount = computed(() => {
     const summary = this.summarySignal();
     if (summary) {
+      if (summary.status === PaymentStatus.Refunded || summary.status === PaymentStatus.PartiallyRefunded) {
+        return summary.refundedAmount;
+      }
       return summary.amountPaid > 0 ? summary.amountPaid : summary.amountAuthorized;
     }
 
@@ -77,12 +80,42 @@ export class PaymentBreakdown {
       return 'Due now';
     }
 
+    if (summary.status === PaymentStatus.Refunded) {
+      return 'Refunded';
+    }
+    if (summary.status === PaymentStatus.PartiallyRefunded) {
+      return 'Partially refunded';
+    }
+
     if (summary.amountPaid > 0) {
       return 'Paid';
     }
 
     return summary.amountAuthorized > 0 ? 'Held on your card' : 'Charged';
   });
+
+  /** Deposit path only: how much of the collected total came from the deposit vs. the remainder. Fully
+   * derived from fields the backend already returns — no separate API data needed for the vendor's
+   * "deposit paid / remainder paid" breakdown. */
+  protected readonly depositPaidAmount = computed(() => {
+    const summary = this.summarySignal();
+    if (!summary?.isDeposit) {
+      return 0;
+    }
+    return Math.min(summary.amountPaid, summary.depositAmount ?? 0);
+  });
+
+  protected readonly remainderPaidAmount = computed(() => {
+    const summary = this.summarySignal();
+    if (!summary?.isDeposit) {
+      return 0;
+    }
+    return Math.max(summary.amountPaid - (summary.depositAmount ?? 0), 0);
+  });
+
+  /** Total ever collected, unaffected by primaryAmount's refunded-figure override above — what the
+   * vendor's "Total collected" figure should always show. */
+  protected readonly totalCollected = computed(() => this.summarySignal()?.amountPaid ?? 0);
 
   protected readonly remaining = computed(
     () => this.summarySignal()?.remainingAmount ?? this.quoteSignal()?.remainingAmount ?? 0,
@@ -130,12 +163,15 @@ export class PaymentBreakdown {
     const stages: ScheduleStage[] = [];
 
     if (summary) {
-      if (summary.status === PaymentStatus.Refunded) {
+      if (summary.status === PaymentStatus.Refunded || summary.status === PaymentStatus.PartiallyRefunded) {
+        const isPartial = summary.status === PaymentStatus.PartiallyRefunded;
         stages.push({
           label: summary.isDeposit ? 'Deposit' : 'Full payment',
-          amount: summary.totalAmount,
+          amount: summary.refundedAmount,
           state: 'refunded',
-          note: 'Refunded',
+          note: isPartial
+            ? `Partially refunded (${summary.refundedAmount} of ${summary.totalAmount})`
+            : 'Refunded',
         });
         return stages;
       }
@@ -224,6 +260,10 @@ const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
   [PaymentStatus.Cancelled]: 'Hold released',
   [PaymentStatus.DepositPaid_RemainderDue]: 'Deposit paid — balance due',
   [PaymentStatus.DepositAuthorized]: 'Deposit authorized — not yet charged',
+  [PaymentStatus.FullyPaid]: 'Paid in full',
+  [PaymentStatus.RemainderFailed]: 'Remainder payment failed',
+  [PaymentStatus.RemainderCharging]: 'Charging remainder…',
+  [PaymentStatus.PartiallyRefunded]: 'Partially refunded',
 };
 
 const PAYMENT_STATUS_TONES: Record<PaymentStatus, string> = {
@@ -235,6 +275,10 @@ const PAYMENT_STATUS_TONES: Record<PaymentStatus, string> = {
   [PaymentStatus.Cancelled]: 'neutral',
   [PaymentStatus.DepositPaid_RemainderDue]: 'partial',
   [PaymentStatus.DepositAuthorized]: 'info',
+  [PaymentStatus.FullyPaid]: 'success',
+  [PaymentStatus.RemainderFailed]: 'danger',
+  [PaymentStatus.RemainderCharging]: 'info',
+  [PaymentStatus.PartiallyRefunded]: 'neutral',
 };
 
 const PAYMENT_STATUS_ICONS: Record<PaymentStatus, string> = {
@@ -246,6 +290,10 @@ const PAYMENT_STATUS_ICONS: Record<PaymentStatus, string> = {
   [PaymentStatus.Cancelled]: 'cancel',
   [PaymentStatus.DepositPaid_RemainderDue]: 'contrast',
   [PaymentStatus.DepositAuthorized]: 'lock_clock',
+  [PaymentStatus.FullyPaid]: 'check_circle',
+  [PaymentStatus.RemainderFailed]: 'error',
+  [PaymentStatus.RemainderCharging]: 'sync',
+  [PaymentStatus.PartiallyRefunded]: 'undo',
 };
 
 const STAGE_ICONS: Record<ScheduleStage['state'], string> = {

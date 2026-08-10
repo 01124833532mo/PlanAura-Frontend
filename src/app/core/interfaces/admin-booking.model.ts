@@ -69,6 +69,7 @@ export interface PaymentTimelineEntry {
   paidAt: string | null;
   cancelledAt: string | null;
   refundedAt: string | null;
+  refundedAmount: number | null;
   refundReason: string | null;
   createdAt: string;
 }
@@ -98,6 +99,13 @@ export interface AdminBookingPaymentDetail {
   vendorName: string | null;
 
   totalAmount: number | null;
+
+  // Derived from the latest Payment row's own captured-amount fields on the backend (never from
+  // paymentStatus below, which is only a coarse cache).
+  amountPaid: number;
+  remainingAmount: number;
+  refundedAmount: number;
+
   paymentStatus: BookingPaymentStatus;
 
   refundStatus: RefundStatus;

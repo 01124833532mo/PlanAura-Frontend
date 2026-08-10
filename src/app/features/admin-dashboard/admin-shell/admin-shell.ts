@@ -78,6 +78,7 @@ export class AdminShell implements OnInit {
         { label: 'Cancellation Requests', path: '/admin/bookings/cancellation-requests', icon: 'event_busy' },
         { label: 'Disputes', path: '/admin/disputes', icon: 'gavel' },
         { label: 'Payments', path: '/admin/payments', icon: 'payments' },
+        { label: 'Vendor Payables', path: '/admin/vendor-payables', icon: 'account_balance_wallet' },
       ],
     },
     {

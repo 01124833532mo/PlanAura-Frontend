@@ -73,6 +73,12 @@ export function mapBookingPaymentStatus(status: BookingPaymentStatus): AdminStat
       return { label: 'Paid', tone: 'success' };
     case BookingPaymentStatus.Refunded:
       return { label: 'Refunded', tone: 'cyan' };
+    case BookingPaymentStatus.DepositPaid:
+      return { label: 'Deposit Paid', tone: 'indigo' };
+    case BookingPaymentStatus.RemainderFailed:
+      return { label: 'Remainder Failed', tone: 'danger' };
+    case BookingPaymentStatus.Unpaid:
+      return { label: 'Unpaid', tone: 'warning' };
     default:
       return { label: 'Unpaid', tone: 'warning' };
   }
@@ -102,6 +108,16 @@ export function mapPaymentStatus(status: PaymentStatus): AdminStatusPresentation
       return { label: 'Refunded', tone: 'cyan' };
     case PaymentStatus.Cancelled:
       return { label: 'Cancelled', tone: 'neutral' };
+    case PaymentStatus.DepositAuthorized:
+      return { label: 'Deposit Authorized', tone: 'indigo' };
+    case PaymentStatus.DepositPaid_RemainderDue:
+      return { label: 'Deposit Paid', tone: 'purple' };
+    case PaymentStatus.RemainderCharging:
+      return { label: 'Charging Remainder', tone: 'warning' };
+    case PaymentStatus.FullyPaid:
+      return { label: 'Fully Paid', tone: 'success' };
+    case PaymentStatus.RemainderFailed:
+      return { label: 'Remainder Failed', tone: 'danger' };
     default:
       return { label: 'Unknown', tone: 'neutral' };
   }

@@ -6,6 +6,16 @@ export enum PaymentStatus {
   Refunded = 4,
   Authorized = 5,
   Cancelled = 6,
+  /** Deposit path: deposit captured on accept, remainder still owed. */
+  DepositPaid_RemainderDue = 7,
+  /** Deposit path: only the deposit is authorized (held) while awaiting vendor accept/reject. */
+  DepositAuthorized = 8,
+  /** Deposit path: remainder charged successfully — booking is paid in full. */
+  FullyPaid = 9,
+  /** Deposit path: the remainder charge failed (decline / SCA) — awaiting client payment or grace expiry. */
+  RemainderFailed = 10,
+  /** Deposit path: transient claim state while the remainder is being charged. */
+  RemainderCharging = 11,
 }
 
 /** Mirrors Planura.Core.Application.Models.PaymentDto. No currency field — the platform is single-currency. */

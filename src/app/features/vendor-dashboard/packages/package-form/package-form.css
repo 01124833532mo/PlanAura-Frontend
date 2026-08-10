@@ -50,3 +50,22 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Responsive (see also the 560px block above, which single-columns the row)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .package-form__actions {
+    flex-direction: column-reverse;
+    gap: var(--space-sm);
+  }
+
+  .package-form__actions ui-button {
+    display: block;
+  }
+
+  .package-form__actions ::ng-deep .ui-btn {
+    width: 100%;
+  }
+}

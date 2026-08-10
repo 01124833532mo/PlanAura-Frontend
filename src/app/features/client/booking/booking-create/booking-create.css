@@ -739,3 +739,60 @@
     position: static;
   }
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .booking-create-form,
+  .booking-create-summary {
+    padding: var(--space-md);
+  }
+
+  /* Seven day-columns inside ~300px give ~40px cells — tight but tappable, so
+     the numbers shrink rather than the grid reflowing. */
+  .booking-calendar__grid {
+    gap: 3px;
+  }
+
+  .booking-calendar__toolbar {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .booking-calendar__legend {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* A 220px scroll box inside an already-scrolling page is hard to hit on
+     touch; the list gets more room here. */
+  .booking-calendar__timeslots {
+    max-height: 320px;
+  }
+
+  .booking-create-form__actions {
+    flex-direction: column-reverse;
+    gap: var(--space-sm);
+  }
+
+  .booking-create-form__actions ui-button {
+    display: block;
+    width: 100%;
+  }
+
+  .booking-create-form__actions ::ng-deep .ui-btn {
+    width: 100%;
+  }
+
+  .booking-create-recap__row {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-calendar__weekdays {
+    font-size: var(--font-label-sm-size);
+  }
+}

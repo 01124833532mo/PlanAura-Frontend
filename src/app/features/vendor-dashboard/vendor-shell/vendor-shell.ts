@@ -38,6 +38,7 @@ export class VendorShell implements OnInit {
     this.mobileNavOpen.update((open) => !open);
   }
 
+  /** Called from every drawer link so tapping one navigates *and* dismisses. */
   protected closeMobileNav(): void {
     this.mobileNavOpen.set(false);
   }

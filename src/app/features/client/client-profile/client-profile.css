@@ -591,3 +591,45 @@
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .cp-card,
+  .cp-completion {
+    padding: var(--space-md);
+  }
+
+  /* The hero's decorative blobs are positioned outside its box; without this
+     they widen the page instead of being cropped by it. */
+  .cp-hero {
+    overflow: hidden;
+  }
+
+  .cp-hero__text {
+    min-width: 0;
+  }
+
+  .cp-edit-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cp-preference {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .cp-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cp-hero__avatar,
+  .cp-skeleton__avatar {
+    width: 96px;
+    height: 96px;
+  }
+}

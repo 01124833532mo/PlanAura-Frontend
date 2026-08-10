@@ -17,6 +17,10 @@ export enum BookingPaymentStatus {
   Unpaid = 1,
   Paid = 2,
   Refunded = 3,
+  /** Deposit path: the deposit was captured on accept; the remainder is still owed. */
+  DepositPaid = 4,
+  /** Deposit path: the automatic remainder charge failed; awaiting client payment or grace expiry. */
+  RemainderFailed = 5,
 }
 
 /** Mirrors Planura.Core.Domain.Enums.RefundStatus (int-backed enum). */
@@ -170,6 +174,10 @@ export interface BookingRequest {
   /** Server-derived from the package's BasePrice — never sent by the client. */
   agreedPrice: number | null;
   clientMessage: string | null;
+  /** Deposit split (Phase 3) — surfaced for the cancel warning. isDeposit false / amounts null on the full-payment path. */
+  isDeposit: boolean;
+  depositAmount: number | null;
+  totalAmount: number | null;
   status: BookingStatus;
   paymentStatus: BookingPaymentStatus;
   vendorResponse: string | null;
@@ -247,6 +255,30 @@ export interface BookingRequestFilter {
   excludeRefunded?: boolean;
   page?: number;
   pageSize?: number;
+}
+
+/** Mirrors Planura.Core.Application.Models.PayRemainderResultDto — the result of a client on-session
+ * "pay remainder now". When requiresAction is true, complete SCA with clientSecret (Stripe.js
+ * confirmCardPayment); success is finalized server-side via webhook. */
+export interface PayRemainderResult {
+  /** Stripe PaymentIntent status: "succeeded" | "requires_action" | ... */
+  status: string;
+  paymentIntentId: string;
+  /** Present when requiresAction is true — pass to Stripe.js to complete 3-D Secure. */
+  clientSecret: string | null;
+  requiresAction: boolean;
+}
+
+/** Mirrors Planura.Core.Application.Models.PaymentPreviewDto — the full-vs-deposit split shown before the
+ * client pays, so booking-create can show the deposit breakdown. Computed server-side (source of truth). */
+export interface PaymentPreview {
+  isDeposit: boolean;
+  depositAmount: number;
+  totalAmount: number;
+  remainderAmount: number;
+  /** Date the remainder is auto-charged (event date − lead days); null on the full-payment path. "yyyy-MM-dd". */
+  remainderChargeDate: string | null;
+  currency: string;
 }
 
 /** Mirrors Planura.Core.Application.Models.CancellationQuoteDto. */

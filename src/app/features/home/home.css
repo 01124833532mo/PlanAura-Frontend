@@ -725,3 +725,69 @@
     margin-right: var(--margin-mobile);
   }
 }
+
+/* ---- <= 1024px — tablet ---- */
+@media (max-width: 1024px) {
+  /* The collage is only half the hero's width on desktop; once the hero stacks
+     it gets the full column and no longer needs a 360px reservation. */
+  .home-hero__visual {
+    min-height: auto;
+  }
+}
+
+/* ---- <= 768px — mobile ---- */
+@media (max-width: 768px) {
+  .home-cta {
+    margin-left: var(--margin-mobile);
+    margin-right: var(--margin-mobile);
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  .home-hero__actions a,
+  .home-hero__actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .home-hero__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  /* The float card hangs 8% past the collage's left edge — fine inside a
+     half-width column, an overflow source at full width. */
+  .home-hero__floatcard {
+    left: 0;
+    bottom: 0;
+    padding: 0.6rem 0.8rem;
+  }
+
+  /* Carousel arrows sit outside the track; on touch the strip is swipeable, so
+     they are redundant as well as overflowing. */
+  .home-category-carousel__nav {
+    display: none;
+  }
+}
+
+/* ---- <= 480px — phones ---- */
+@media (max-width: 480px) {
+  .home-hero {
+    padding-top: var(--space-xl);
+  }
+
+  .category-tile {
+    width: min(300px, 84vw);
+  }
+
+  /* Two stats per row instead of a 4-wide strip that wraps unevenly. */
+  .home-stats__item {
+    min-width: 0;
+    flex: 1 1 40%;
+  }
+
+  .home-testimonial,
+  .home-how__step {
+    padding: var(--space-md);
+  }
+}

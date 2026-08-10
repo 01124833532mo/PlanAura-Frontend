@@ -213,3 +213,46 @@
     align-items: flex-start;
   }
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .booking-row {
+    padding: var(--space-md);
+  }
+
+  /* These min-widths are what stop the stacked column from actually shrinking
+     to the viewport — 200px + 140px exceeds a 360px phone's content box. */
+  .booking-row__vendor,
+  .booking-row__meta {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .booking-row__actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .booking-row__actions ui-button {
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-row__logo-placeholder {
+    width: 44px;
+    height: 44px;
+  }
+
+  .booking-row__actions ui-button {
+    flex: 1 1 100%;
+    display: block;
+  }
+
+  .booking-row__actions ::ng-deep .ui-btn {
+    width: 100%;
+  }
+}

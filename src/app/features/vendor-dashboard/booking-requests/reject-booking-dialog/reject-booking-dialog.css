@@ -83,3 +83,27 @@
   padding-top: var(--space-sm);
   border-top: 1px solid var(--color-subtle-border);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .reject-dialog__actions {
+    flex-direction: column-reverse;
+  }
+
+  .reject-dialog__actions ui-button {
+    display: block;
+  }
+
+  .reject-dialog__actions ::ng-deep .ui-btn {
+    width: 100%;
+  }
+
+  /* The on-screen keyboard eats most of the sheet; a shorter textarea keeps
+     the submit button reachable without scrolling. */
+  .reject-dialog__textarea {
+    min-height: 80px;
+  }
+}

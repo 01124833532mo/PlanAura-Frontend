@@ -228,3 +228,42 @@
     grid-template-columns: 1fr;
   }
 }
+/* ==========================================================================
+   Responsive (see also the 560px block above)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .verif-details__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--admin-space-sm);
+  }
+
+  .verif-details__actions {
+    flex-direction: column-reverse;
+    gap: var(--admin-space-sm);
+  }
+
+  .verif-details__actions .admin-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .verif-details__state {
+    padding: var(--admin-space-lg) var(--admin-space-md);
+  }
+}
+
+@media (max-width: 480px) {
+  /* Two fixed columns give each field ~150px, which truncates every ID and
+     licence-number value. */
+  .verif-details__grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Keep two document thumbnails per row — 150px auto-fill drops to one very
+     tall column at this width. */
+  .verif-doc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

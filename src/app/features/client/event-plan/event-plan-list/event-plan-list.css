@@ -195,3 +195,48 @@
   padding-top: var(--space-sm);
   border-top: 1px solid var(--color-subtle-border);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .event-plan-page__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .event-plan-page__header ui-button {
+    display: block;
+  }
+
+  .event-plan-page__header ::ng-deep .ui-btn {
+    width: 100%;
+  }
+
+  .event-plan-card {
+    padding: var(--space-md);
+  }
+
+  .event-plan-card__actions {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .event-plan-page__filter-banner {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  /* minmax(280px, 1fr) plus the gutter still attempts two tracks inside a
+     ~330px content box on some phones. */
+  .event-plan-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-plan-page__empty {
+    max-width: 100%;
+  }
+}

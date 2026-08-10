@@ -96,3 +96,19 @@
 .booking-timeline__by {
   color: var(--color-secondary, rgba(0, 0, 0, 0.5));
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  /* A 22rem inner scroll box inside an already-scrolling page is awkward on
+     touch; the timeline is short enough to run inline here. */
+  .booking-timeline__list {
+    max-height: none;
+  }
+
+  .booking-timeline__item {
+    gap: 0.5rem;
+  }
+}

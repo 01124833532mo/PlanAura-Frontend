@@ -1,7 +1,3 @@
-@if (mobileNavOpen()) {
-  <div class="vendor-nav__backdrop" (click)="closeMobileNav()"></div>
-}
-
 <aside class="vendor-nav" [class.vendor-nav--open]="mobileNavOpen()">
   <div class="vendor-nav__brand">
     <span class="vendor-nav__logo material-symbols-outlined" aria-hidden="true">celebration</span>
@@ -13,6 +9,7 @@
       class="vendor-nav__link"
       routerLink="/vendor/dashboard/overview"
       routerLinkActive="vendor-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined vendor-nav__link-icon">dashboard</span>
       <span class="text-label-md">Overview</span>
@@ -23,6 +20,7 @@
       class="vendor-nav__link"
       routerLink="/vendor/dashboard/requests"
       routerLinkActive="vendor-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined vendor-nav__link-icon">mail</span>
       <span class="text-label-md">My Booking Requests</span>
@@ -31,6 +29,7 @@
       class="vendor-nav__link"
       routerLink="/vendor/dashboard/packages"
       routerLinkActive="vendor-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined vendor-nav__link-icon">inventory_2</span>
       <span class="text-label-md">My Packages</span>
@@ -39,6 +38,7 @@
       class="vendor-nav__link"
       routerLink="/vendor/dashboard/availability"
       routerLinkActive="vendor-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined vendor-nav__link-icon">event_available</span>
       <span class="text-label-md">Availability</span>
@@ -47,6 +47,7 @@
       class="vendor-nav__link"
       routerLink="/vendor/dashboard/reviews"
       routerLinkActive="vendor-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined vendor-nav__link-icon">reviews</span>
       <span class="text-label-md">Reviews</span>
@@ -65,6 +66,7 @@
       class="vendor-nav__link"
       routerLink="/vendor/dashboard/profile"
       routerLinkActive="vendor-nav__link--active"
+      (click)="closeMobileNav()"
     >
       <span class="material-symbols-outlined">storefront</span>
       <span class="text-label-md">My Profile</span>
@@ -79,6 +81,12 @@
   </div>
 </aside>
 
+<!-- Dismiss layer for the mobile drawer. Only painted below 768px; above that
+     the rail is part of the layout and there is nothing to dismiss. -->
+@if (mobileNavOpen()) {
+  <div class="vendor-nav-backdrop" (click)="closeMobileNav()" aria-hidden="true"></div>
+}
+
 <main class="vendor-main">
   <header class="vendor-topbar">
     <div class="vendor-topbar__left">
@@ -86,9 +94,10 @@
         type="button"
         class="vendor-topbar__burger"
         aria-label="Toggle navigation menu"
+        [attr.aria-expanded]="mobileNavOpen()"
         (click)="toggleMobileNav()"
       >
-        <span class="material-symbols-outlined">menu</span>
+        <span class="material-symbols-outlined">{{ mobileNavOpen() ? 'close' : 'menu' }}</span>
       </button>
       <h2 class="text-headline-md vendor-topbar__title">{{ pageTitle() }}</h2>
     </div>

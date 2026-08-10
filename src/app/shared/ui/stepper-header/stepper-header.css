@@ -152,3 +152,23 @@
     width: calc(100% - 30px);
   }
 }
+
+/* The connector line is drawn from each dot to the next; once the labels are
+   hidden (above) the items collapse to bare dots, so the track needs to stay
+   wide enough for the line to remain visible between them. */
+@media (max-width: 480px) {
+  .ui-stepper {
+    gap: 0.25rem;
+  }
+
+  .ui-stepper__dot {
+    width: 24px;
+    height: 24px;
+  }
+
+  .ui-stepper__item:not(:last-child)::after {
+    top: 12px;
+    left: calc(50% + 16px);
+    width: calc(100% - 32px);
+  }
+}

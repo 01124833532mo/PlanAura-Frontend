@@ -362,3 +362,12 @@
 .auth-shell__footer a:hover {
   text-decoration: underline;
 }
+
+/* Two role cards side by side stop being tappable once the column is under
+   ~340px wide — the label wraps to three lines inside a 150px card. */
+@media (max-width: 380px) {
+  .auth-shell__roles {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+}

@@ -83,3 +83,27 @@
   padding-top: var(--space-sm);
   border-top: 1px solid var(--color-subtle-border);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .report-dialog__actions {
+    flex-direction: column-reverse;
+  }
+
+  .report-dialog__actions ui-button {
+    display: block;
+  }
+
+  .report-dialog__actions ::ng-deep .ui-btn {
+    width: 100%;
+  }
+
+  /* 120px of textarea plus the header leaves no room for the buttons once the
+     on-screen keyboard is up. */
+  .report-dialog__textarea {
+    min-height: 90px;
+  }
+}

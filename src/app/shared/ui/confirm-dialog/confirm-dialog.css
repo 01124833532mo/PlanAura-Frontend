@@ -51,3 +51,29 @@
 .confirm-dialog__actions ui-button {
   flex: 1;
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  /* Confirm sits below Cancel so the destructive action isn't under the thumb
+     that just opened the sheet. */
+  .confirm-dialog__actions {
+    flex-direction: column-reverse;
+  }
+
+  .confirm-dialog__actions ui-button {
+    display: block;
+    width: 100%;
+  }
+
+  .confirm-dialog__actions ::ng-deep .ui-btn {
+    width: 100%;
+  }
+
+  .confirm-dialog__icon-wrap {
+    width: 44px;
+    height: 44px;
+  }
+}

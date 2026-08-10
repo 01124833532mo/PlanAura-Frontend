@@ -96,3 +96,15 @@
     transform: rotate(360deg);
   }
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  /* 1.75rem of side padding pushes two buttons in a row past the viewport;
+     the vertical padding is kept so the 44px touch target survives. */
+  .ui-btn {
+    padding: 0.95rem 1.15rem;
+  }
+}

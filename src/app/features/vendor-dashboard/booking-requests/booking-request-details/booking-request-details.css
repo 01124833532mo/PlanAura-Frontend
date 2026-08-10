@@ -152,3 +152,34 @@
 .details-dialog__report:hover {
   color: var(--color-error);
 }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Label and value share a justified row with a 24px gutter; below ~400px the
+     value wraps to three lines beside a one-word label. */
+  .details-grid__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+
+  .details-dialog__header,
+  .details-dialog__title {
+    flex-wrap: wrap;
+  }
+
+  .details-dialog__actions {
+    flex-direction: column-reverse;
+  }
+
+  .details-dialog__actions ui-button {
+    display: block;
+  }
+
+  .details-dialog__actions ::ng-deep .ui-btn {
+    width: 100%;
+  }
+}

@@ -88,7 +88,12 @@
           </div>
 
           <div class="request-row__side">
-            @if (req.agreedPrice != null) {
+            @if (req.payment; as payment) {
+              <span class="request-row__price">
+                {{ payment.totalAmount | number: '1.0-2' }} {{ priceCurrency(req) }}
+              </span>
+              <span class="request-row__payment-status">{{ simplePaymentStatus(payment) }}</span>
+            } @else if (req.agreedPrice != null) {
               <span class="request-row__price">
                 {{ req.agreedPrice | number: '1.0-2' }} {{ priceCurrency(req) }}
               </span>

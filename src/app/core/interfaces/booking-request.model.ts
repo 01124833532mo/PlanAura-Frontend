@@ -1,3 +1,13 @@
+/**
+ * Mirrors Planura.Core.Domain.Enums.PaymentStatus (int-backed enum). Imported from payment.model.ts, the
+ * single canonical copy — this file used to declare its own duplicate that drifted out of sync (missing
+ * FullyPaid/RemainderFailed/RemainderCharging/PartiallyRefunded), which is why payment status badges fell
+ * back to "Unknown" here while the admin side (which already imported the canonical enum) was fine.
+ * Re-exported so existing imports of `PaymentStatus` from this file keep working.
+ */
+import { PaymentStatus } from './payment.model';
+export { PaymentStatus };
+
 /** Mirrors Planura.Core.Domain.Enums.BookingStatus (int-backed enum). */
 export enum BookingStatus {
   Pending = 1,
@@ -81,21 +91,6 @@ export interface AgreementPreviewRequest {
   requirements?: ClientRequirements;
 }
 
-/** Mirrors Planura.Core.Domain.Enums.PaymentStatus (int-backed enum). */
-export enum PaymentStatus {
-  Pending = 1,
-  Completed = 2,
-  Failed = 3,
-  Refunded = 4,
-  /** Card hold placed at booking; nothing charged yet. */
-  Authorized = 5,
-  Cancelled = 6,
-  /** Deposit captured on vendor accept; the balance is outstanding. */
-  DepositPaid_RemainderDue = 7,
-  /** Deposit-path counterpart of Authorized — only the deposit is held. */
-  DepositAuthorized = 8,
-}
-
 /**
  * Mirrors Planura.Core.Application.Models.BookingPaymentQuoteDto.
  *
@@ -139,6 +134,8 @@ export interface BookingPaymentSummary {
   authorizedAt: string | null;
   paidAt: string | null;
   refundedAt: string | null;
+  /** The amount actually returned to the client so far. Zero unless status is Refunded or PartiallyRefunded. */
+  refundedAmount: number;
   createdAt: string;
 }
 

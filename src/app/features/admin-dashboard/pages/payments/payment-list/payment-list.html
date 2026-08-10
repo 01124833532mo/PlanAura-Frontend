@@ -43,8 +43,10 @@
             <th>Client</th>
             <th>Phone</th>
             <th>Vendor</th>
-            <th>Amount</th>
-            <th>Method</th>
+            <th>Total</th>
+            <th>Paid</th>
+            <th>Remaining</th>
+            <th>Refunded</th>
             <th>Status</th>
             <th>Paid At</th>
             <th></th>
@@ -56,8 +58,10 @@
               <td>{{ payment.clientName ?? '—' }}</td>
               <td>{{ payment.clientPhone ?? '—' }}</td>
               <td>{{ payment.vendorName ?? '—' }}</td>
-              <td>{{ payment.amount | number: '1.0-0' }} EGP</td>
-              <td>{{ payment.paymentMethod ?? '—' }}</td>
+              <td>{{ payment.totalAmount | number: '1.0-0' }} EGP</td>
+              <td>{{ payment.amountPaid | number: '1.0-0' }} EGP</td>
+              <td>{{ payment.remainingAmount | number: '1.0-0' }} EGP</td>
+              <td>{{ payment.refundedAmount > 0 ? (payment.refundedAmount | number: '1.0-0') + ' EGP' : '—' }}</td>
               <td><admin-badge [label]="mapPaymentStatus(payment.status).label" [tone]="mapPaymentStatus(payment.status).tone" /></td>
               <td>{{ payment.paidAt ? (payment.paidAt | date: 'mediumDate') : '—' }}</td>
               <td>
@@ -65,7 +69,7 @@
                   <button type="button" class="admin-btn admin-btn--secondary admin-btn--sm" (click)="openPaymentDetail(payment)">
                     Detail
                   </button>
-                  @if (payment.status === PaymentStatus.Completed) {
+                  @if (payment.status === PaymentStatus.Completed || payment.status === PaymentStatus.FullyPaid) {
                     <button type="button" class="admin-btn admin-btn--secondary admin-btn--sm" (click)="openRefund(payment)">
                       Refund
                     </button>
@@ -87,7 +91,7 @@
     <div class="admin-modal-card admin-modal-card--wide admin-animate-scale-in" style="text-align: left;" (click)="$event.stopPropagation()">
       <h3 class="admin-modal-card__title" style="text-align: left;">Refund Payment</h3>
       <p class="admin-modal-card__message" style="text-align: left;">
-        {{ target.clientName }} — {{ target.amount | number: '1.0-0' }} EGP paid to {{ target.vendorName }}
+        {{ target.clientName }} — {{ target.amountPaid | number: '1.0-0' }} EGP paid to {{ target.vendorName }}
       </p>
 
       @if (refundError()?.message) {
@@ -141,6 +145,11 @@
           <div class="admin-field"><span class="admin-field__label">Client Phone</span><span class="admin-field__value">{{ detail.clientPhone ?? '—' }}</span></div>
           <div class="admin-field"><span class="admin-field__label">Vendor</span><span class="admin-field__value">{{ detail.vendorName ?? '—' }}</span></div>
           <div class="admin-field"><span class="admin-field__label">Total Amount</span><span class="admin-field__value">{{ detail.totalAmount ? (detail.totalAmount | number: '1.0-2') + ' EGP' : '—' }}</span></div>
+          <div class="admin-field"><span class="admin-field__label">Amount Paid</span><span class="admin-field__value">{{ detail.amountPaid | number: '1.0-2' }} EGP</span></div>
+          <div class="admin-field"><span class="admin-field__label">Remaining</span><span class="admin-field__value">{{ detail.remainingAmount | number: '1.0-2' }} EGP</span></div>
+          @if (detail.refundedAmount > 0) {
+            <div class="admin-field"><span class="admin-field__label">Refunded</span><span class="admin-field__value">{{ detail.refundedAmount | number: '1.0-2' }} EGP</span></div>
+          }
           <div class="admin-field"><span class="admin-field__label">Payment Status</span><span class="admin-field__value"><admin-badge [label]="mapBookingPaymentStatus(detail.paymentStatus).label" [tone]="mapBookingPaymentStatus(detail.paymentStatus).tone" /></span></div>
           <div class="admin-field"><span class="admin-field__label">Refund Status</span><span class="admin-field__value"><admin-badge [label]="mapRefundStatus(detail.refundStatus).label" [tone]="mapRefundStatus(detail.refundStatus).tone" /></span></div>
           @if (detail.cancellationRefundAmount !== null) {
@@ -170,6 +179,7 @@
                 <th>Authorized</th>
                 <th>Paid</th>
                 <th>Refunded</th>
+                <th>Refunded Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -181,6 +191,7 @@
                   <td>{{ payment.authorizedAt ? (payment.authorizedAt | date: 'short') : '—' }}</td>
                   <td>{{ payment.paidAt ? (payment.paidAt | date: 'short') : '—' }}</td>
                   <td>{{ payment.refundedAt ? (payment.refundedAt | date: 'short') : '—' }}</td>
+                  <td>{{ payment.refundedAmount ? (payment.refundedAmount | number: '1.0-2') + ' EGP' : '—' }}</td>
                 </tr>
               }
             </tbody>

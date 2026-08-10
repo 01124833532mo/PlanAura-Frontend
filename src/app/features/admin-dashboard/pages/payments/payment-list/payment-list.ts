@@ -20,9 +20,15 @@ const STATUS_OPTIONS: { label: string; value: PaymentStatus | undefined }[] = [
   { label: 'All statuses', value: undefined },
   { label: 'Pending', value: PaymentStatus.Pending },
   { label: 'Authorized', value: PaymentStatus.Authorized },
+  { label: 'Deposit authorized', value: PaymentStatus.DepositAuthorized },
+  { label: 'Deposit paid', value: PaymentStatus.DepositPaid_RemainderDue },
+  { label: 'Remainder charging', value: PaymentStatus.RemainderCharging },
+  { label: 'Remainder failed', value: PaymentStatus.RemainderFailed },
   { label: 'Completed', value: PaymentStatus.Completed },
+  { label: 'Fully paid', value: PaymentStatus.FullyPaid },
   { label: 'Failed', value: PaymentStatus.Failed },
   { label: 'Refunded', value: PaymentStatus.Refunded },
+  { label: 'Partially refunded', value: PaymentStatus.PartiallyRefunded },
   { label: 'Cancelled', value: PaymentStatus.Cancelled },
 ];
 

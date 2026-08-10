@@ -7,6 +7,7 @@ import { Button } from '../../../../shared/ui/button/button';
 import { DocumentDownload } from '../../../../shared/ui/document-download/document-download';
 import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { BookingTimeline } from '../../../../shared/ui/booking-timeline/booking-timeline';
+import { PaymentBreakdown } from '../../../../shared/ui/payment-breakdown/payment-breakdown';
 import {
   BookingChatMessage,
   BookingRequest,
@@ -17,6 +18,7 @@ import { AppError } from '../../../../core/interfaces/api-response.model';
 import { VendorProfileStateService } from '../../../../core/services/vendor-profile-state.service';
 import { VendorBookingRequestService } from '../../../../core/services/vendor-booking-request.service';
 import { notifyError } from '../../../../shared/utils/notify';
+import { simplePaymentStatusLabel } from '../../../../shared/utils/simple-payment-status';
 
 /**
  * Read-only detail view of a single incoming booking request, shown in a modal
@@ -37,6 +39,7 @@ import { notifyError } from '../../../../shared/utils/notify';
     StatusBadge,
     AgreementReview,
     BookingTimeline,
+    PaymentBreakdown,
     DatePipe,
     DecimalPipe,
   ],
@@ -66,6 +69,7 @@ export class BookingRequestDetails implements OnInit, OnDestroy {
   @Output() closed = new EventEmitter<void>();
 
   protected readonly BookingStatus = BookingStatus;
+  protected readonly simplePaymentStatus = simplePaymentStatusLabel;
 
   protected readonly timelineEntries = signal<BookingStatusHistoryEntry[] | null>(null);
   protected readonly timelineLoading = signal(false);

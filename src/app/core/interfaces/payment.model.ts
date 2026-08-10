@@ -16,6 +16,8 @@ export enum PaymentStatus {
   RemainderFailed = 10,
   /** Deposit path: transient claim state while the remainder is being charged. */
   RemainderCharging = 11,
+  /** A refund was issued for less than the amount actually captured — some money is still collected. */
+  PartiallyRefunded = 12,
 }
 
 /** Mirrors Planura.Core.Application.Models.PaymentDto. No currency field — the platform is single-currency. */

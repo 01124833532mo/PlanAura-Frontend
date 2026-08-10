@@ -19,6 +19,7 @@ import { VendorPackageService } from '../../../../core/services/vendor-package.s
 import { VendorProfileStateService } from '../../../../core/services/vendor-profile-state.service';
 import { confirmAcceptBooking } from '../../../../shared/utils/confirm-accept-booking';
 import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
+import { simplePaymentStatusLabel } from '../../../../shared/utils/simple-payment-status';
 import { BookingRequestDetails } from '../booking-request-details/booking-request-details';
 import { RejectBookingDialog } from '../reject-booking-dialog/reject-booking-dialog';
 import { ReportProblemDialog } from '../report-problem-dialog/report-problem-dialog';
@@ -83,6 +84,7 @@ export class BookingRequestList implements OnInit {
   // Exposed so the template can reference enum members directly.
   protected readonly BookingStatus = BookingStatus;
   protected readonly DisputeStatus = DisputeStatus;
+  protected readonly simplePaymentStatus = simplePaymentStatusLabel;
 
   protected readonly tabs: readonly StatusTab[] = [
     { label: 'All', key: 'all' },

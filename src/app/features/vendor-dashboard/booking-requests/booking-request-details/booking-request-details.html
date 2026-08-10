@@ -50,6 +50,15 @@
       </div>
     }
 
+    <!--
+      Full breakdown (deposit/remainder/held figures) is only useful once the vendor has accepted and
+      real money is moving. At the request stage it's noise, so this shows the simple total + status
+      the vendor actually needs to decide whether to accept.
+    -->
+    @if (booking.payment && booking.status !== BookingStatus.Pending) {
+      <app-payment-breakdown [summary]="booking.payment" [detailed]="true" />
+    }
+
     <dl class="details-grid">
       @if (packageTitle) {
         <div class="details-grid__row">
@@ -57,7 +66,16 @@
           <dd>{{ packageTitle }}</dd>
         </div>
       }
-      @if (booking.agreedPrice != null) {
+      @if (booking.status === BookingStatus.Pending && booking.payment; as payment) {
+        <div class="details-grid__row">
+          <dt><span class="material-symbols-outlined">payments</span>Total price</dt>
+          <dd class="details-grid__price">{{ payment.totalAmount | number: '1.0-2' }} {{ currency }}</dd>
+        </div>
+        <div class="details-grid__row">
+          <dt><span class="material-symbols-outlined">info</span>Payment status</dt>
+          <dd>{{ simplePaymentStatus(payment) }}</dd>
+        </div>
+      } @else if (!booking.payment && booking.agreedPrice != null) {
         <div class="details-grid__row">
           <dt><span class="material-symbols-outlined">payments</span>Agreed price</dt>
           <dd class="details-grid__price">{{ booking.agreedPrice | number: '1.0-2' }} {{ currency }}</dd>

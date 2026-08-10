@@ -193,6 +193,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'vendor-payables',
+        data: { title: 'Vendor Payables' },
+        loadComponent: () =>
+          import(
+            './features/admin-dashboard/pages/vendor-payables/vendor-payables-list/vendor-payables-list'
+          ).then((m) => m.VendorPayablesList),
+      },
+      {
         path: 'reports',
         data: { title: 'Reports' },
         loadComponent: () =>

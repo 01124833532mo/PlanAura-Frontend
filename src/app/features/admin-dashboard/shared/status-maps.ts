@@ -118,6 +118,8 @@ export function mapPaymentStatus(status: PaymentStatus): AdminStatusPresentation
       return { label: 'Fully Paid', tone: 'success' };
     case PaymentStatus.RemainderFailed:
       return { label: 'Remainder Failed', tone: 'danger' };
+    case PaymentStatus.PartiallyRefunded:
+      return { label: 'Partially Refunded', tone: 'warning' };
     default:
       return { label: 'Unknown', tone: 'neutral' };
   }

@@ -234,6 +234,12 @@
   white-space: nowrap;
 }
 
+.request-row__payment-status {
+  font-size: var(--font-label-sm-size);
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
 .request-row__actions {
   display: flex;
   gap: 0.5rem;

@@ -16,12 +16,19 @@
   transform: translateY(-3px);
 }
 
+.vendor-card:hover .vendor-card__media {
+  box-shadow: inset 0 0 0 1px rgba(36, 31, 28, 0.06), var(--shadow-sm);
+}
+
 .vendor-card__media {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--color-surface-container);
+  /* A hairline ring, not a shadow — definition for the image against a
+     same-tone page background without adding card "chrome" weight. */
+  box-shadow: inset 0 0 0 1px rgba(36, 31, 28, 0.06);
 }
 
 .vendor-card__image {
@@ -107,12 +114,22 @@
   color: var(--color-primary);
 }
 
+.vendor-card__trust--verified .material-symbols-outlined {
+  color: var(--color-success);
+}
+
 /* ============ Body — typography does the work, no card chrome ============ */
 
+/* flex: 1 + the price block's margin-top: auto below is what keeps every
+   card's price/badge row bottom-aligned in a grid row, regardless of
+   whether that vendor has a rating/review line or not — without this, a
+   card missing the optional review line reads as "shorter" and its price
+   floats above its neighbors'. */
 .vendor-card__body {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  padding: 0.7rem 0.1rem 0;
+  padding: 0.75rem 0.1rem 0;
 }
 
 .vendor-card__title-row {
@@ -124,8 +141,9 @@
 
 .vendor-card__title {
   margin: 0;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
   color: var(--color-charcoal);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -163,20 +181,23 @@
 }
 
 .vendor-card__price {
-  margin: 0.4rem 0 0;
+  /* Pins to the bottom of the (flex: 1) body — see the comment on
+     .vendor-card__body above. */
+  margin: auto 0 0;
+  padding-top: 0.5rem;
   display: flex;
   align-items: baseline;
-  gap: 0.3rem;
+  gap: 0.35rem;
 }
 
 .vendor-card__price-value {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--color-charcoal);
 }
 
 .vendor-card__price-label {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--color-secondary);
 }
 

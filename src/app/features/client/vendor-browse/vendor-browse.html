@@ -221,7 +221,25 @@
       </span>
     </label>
 
-    <!-- Sort -->
+    @if (hasActiveFilters()) {
+      <button type="button" class="filter-toolbar__clear" aria-label="Clear all filters" (click)="resetFilters()">
+        <span class="material-symbols-outlined" aria-hidden="true">close</span>
+      </button>
+    }
+  </div>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <!-- ============ Results count + sort — the hinge between filters and the grid ============ -->
+  <div class="browse-results-bar animate-fade-up stagger-2">
+    <p class="browse-results-bar__count">
+      @if (loading()) {
+        Searching…
+      } @else {
+        <strong>{{ totalCount() }}</strong> vendor{{ totalCount() === 1 ? '' : 's' }} found
+      }
+    </p>
+
     <div
       class="filter-segment"
       [class.filter-segment--open]="openDropdown() === 'sort'"
@@ -247,7 +265,7 @@
 
       <div
         id="sort-listbox"
-        class="filter-segment__panel filter-segment__panel--list"
+        class="filter-segment__panel filter-segment__panel--list filter-segment__panel--right"
         role="listbox"
         aria-label="Sort by"
         (keydown)="onListboxKeydown($event)"
@@ -269,15 +287,7 @@
         }
       </div>
     </div>
-
-    @if (hasActiveFilters()) {
-      <button type="button" class="filter-toolbar__clear" aria-label="Clear all filters" (click)="resetFilters()">
-        <span class="material-symbols-outlined" aria-hidden="true">close</span>
-      </button>
-    }
   </div>
-
-  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
 
   <!-- ============ Results ============ -->
   @if (loading()) {

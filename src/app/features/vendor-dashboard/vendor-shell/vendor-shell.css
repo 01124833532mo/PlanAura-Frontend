@@ -58,6 +58,16 @@
   padding: 0 var(--space-md);
 }
 
+.vendor-nav__group-label {
+  padding: 0.9rem 1rem 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-secondary);
+  opacity: 0.7;
+}
+
 .vendor-nav__link {
   position: relative;
   display: flex;
@@ -163,27 +173,11 @@
   z-index: 5;
 }
 
-.vendor-topbar__lead {
+.vendor-topbar__left {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
   min-width: 0;
-}
-
-/* Hamburger — only rendered below the drawer breakpoint. */
-.vendor-topbar__menu-btn {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  flex-shrink: 0;
-  padding: 0;
-  border: 1px solid var(--color-subtle-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-container-lowest);
-  color: var(--color-charcoal);
-  cursor: pointer;
 }
 
 .vendor-topbar__title {
@@ -196,6 +190,25 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+}
+
+.vendor-topbar__burger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-charcoal);
+  cursor: pointer;
+}
+
+.vendor-topbar__burger:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .vendor-topbar__actions {
@@ -255,13 +268,13 @@
 }
 
 /* ==========================================================================
-   <= 1024px — tablet: the rail keeps its place but drops to icons only.
-   Width comes from --nav-rail-width, which the global layer sets to 76px here.
+   <= 900px — tablet: the rail keeps its place but drops to icons only.
    ========================================================================== */
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .vendor-nav__brand-name,
   .vendor-nav__link span:last-child,
-  .vendor-nav__logout span:last-child {
+  .vendor-nav__logout span:last-child,
+  .vendor-nav__group-label {
     display: none;
   }
 
@@ -276,32 +289,33 @@
   }
 }
 
-/* ==========================================================================
-   <= 768px — mobile: the rail leaves the flow entirely and slides in over the
-   content as a drawer. --nav-rail-width is 0 here, so .vendor-main reclaims
-   the full width automatically.
-   ========================================================================== */
-@media (max-width: 768px) {
+/* Drawer motion is decorative — honour the OS setting. */
+@media (prefers-reduced-motion: reduce) {
   .vendor-nav {
-    width: min(80vw, 288px);
-    /* Parked off-screen rather than display:none so the slide reads as motion
-       and the links stay in the a11y tree order they had on desktop. */
+    transition: none;
+  }
+}
+
+/* Below phone width, collapse the icon-rail entirely into an off-canvas
+ * drawer triggered by the topbar burger button — an icon-only rail is still
+ * too cramped alongside real content at this size. */
+@media (max-width: 640px) {
+  .vendor-nav {
+    width: 264px;
     transform: translateX(-100%);
     transition: transform var(--dur-base) var(--ease-out-expo);
-    z-index: 1100;
-    box-shadow: none;
-    overflow-y: auto;
+    z-index: 30;
   }
 
   .vendor-nav--open {
     transform: translateX(0);
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-xl, 0 20px 40px rgb(0 0 0 / 0.25));
   }
 
-  /* Labels come back — inside the drawer there is room for them again. */
   .vendor-nav__brand-name,
   .vendor-nav__link span:last-child,
-  .vendor-nav__logout span:last-child {
+  .vendor-nav__logout span:last-child,
+  .vendor-nav__group-label {
     display: inline;
   }
 
@@ -316,13 +330,17 @@
     min-height: 48px;
   }
 
-  .vendor-topbar__menu-btn {
+  .vendor-main {
+    margin-left: 0;
+  }
+
+  .vendor-topbar__burger {
     display: inline-flex;
   }
 
   /* Business name is dropped; the logo alone identifies the account and the
      two together eat most of a 360px bar. */
-  .vendor-topbar__name {
+  .vendor-topbar__profile .vendor-topbar__name {
     display: none;
   }
 
@@ -337,12 +355,5 @@
 
   .vendor-content {
     padding: var(--space-lg) var(--margin-mobile) var(--space-xl);
-  }
-}
-
-/* Drawer motion is decorative — honour the OS setting. */
-@media (prefers-reduced-motion: reduce) {
-  .vendor-nav {
-    transition: none;
   }
 }

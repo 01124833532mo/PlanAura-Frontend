@@ -1,3 +1,85 @@
+/* ==========================================================================
+   Standalone checkout shell — booking/new lives outside both PublicShell
+   (no marketing nav/footer distracting mid-checkout) and the account
+   sidebar, so it supplies its own minimal top bar: logo + exit link only.
+   ========================================================================== */
+
+.checkout-shell {
+  min-height: 100vh;
+  background: var(--gradient-warm-bg);
+}
+
+.checkout-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--margin-desktop);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--color-subtle-border);
+}
+
+.checkout-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-family-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  text-decoration: none;
+}
+
+.checkout-topbar__brand .material-symbols-outlined {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  font-size: 18px;
+}
+
+.checkout-topbar__exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-subtle-border);
+  background: transparent;
+  color: var(--color-secondary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-smooth), color var(--dur-fast) var(--ease-smooth);
+}
+
+.checkout-topbar__exit:hover {
+  background: var(--color-soft-beige);
+  color: var(--color-error);
+}
+
+.checkout-shell__content {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--margin-desktop) var(--space-2xl);
+}
+
+@media (max-width: 900px) {
+  .checkout-topbar,
+  .checkout-shell__content {
+    padding-left: var(--margin-mobile);
+    padding-right: var(--margin-mobile);
+  }
+}
+
 .booking-create-page {
   display: flex;
   flex-direction: column;
@@ -455,6 +537,186 @@
 
 .booking-create-payment__disclaimer .material-symbols-outlined {
   font-size: 1rem;
+}
+
+/* ---------------------------------------------------------------- step scaffolding */
+
+.booking-create-step__lead {
+  margin: calc(var(--space-md) * -1 + 0.35rem) 0 0;
+  color: var(--color-secondary);
+}
+
+.booking-create-step__subhead {
+  margin: 0 0 var(--space-sm);
+}
+
+.booking-create-step__money {
+  display: flex;
+  flex-direction: column;
+}
+
+.booking-create-step__loading {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-secondary);
+}
+
+/* Read-only fact list shared by the summary and confirmation steps. Two columns on desktop so
+   label/value pairs scan quickly; stacked on mobile to avoid cramped value columns. */
+.booking-create-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+}
+
+.booking-create-facts__row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.4fr) 1fr;
+  gap: var(--space-md);
+  padding: 0.7rem var(--space-md);
+  align-items: baseline;
+}
+
+.booking-create-facts__row:nth-child(odd) {
+  background: var(--color-surface-container-lowest, #fff);
+}
+
+.booking-create-facts__row:nth-child(even) {
+  background: var(--color-surface-container, #f5ede3);
+}
+
+.booking-create-facts__row dt {
+  font-size: var(--font-label-sm-size);
+  color: var(--color-secondary);
+}
+
+.booking-create-facts__row dd {
+  margin: 0;
+  color: var(--color-charcoal);
+  overflow-wrap: anywhere;
+}
+
+.booking-create-facts__mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+}
+
+.booking-create-contract-terms {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: var(--space-md);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-surface-container-lowest, #fff);
+}
+
+.booking-create-payment__agreed {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin: 0;
+  color: var(--color-secondary);
+}
+
+.booking-create-payment__agreed .material-symbols-outlined {
+  font-size: 17px;
+  color: var(--color-success, #2e7d4f);
+}
+
+/* ---------------------------------------------------------------- confirmation */
+
+.booking-create-done {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  text-align: left;
+}
+
+.booking-create-done__icon {
+  align-self: center;
+  font-size: 52px;
+  color: var(--color-primary);
+}
+
+.booking-create-done__lead {
+  margin: 0;
+  text-align: center;
+  color: var(--color-secondary);
+}
+
+.booking-create-next {
+  padding: var(--space-md);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-surface-container, #f5ede3);
+}
+
+.booking-create-next h5 {
+  margin: 0 0 var(--space-sm);
+}
+
+.booking-create-next__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.booking-create-next__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: var(--font-body-md-size, 0.95rem);
+  line-height: 1.45;
+  color: var(--color-dark-gray);
+}
+
+.booking-create-next__list .material-symbols-outlined {
+  font-size: 19px;
+  flex: 0 0 auto;
+  color: var(--color-primary);
+}
+
+@media (max-width: 640px) {
+  .booking-create-facts__row {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}
+
+/* Requirements block — visually grouped so it reads as one optional section that shapes the
+   agreement, rather than five more loose fields competing with the required ones above. */
+.booking-create-form__requirements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-surface-container, #f5ede3);
+}
+
+.booking-create-form__requirements-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-charcoal, #241f1c);
+}
+
+.booking-create-form__requirements-hint {
+  margin: calc(var(--space-md) * -1 + 0.35rem) 0 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--color-secondary, #8a8074);
 }
 
 .booking-create-form__actions {

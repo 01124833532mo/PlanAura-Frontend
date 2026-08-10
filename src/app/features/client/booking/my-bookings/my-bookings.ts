@@ -5,6 +5,7 @@ import { catchError, forkJoin, of } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
 import { DocumentDownload } from '../../../../shared/ui/document-download/document-download';
+import { PaymentBreakdown } from '../../../../shared/ui/payment-breakdown/payment-breakdown';
 import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
@@ -21,14 +22,22 @@ import { VendorService } from '../../../../core/services/vendor.service';
 
 /**
  * Read-only, navigational list of every booking the client has across all
- * their event plans. Actions (cancel/dispute) intentionally stay on
- * event-plan-detail, which already has that logic — this page just links
- * into it for full context, avoiding duplicating the action code here.
+ * their event plans. Actions (cancel/dispute/confirm/review) live on the
+ * dedicated Booking Details page (booking-details.ts) — this page just
+ * links into it, avoiding duplicating the action code here.
  */
 @Component({
   selector: 'app-my-bookings',
   standalone: true,
-  imports: [AlertBanner, Button, DocumentDownload, StatusBadge, DatePipe, DecimalPipe],
+  imports: [
+    AlertBanner,
+    Button,
+    DocumentDownload,
+    PaymentBreakdown,
+    StatusBadge,
+    DatePipe,
+    DecimalPipe,
+  ],
   templateUrl: './my-bookings.html',
   styleUrl: './my-bookings.css',
 })
@@ -117,16 +126,16 @@ export class MyBookings implements OnInit {
     return pkg?.currency ?? 'EGP';
   }
 
+  protected openBooking(booking: BookingRequest): void {
+    this.router.navigate(['/client/bookings', booking.id]);
+  }
+
   /** The outstanding remainder on a deposit booking (total − deposit), server-recorded on the DTO. */
   protected remainderAmount(booking: BookingRequest): number {
     return (booking.totalAmount ?? 0) - (booking.depositAmount ?? 0);
   }
 
-  protected openPlan(booking: BookingRequest): void {
-    this.router.navigate(['/client/event-plans', booking.eventPlanId]);
-  }
-
   protected goToVendors(): void {
-    this.router.navigateByUrl('/client/vendors');
+    this.router.navigateByUrl('/explore/vendors');
   }
 }

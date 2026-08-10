@@ -1,4 +1,16 @@
-<div class="booking-create-page">
+<div class="checkout-shell">
+  <header class="checkout-topbar">
+    <a class="checkout-topbar__brand" routerLink="/">
+      <span class="material-symbols-outlined" aria-hidden="true">celebration</span>
+      Planura
+    </a>
+    <button type="button" class="checkout-topbar__exit" (click)="goToVendors()">
+      <span class="material-symbols-outlined">close</span>
+      Exit booking
+    </button>
+  </header>
+
+  <div class="booking-create-page checkout-shell__content">
   <div class="booking-create-page__header animate-fade-up">
     <p class="text-label-sm booking-create-page__eyebrow">
       <span class="material-symbols-outlined">event_available</span>
@@ -192,9 +204,199 @@
               [multiline]="true"
             />
 
+            <!--
+              Your requirements. Everything here is optional, but it is what the Booking Agreement is
+              written from — the more specific you are, the more the contract states your actual deal
+              (deliverables, timings, location) as binding terms rather than in general language.
+            -->
+            <div class="booking-create-form__requirements">
+              <h3 class="booking-create-form__requirements-title">Your requirements (optional)</h3>
+              <p class="booking-create-form__requirements-hint">
+                These become part of the Booking Agreement you and the vendor sign. Anything you leave
+                blank is simply left out of the contract.
+              </p>
+
+              <ui-text-field
+                label="What you expect to receive"
+                placeholder="e.g. 500 edited photos, delivered as a private online gallery"
+                formControlName="reqDeliverables"
+                [multiline]="true"
+                hint="Deliverables, quantities, formats."
+              />
+
+              <ui-text-field
+                label="Style or presentation preferences"
+                placeholder="e.g. natural light, candid documentary style, no heavy retouching"
+                formControlName="reqStyle"
+              />
+
+              <ui-text-field
+                label="Timing requirements"
+                placeholder="e.g. setup by 4pm, final delivery within 14 days of the event"
+                formControlName="reqTiming"
+              />
+
+              <ui-text-field
+                label="Location details"
+                placeholder="e.g. venue name, indoor hall plus garden ceremony"
+                formControlName="reqLocation"
+              />
+
+              <ui-text-field
+                label="Special requests"
+                placeholder="e.g. two vegetarian menu options, accessible entrance required"
+                formControlName="reqSpecial"
+                [multiline]="true"
+              />
+            </div>
+
             <div class="booking-create-form__actions">
-              <ui-button type="button" [fullWidth]="false" (click)="goToPayment()">
-                Go to Payment
+              <ui-button type="button" [fullWidth]="false" (click)="goToSummary()">
+                Review booking
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </ui-button>
+            </div>
+          }
+
+          <!-- ============================================ STEP 2 — BOOKING SUMMARY -->
+          @if (currentStep() === 'summary') {
+            <div class="booking-create-form__header">
+              <span class="booking-create-form__icon material-symbols-outlined" aria-hidden="true">fact_check</span>
+              <h4 class="text-headline-sm">Review your booking</h4>
+            </div>
+            <p class="text-body-md booking-create-step__lead">
+              Check the details below. You can go back and change anything before the contract is
+              drafted.
+            </p>
+
+            <dl class="booking-create-facts">
+              @if (vendor(); as v) {
+                <div class="booking-create-facts__row">
+                  <dt>Vendor</dt>
+                  <dd>{{ v.businessName }}</dd>
+                </div>
+              }
+              <div class="booking-create-facts__row">
+                <dt>Package</dt>
+                <dd>{{ p.title }}</dd>
+              </div>
+              @if (p.description) {
+                <div class="booking-create-facts__row">
+                  <dt>What's included</dt>
+                  <dd>{{ p.description }}</dd>
+                </div>
+              }
+              @if (selectedSlot(); as slot) {
+                <div class="booking-create-facts__row">
+                  <dt>Date</dt>
+                  <dd>{{ slot.startAt | date: 'fullDate' }}</dd>
+                </div>
+                <div class="booking-create-facts__row">
+                  <dt>Time</dt>
+                  <dd>
+                    {{ slot.startAt | date: 'shortTime' }} – {{ slot.endAt | date: 'shortTime' }}
+                  </dd>
+                </div>
+              }
+              @if (eventPlan(); as plan) {
+                @if (plan.eventType) {
+                  <div class="booking-create-facts__row">
+                    <dt>Event type</dt>
+                    <dd>{{ plan.eventType }}</dd>
+                  </div>
+                }
+                @if (plan.city) {
+                  <div class="booking-create-facts__row">
+                    <dt>Location</dt>
+                    <dd>{{ plan.city }}</dd>
+                  </div>
+                }
+              }
+              @if (guestCountValue(); as guests) {
+                <div class="booking-create-facts__row">
+                  <dt>Guests</dt>
+                  <dd>{{ guests }}</dd>
+                </div>
+              }
+              @for (item of requirementSummary(); track item.label) {
+                <div class="booking-create-facts__row">
+                  <dt>{{ item.label }}</dt>
+                  <dd>{{ item.value }}</dd>
+                </div>
+              }
+            </dl>
+
+            @if (dateMismatchWarning(); as warning) {
+              <ui-alert-banner variant="info" [message]="warning" />
+            }
+
+            <!-- Money shown here, before the contract, so the client knows the cost while the details
+                 are still editable rather than discovering it at the card form. -->
+            <div class="booking-create-step__money">
+              <h5 class="text-title-sm booking-create-step__subhead">What this will cost</h5>
+              @if (quoteLoading()) {
+                <p class="text-body-md booking-create-step__loading">
+                  <span class="material-symbols-outlined skeleton-icon">progress_activity</span>
+                  Calculating your payment...
+                </p>
+              } @else if (quoteError(); as msg) {
+                <ui-alert-banner [message]="msg" />
+              } @else if (paymentQuote(); as quote) {
+                <app-payment-breakdown [quote]="quote" />
+              }
+            </div>
+
+            <div class="booking-create-form__actions booking-create-form__actions--split">
+              <ui-button variant="outline" type="button" [fullWidth]="false" (click)="goToStep('details')">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Edit details
+              </ui-button>
+              <ui-button type="button" [fullWidth]="false" [disabled]="quoteLoading()" (click)="goToContract()">
+                Continue to contract
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </ui-button>
+            </div>
+          }
+
+          <!-- ============================================ STEP 3 — CONTRACT REVIEW -->
+          @if (currentStep() === 'contract') {
+            <div class="booking-create-form__header">
+              <span class="booking-create-form__icon material-symbols-outlined" aria-hidden="true">contract</span>
+              <h4 class="text-headline-sm">Your booking agreement</h4>
+            </div>
+            <p class="text-body-md booking-create-step__lead">
+              This contract was written for this specific booking. Read it in full — you and the vendor
+              are both bound by it once they accept.
+            </p>
+
+            <!-- Restated here so the client checks the document against the same figures they will
+                 be charged, rather than trusting that the two agree. -->
+            @if (paymentQuote(); as quote) {
+              <div class="booking-create-contract-terms">
+                <span class="text-label-sm">Payment terms in this contract</span>
+                <app-payment-breakdown [quote]="quote" [compact]="true" />
+              </div>
+            }
+
+            <app-agreement-review
+              [documentUrl]="agreementUrl()"
+              [loading]="agreementLoading()"
+              [error]="agreementError()"
+              (agreedChange)="agreed.set($event)"
+            />
+
+            <div class="booking-create-form__actions booking-create-form__actions--split">
+              <ui-button variant="outline" type="button" [fullWidth]="false" (click)="goToStep('summary')">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Back
+              </ui-button>
+              <ui-button
+                type="button"
+                [fullWidth]="false"
+                [disabled]="!agreed() || !agreementUrl()"
+                (click)="goToPayment()"
+              >
+                Continue to payment
                 <span class="material-symbols-outlined">arrow_forward</span>
               </ui-button>
             </div>
@@ -218,48 +420,10 @@
               <h4 class="text-headline-sm">Payment</h4>
             </div>
 
-            <div class="booking-create-recap">
-              <div class="booking-create-recap__row">
-                <span class="text-label-sm">Package</span>
-                <span class="text-body-md">{{ p.title }}</span>
-              </div>
-              <div class="booking-create-recap__row">
-                <span class="text-label-sm">Price</span>
-                <span class="text-body-md">{{ p.currency }} {{ p.basePrice | number: '1.0-2' }}</span>
-              </div>
-              @if (selectedSlot(); as slot) {
-                <div class="booking-create-recap__row">
-                  <span class="text-label-sm">Date</span>
-                  <span class="text-body-md">
-                    {{ slot.startAt | date: 'mediumDate' }}, {{ slot.startAt | date: 'shortTime' }}
-                  </span>
-                </div>
-              }
-            </div>
-
-            <!-- Deposit breakdown (Phase 4): only for deposit bookings; full-payment shows the price above as today. -->
-            @if (paymentPreview(); as preview) {
-              @if (preview.isDeposit) {
-                <div class="booking-create-recap">
-                  <p class="text-body-md">
-                    <strong>
-                      Pay {{ (preview.depositAmount / preview.totalAmount) * 100 | number: '1.0-0' }}% deposit
-                      now: {{ preview.depositAmount | number: '1.0-2' }} {{ preview.currency }}
-                    </strong>
-                  </p>
-                  <p class="text-body-sm">
-                    The remaining {{ preview.remainderAmount | number: '1.0-2' }} {{ preview.currency }} will be
-                    charged automatically on
-                    <strong>{{ preview.remainderChargeDate | date: 'mediumDate' }}</strong>
-                    (about 4 days before your event) from this card.
-                  </p>
-                  <p class="text-label-sm">Your card will be saved securely for the remaining payment.</p>
-                </div>
-              }
-            }
-
-            @if (dateMismatchWarning(); as warning) {
-              <ui-alert-banner variant="info" [message]="warning" />
+            <!-- The amount due leads the step. Nothing here is computed client-side: every figure
+                 comes from the server's payment plan. -->
+            @if (paymentQuote(); as quote) {
+              <app-payment-breakdown [quote]="quote" />
             }
 
             <div class="booking-create-payment">
@@ -305,26 +469,137 @@
               </p>
             </div>
 
-            <app-agreement-review
-              [documentUrl]="agreementUrl()"
-              [loading]="agreementLoading()"
-              [error]="agreementError()"
-              (agreedChange)="agreed.set($event)"
-            />
+            <!-- The agreement was accepted on step 3; this is a read-only reminder of what is bound,
+                 not a second consent gate. -->
+            <p class="text-label-sm booking-create-payment__agreed">
+              <span class="material-symbols-outlined">task_alt</span>
+              You've accepted the booking agreement.
+              @if (agreementUrl(); as url) {
+                <a [href]="url" target="_blank" rel="noopener">View it again</a>
+              }
+            </p>
 
             <div class="booking-create-form__actions booking-create-form__actions--split">
-              <ui-button variant="outline" type="button" [fullWidth]="false" (click)="backToDetails()">
+              <ui-button variant="outline" type="button" [fullWidth]="false" (click)="goToStep('contract')">
                 <span class="material-symbols-outlined">arrow_back</span>
                 Back
               </ui-button>
               <ui-button type="submit" [loading]="submitting()" [disabled]="!agreed() || !agreementUrl()">
-                <span class="material-symbols-outlined">celebration</span>
-                Confirm &amp; Book
+                <span class="material-symbols-outlined">lock</span>
+                @if (paymentQuote(); as quote) {
+                  Authorize {{ quote.currency }} {{ quote.amountDueNow | number: '1.2-2' }}
+                } @else {
+                  Confirm &amp; Book
+                }
               </ui-button>
             </div>
           </div>
+
+          <!-- ============================================ STEP 5 — CONFIRMATION -->
+          @if (currentStep() === 'confirmation') {
+            @if (confirmedBooking(); as booking) {
+              <div class="booking-create-done">
+                <!--
+                  Deliberately NOT "payment successful / booking confirmed". At this point the card is
+                  only authorized and the booking is Pending: BookingService captures the payment and
+                  sets Accepted when the VENDOR accepts. Claiming otherwise here would be false.
+                -->
+                <span class="booking-create-done__icon material-symbols-outlined animate-pop">
+                  mark_email_read
+                </span>
+                <h4 class="text-headline-sm">Request sent to the vendor</h4>
+                <p class="text-body-md booking-create-done__lead">
+                  Your card has been authorized and your date is reserved. You have not been charged
+                  yet.
+                </p>
+
+                @if (booking.payment; as payment) {
+                  <app-payment-breakdown [summary]="payment" />
+
+                  <dl class="booking-create-facts">
+                    @if (payment.authorizedAt) {
+                      <div class="booking-create-facts__row">
+                        <dt>Authorized on</dt>
+                        <dd>{{ payment.authorizedAt | date: 'medium' }}</dd>
+                      </div>
+                    }
+                    @if (payment.paidAt) {
+                      <div class="booking-create-facts__row">
+                        <dt>Charged on</dt>
+                        <dd>{{ payment.paidAt | date: 'medium' }}</dd>
+                      </div>
+                    }
+                    @if (payment.reference) {
+                      <div class="booking-create-facts__row">
+                        <dt>Payment reference</dt>
+                        <dd class="booking-create-facts__mono">{{ payment.reference }}</dd>
+                      </div>
+                    }
+                  </dl>
+                }
+
+                <dl class="booking-create-facts">
+                  <div class="booking-create-facts__row">
+                    <dt>Booking status</dt>
+                    <dd>
+                      <ui-status-badge
+                        [status]="booking.status"
+                        [paymentStatus]="booking.paymentStatus"
+                      />
+                    </dd>
+                  </div>
+                  @if (booking.contractId) {
+                    <div class="booking-create-facts__row">
+                      <dt>Contract</dt>
+                      <dd class="booking-create-facts__mono">{{ booking.contractId }}</dd>
+                    </div>
+                  }
+                  @if (booking.clientAgreedAt) {
+                    <div class="booking-create-facts__row">
+                      <dt>Agreement accepted</dt>
+                      <dd>{{ booking.clientAgreedAt | date: 'medium' }}</dd>
+                    </div>
+                  }
+                </dl>
+
+                <!-- What happens next, stated in terms of what the backend will actually do. -->
+                <div class="booking-create-next">
+                  <h5 class="text-title-sm">What happens next</h5>
+                  <ol class="booking-create-next__list">
+                    <li>
+                      <span class="material-symbols-outlined">schedule</span>
+                      The vendor reviews your request and the same contract you accepted
+                      @if (paymentQuote(); as quote) {
+                        , within {{ quote.vendorResponseWindowHours }} hours
+                      }.
+                    </li>
+                    <li>
+                      <span class="material-symbols-outlined">credit_score</span>
+                      If they accept, your card is charged and the booking is confirmed.
+                    </li>
+                    <li>
+                      <span class="material-symbols-outlined">lock_open</span>
+                      If they decline or don't respond in time, the hold is released and you're not
+                      charged.
+                    </li>
+                  </ol>
+                </div>
+
+                <div class="booking-create-form__actions booking-create-form__actions--split">
+                  <ui-button variant="outline" type="button" [fullWidth]="false" (click)="goToEventPlans()">
+                    Back to event plans
+                  </ui-button>
+                  <ui-button type="button" [fullWidth]="false" (click)="goToMyBookings()">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    View my bookings
+                  </ui-button>
+                </div>
+              </div>
+            }
+          }
         </form>
       </div>
     }
   }
+  </div>
 </div>

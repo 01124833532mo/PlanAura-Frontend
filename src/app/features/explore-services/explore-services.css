@@ -1,0 +1,118 @@
+.services-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 60vh;
+}
+
+.services-hero {
+  padding: var(--space-2xl) var(--margin-desktop) var(--space-xl);
+  background: var(--gradient-warm-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-sm);
+}
+
+.services-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-rose-gold);
+  font-size: var(--font-label-sm-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.services-hero__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-rose-gold);
+}
+
+.services-hero__title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-display-lg-size);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-charcoal);
+}
+
+.services-hero__subtitle {
+  max-width: 560px;
+  color: var(--color-secondary);
+  font-size: var(--font-body-lg-size);
+}
+
+.services-hero__search {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 520px;
+  margin-top: var(--space-sm);
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-subtle-border);
+  box-shadow: var(--shadow-xs);
+}
+
+.services-hero__search .material-symbols-outlined {
+  color: var(--color-primary);
+}
+
+.services-hero__search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-family-base);
+  font-size: var(--font-body-md-size);
+  color: var(--color-charcoal);
+}
+
+.services-body {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--space-xl) var(--margin-desktop) var(--space-2xl);
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--gutter);
+}
+
+.services-grid__skeleton {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+}
+
+.services-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xl);
+  text-align: center;
+  color: var(--color-secondary);
+  background: var(--color-surface-container-low);
+  border-radius: var(--radius-lg);
+}
+
+.services-empty .material-symbols-outlined {
+  font-size: 40px;
+  color: var(--color-rose-gold);
+}
+
+@media (max-width: 900px) {
+  .services-hero,
+  .services-body {
+    padding-left: var(--margin-mobile);
+    padding-right: var(--margin-mobile);
+  }
+}

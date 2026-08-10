@@ -1,0 +1,41 @@
+<div class="vendor-chart-card">
+  <div class="vendor-chart-card__header">
+    <div>
+      <h3 class="vendor-chart-card__title">{{ title }}</h3>
+      @if (subtitle) {
+        <p class="vendor-chart-card__subtitle">{{ subtitle }}</p>
+      }
+    </div>
+    <ng-content select="[card-actions]" />
+  </div>
+
+  <div class="vendor-chart-card__body" [style.height.px]="height">
+    @if (loading) {
+      <div class="vendor-chart-card__state">
+        <span class="vendor-chart-card__spinner"></span>
+      </div>
+    } @else if (!config || isEmpty) {
+      <div class="vendor-chart-card__state">
+        <span class="material-symbols-outlined vendor-chart-card__empty-icon">{{ emptyIcon }}</span>
+        <p class="vendor-chart-card__empty-title">{{ emptyTitle }}</p>
+        <p class="vendor-chart-card__empty-message">{{ emptyMessage }}</p>
+      </div>
+    } @else {
+      <apx-chart
+        [chart]="config.chart"
+        [series]="config.series"
+        [xaxis]="config.xaxis ?? {}"
+        [yaxis]="config.yaxis ?? {}"
+        [colors]="config.colors ?? []"
+        [labels]="config.labels ?? []"
+        [legend]="config.legend ?? { show: false }"
+        [stroke]="config.stroke ?? {}"
+        [fill]="config.fill ?? {}"
+        [dataLabels]="config.dataLabels ?? { enabled: false }"
+        [tooltip]="config.tooltip ?? {}"
+        [grid]="config.grid ?? {}"
+        [plotOptions]="config.plotOptions ?? {}"
+      ></apx-chart>
+    }
+  </div>
+</div>

@@ -1,0 +1,14 @@
+:host {
+  display: block;
+}
+
+.public-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-surface);
+}
+
+.public-shell__content {
+  flex: 1;
+}

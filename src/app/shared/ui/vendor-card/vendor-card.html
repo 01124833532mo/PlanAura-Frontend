@@ -1,6 +1,6 @@
 <a
   class="vendor-card"
-  [routerLink]="['/client/vendors', vendor.id]"
+  [routerLink]="['/vendors', vendor.id]"
   [queryParams]="eventPlanId ? { eventPlanId } : {}"
 >
   <div class="vendor-card__media">
@@ -27,6 +27,11 @@
       <span class="vendor-card__trust">
         <span class="material-symbols-outlined">verified</span>
         Trusted
+      </span>
+    } @else if (vendor.verificationStatus === 'Verified') {
+      <span class="vendor-card__trust vendor-card__trust--verified">
+        <span class="material-symbols-outlined">check_circle</span>
+        Verified
       </span>
     }
   </div>

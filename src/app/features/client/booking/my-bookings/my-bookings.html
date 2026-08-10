@@ -24,7 +24,7 @@
   } @else {
     <div class="booking-list">
       @for (booking of bookings(); track booking.id) {
-        <div class="card-luxe luxe-shadow hover-lift booking-row" (click)="openPlan(booking)">
+        <div class="card-luxe luxe-shadow hover-lift booking-row" (click)="openBooking(booking)">
           <div class="booking-row__main">
             <div class="booking-row__vendor">
               <div class="booking-row__logo-placeholder">
@@ -56,6 +56,15 @@
                 </span>
               }
             </div>
+
+            <!--
+              Real payment state, straight from the booking's Payment row. Compact mode: the
+              headline distinguishes held from charged, which agreedPrice alone cannot — a pending
+              booking's price is authorized, not paid.
+            -->
+            @if (booking.payment; as payment) {
+              <app-payment-breakdown class="booking-row__payment" [summary]="payment" [compact]="true" />
+            }
           </div>
 
           <div class="booking-row__footer">
@@ -98,7 +107,7 @@
                 />
               }
               <span class="my-bookings-row__view-link">
-                View plan
+                View details
                 <span class="material-symbols-outlined">chevron_right</span>
               </span>
             </div>

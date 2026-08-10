@@ -1,9 +1,7 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AppError } from '../../../core/interfaces/api-response.model';
 import { VendorDashboardStats } from '../../../core/interfaces/vendor-dashboard-stats.model';
-import { VendorService } from '../../../core/services/vendor.service';
 
 interface StatTile {
   icon: string;
@@ -18,6 +16,13 @@ interface StatTile {
 
 const REQUESTS = '/vendor/dashboard/requests';
 
+/**
+ * The four primary, always-visible KPI cards at the top of the Overview page — the numbers a
+ * vendor should be able to read in one glance: how many bookings total, how many are waiting on
+ * them, how many are confirmed, and how much they've earned. Purely presentational: Overview owns
+ * the single `getMyDashboardStats()` fetch (shared with the booking-status chart and the business
+ * summary section below) and passes the result in, so this card never makes its own API call.
+ */
 @Component({
   selector: 'app-dashboard-stats',
   standalone: true,
@@ -25,30 +30,23 @@ const REQUESTS = '/vendor/dashboard/requests';
   templateUrl: './dashboard-stats.html',
   styleUrl: './dashboard-stats.css',
 })
-export class DashboardStats implements OnInit {
-  private readonly vendorService = inject(VendorService);
+export class DashboardStats {
   private readonly decimal = new DecimalPipe('en-US');
 
-  protected readonly stats = signal<VendorDashboardStats | null>(null);
-  protected readonly loading = signal(false);
-  protected readonly error = signal<AppError | null>(null);
-
-  ngOnInit(): void {
-    this.loading.set(true);
-    this.vendorService.getMyDashboardStats().subscribe({
-      next: (stats) => {
-        this.stats.set(stats);
-        this.loading.set(false);
-      },
-      error: (err: AppError) => {
-        this.error.set(err);
-        this.loading.set(false);
-      },
-    });
-  }
+  @Input() stats: VendorDashboardStats | null = null;
+  @Input() loading = false;
 
   protected tiles(s: VendorDashboardStats): StatTile[] {
     return [
+      {
+        icon: 'calendar_month',
+        label: 'Total bookings',
+        value: this.decimal.transform(s.totalBookingRequests, '1.0-0') ?? '0',
+        hint: 'All-time requests',
+        tone: 'neutral',
+        link: REQUESTS,
+        queryParams: { status: 'all' },
+      },
       {
         icon: 'pending_actions',
         label: 'Pending requests',
@@ -59,10 +57,10 @@ export class DashboardStats implements OnInit {
         queryParams: { status: 'pending' },
       },
       {
-        icon: 'event_upcoming',
-        label: 'Upcoming bookings',
-        value: this.decimal.transform(s.upcomingBookings, '1.0-0') ?? '0',
-        hint: 'Confirmed & in the future',
+        icon: 'event_available',
+        label: 'Confirmed bookings',
+        value: this.decimal.transform(s.acceptedRequests, '1.0-0') ?? '0',
+        hint: 'Accepted & on the calendar',
         tone: 'gold',
         link: REQUESTS,
         queryParams: { status: 'accepted' },
@@ -73,35 +71,10 @@ export class DashboardStats implements OnInit {
         icon: 'payments',
         label: 'Total revenue',
         value: `${this.decimal.transform(s.totalRevenue, '1.0-0') ?? '0'} EGP`,
-        hint: 'Captured payments',
+        hint: 'Captured payments, all-time',
         tone: 'success',
         link: REQUESTS,
         queryParams: { status: 'all' },
-      },
-      {
-        icon: 'star',
-        label: 'Average rating',
-        value: s.totalReviews > 0 ? (this.decimal.transform(s.avgRating, '1.1-1') ?? '0.0') : '—',
-        hint: `${this.decimal.transform(s.totalReviews, '1.0-0') ?? '0'} reviews`,
-        tone: 'gold',
-        link: '/vendor/dashboard/reviews',
-      },
-      {
-        icon: 'task_alt',
-        label: 'Completed',
-        value: this.decimal.transform(s.totalCompletedBookings, '1.0-0') ?? '0',
-        hint: 'Finished events',
-        tone: 'neutral',
-        link: REQUESTS,
-        queryParams: { status: 'completed' },
-      },
-      {
-        icon: 'inventory_2',
-        label: 'Active packages',
-        value: this.decimal.transform(s.activePackages, '1.0-0') ?? '0',
-        hint: 'Live in your catalog',
-        tone: 'neutral',
-        link: '/vendor/dashboard/packages',
       },
     ];
   }

@@ -1,0 +1,29 @@
+<a
+  class="category-card hover-lift"
+  [routerLink]="['/explore/vendors']"
+  [queryParams]="{ category: category.slug }"
+>
+  @if (category.iconUrl && !imageFailed()) {
+    <img
+      [src]="category.iconUrl"
+      [alt]="category.nameEn"
+      class="category-card__image"
+      loading="lazy"
+      (error)="onImageError()"
+    />
+  } @else {
+    <div class="category-card__image category-card__image--fallback">
+      <span class="material-symbols-outlined">{{ icon }}</span>
+    </div>
+  }
+  <div class="category-card__scrim"></div>
+
+  <div class="category-card__body">
+    <span class="category-card__name">{{ category.nameEn }}</span>
+    @if (category.vendorCount > 0) {
+      <span class="category-card__count"
+        >{{ category.vendorCount }} vendor{{ category.vendorCount === 1 ? '' : 's' }}</span
+      >
+    }
+  </div>
+</a>

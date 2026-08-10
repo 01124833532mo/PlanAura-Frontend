@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { VendorProfileStateService } from '../../../core/services/vendor-profile-state.service';
 import { createActiveRouteTitle } from '../../../shared/utils/active-route-title';
@@ -20,15 +21,17 @@ export class VendorShell implements OnInit {
   protected readonly vendorProfileState = inject(VendorProfileStateService);
   protected readonly pageTitle = createActiveRouteTitle('Booking Requests');
 
-  /**
-   * Drives the off-canvas nav drawer below the 768px breakpoint. Above it the
-   * rail is always visible and this flag is inert, so nothing needs to reset
-   * it on resize — the CSS simply stops reading the `--open` class.
-   */
+  /** Off-canvas sidebar state on small screens (<640px) — desktop/tablet always show the sidebar
+   * (full or icon-rail), this only matters below the phone breakpoint. */
   protected readonly mobileNavOpen = signal(false);
 
   ngOnInit(): void {
     this.vendorProfileState.load();
+    // Close the drawer automatically on navigation so tapping a link doesn't
+    // leave it open over the next page.
+    this.router.events.pipe(filter((e) => e instanceof NavigationStart)).subscribe(() => {
+      this.mobileNavOpen.set(false);
+    });
   }
 
   protected toggleMobileNav(): void {

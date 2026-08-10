@@ -345,7 +345,7 @@ export class Profile implements OnInit {
       return;
     }
 
-    const url = `${window.location.origin}/client/vendors/${vendorId}`;
+    const url = `${window.location.origin}/vendors/${vendorId}`;
     try {
       await navigator.clipboard.writeText(url);
       notifySuccess('Profile link copied to clipboard.');

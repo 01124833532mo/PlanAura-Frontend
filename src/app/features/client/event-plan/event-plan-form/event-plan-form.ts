@@ -145,7 +145,7 @@ export class EventPlanForm implements OnInit {
         notifySuccess('Event plan created.');
 
         if (this.fromBooking && this.bookingVendorId && this.bookingPackageId) {
-          this.router.navigate(['/client/booking/new'], {
+          this.router.navigate(['/booking/new'], {
             queryParams: {
               vendorId: this.bookingVendorId,
               packageId: this.bookingPackageId,

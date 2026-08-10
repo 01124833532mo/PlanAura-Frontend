@@ -7,10 +7,63 @@ import { vendorGuard } from './core/guards/vendor.guard';
 
 export const routes: Routes = [
   {
+    // Public/marketing site — a real, guest-browsable website: no
+    // authGuard/clientGuard on any of these. Wrapped in PublicShell (top
+    // navbar + footer), not the account sidebar. Booking itself still
+    // requires an account (see 'booking/new' below), but discovery never
+    // does.
     path: '',
-    pathMatch: 'full',
-    canActivate: [authGuard, clientGuard],
-    loadComponent: () => import('./features/home/home').then((m) => m.Home),
+    loadComponent: () =>
+      import('./features/public-shell/public-shell').then((m) => m.PublicShell),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./features/home/home').then((m) => m.Home),
+      },
+      {
+        path: 'explore/services',
+        data: { title: 'Explore Services' },
+        loadComponent: () =>
+          import('./features/explore-services/explore-services').then(
+            (m) => m.ExploreServices,
+          ),
+      },
+      {
+        path: 'explore/vendors',
+        data: { title: 'Explore Vendors' },
+        loadComponent: () =>
+          import('./features/client/vendor-browse/vendor-browse').then((m) => m.VendorBrowse),
+      },
+      {
+        path: 'vendors/:id',
+        data: { title: 'Vendor Profile' },
+        loadComponent: () =>
+          import('./features/client/vendor-details/vendor-details').then((m) => m.VendorDetails),
+      },
+      {
+        path: 'how-it-works',
+        data: { title: 'How Planura Works' },
+        loadComponent: () =>
+          import('./features/how-it-works/how-it-works').then((m) => m.HowItWorks),
+      },
+      {
+        // Public legal pages — no auth guard, linked from both the signed-out
+        // auth page footer and the public site footer.
+        path: 'terms',
+        loadComponent: () =>
+          import('./features/legal/terms-of-service/terms-of-service').then(
+            (m) => m.TermsOfService,
+          ),
+      },
+      {
+        path: 'privacy',
+        loadComponent: () =>
+          import('./features/legal/privacy-policy/privacy-policy').then(
+            (m) => m.PrivacyPolicy,
+          ),
+      },
+    ],
   },
   {
     path: 'auth',
@@ -25,19 +78,17 @@ export const routes: Routes = [
       import('./features/auth/forgot-password/forgot-password').then((m) => m.ForgotPassword),
   },
   {
-    // Public legal pages — no auth guard, linked from both the signed-out
-    // auth page footer and the signed-in home page footer.
-    path: 'terms',
+    // Standalone checkout-style flow — deliberately outside both PublicShell
+    // (no marketing nav/footer distractions mid-checkout) and the account
+    // sidebar (a booking wizard isn't "account management"). Still requires
+    // a signed-in client; guests land here via authGuard's returnUrl after
+    // logging in from a public vendor page's "Book this package" CTA.
+    path: 'booking/new',
+    canActivate: [authGuard, clientGuard],
+    data: { title: 'Book a Vendor' },
     loadComponent: () =>
-      import('./features/legal/terms-of-service/terms-of-service').then(
-        (m) => m.TermsOfService,
-      ),
-  },
-  {
-    path: 'privacy',
-    loadComponent: () =>
-      import('./features/legal/privacy-policy/privacy-policy').then(
-        (m) => m.PrivacyPolicy,
+      import('./features/client/booking/booking-create/booking-create').then(
+        (m) => m.BookingCreate,
       ),
   },
   {
@@ -268,6 +319,10 @@ export const routes: Routes = [
     ],
   },
   {
+    // Authenticated "account area" — My Bookings, My Profile, Event Plans,
+    // etc. Distinct from the public marketplace above: this is where a
+    // signed-in client manages *their own stuff*, not where they discover
+    // vendors (Explore Services/Vendors live under PublicShell now).
     path: 'client',
     canActivate: [authGuard, clientGuard],
     loadComponent: () =>
@@ -276,30 +331,10 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
-        data: { title: 'Overview' },
+        data: { title: 'My Account' },
         loadComponent: () =>
           import('./features/client/client-dashboard/client-dashboard').then(
             (m) => m.ClientDashboard,
-          ),
-      },
-      {
-        path: 'vendors',
-        data: { title: 'Browse Vendors' },
-        loadComponent: () =>
-          import('./features/client/vendor-browse/vendor-browse').then((m) => m.VendorBrowse),
-      },
-      {
-        path: 'vendors/:id',
-        data: { title: 'Vendor Details' },
-        loadComponent: () =>
-          import('./features/client/vendor-details/vendor-details').then((m) => m.VendorDetails),
-      },
-      {
-        path: 'booking/new',
-        data: { title: 'New Booking' },
-        loadComponent: () =>
-          import('./features/client/booking/booking-create/booking-create').then(
-            (m) => m.BookingCreate,
           ),
       },
       {
@@ -355,12 +390,22 @@ export const routes: Routes = [
           import('./features/client/booking/my-bookings/my-bookings').then((m) => m.MyBookings),
       },
       {
+        // Must come after 'bookings' (2-segment, matches first) — a distinct
+        // 2-segment path itself, so no ambiguity with event-plans' pattern.
+        path: 'bookings/:id',
+        data: { title: 'Booking Details' },
+        loadComponent: () =>
+          import('./features/client/booking/booking-details/booking-details').then(
+            (m) => m.BookingDetails,
+          ),
+      },
+      {
         path: 'profile',
         data: { title: 'My Profile' },
         loadComponent: () =>
           import('./features/client/client-profile/client-profile').then(
             (m) => m.ClientProfileComponent,
-            ),
+          ),
       },
       {
         path: 'ai-visualizer',
@@ -370,15 +415,9 @@ export const routes: Routes = [
             (m) => m.AiVisualizerComponent,
           ),
       },
-      {
-        path: 'profile',
-        data: { title: 'My Profile' },
-        loadComponent: () =>
-          import('./features/client/client-profile/client-profile').then(
-            (m) => m.ClientProfileComponent,
-          ),
-      },
     ],
   },
-  { path: '**', redirectTo: 'auth' },
+  // Unknown paths land on the public homepage rather than forcing a login —
+  // this is a browsable website first, not an app that gates everything.
+  { path: '**', redirectTo: '' },
 ];

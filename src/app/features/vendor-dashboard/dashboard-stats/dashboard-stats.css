@@ -1,14 +1,14 @@
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: var(--space-sm);
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-md);
 }
 
 .stat-card {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  padding: 1.1rem 1.25rem;
+  gap: 1rem;
+  padding: 1.35rem 1.5rem;
   border-radius: var(--radius-lg);
   background: var(--color-surface-container-lowest);
   border: 1px solid var(--color-subtle-border);

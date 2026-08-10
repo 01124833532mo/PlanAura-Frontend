@@ -1,0 +1,345 @@
+<div class="booking-details-page">
+  <a class="booking-details-back" routerLink="/client/bookings">
+    <span class="material-symbols-outlined">arrow_back</span>
+    Back to My Bookings
+  </a>
+
+  <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  @if (loading()) {
+    <div class="skeleton booking-details-page__skeleton"></div>
+  } @else if (booking(); as b) {
+    <header class="booking-details-header card-luxe luxe-shadow animate-fade-up">
+      <div class="booking-details-header__vendor">
+        @if (vendor(); as v) {
+          <button type="button" class="booking-details-header__logo" (click)="goToVendor()">
+            @if (v.logoUrl) {
+              <img [src]="v.logoUrl" [alt]="v.businessName" />
+            } @else {
+              <span class="material-symbols-outlined">storefront</span>
+            }
+          </button>
+        }
+        <div>
+          <p class="text-label-sm booking-details-header__eyebrow">
+            @if (plan(); as p) {
+              Part of <a [routerLink]="['/client/event-plans', p.id]">{{ p.title }}</a>
+            } @else {
+              Booking
+            }
+          </p>
+          <h1 class="text-headline-md">
+            {{ pkg()?.title ?? 'Booking #' + b.id }}
+          </h1>
+          @if (vendor(); as v) {
+            <button type="button" class="booking-details-header__vendor-link" (click)="goToVendor()">
+              <span class="material-symbols-outlined">storefront</span>
+              {{ v.businessName }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <ui-status-badge [status]="b.status" [paymentStatus]="b.paymentStatus" />
+    </header>
+
+    <div class="booking-details-layout">
+      <div class="booking-details-main">
+        <!-- ============ Key facts ============ -->
+        <section class="card-luxe luxe-shadow booking-details-section animate-fade-up stagger-1">
+          <h3 class="text-headline-sm booking-details-section__heading">
+            <span class="material-symbols-outlined" aria-hidden="true">event</span>
+            Booking details
+          </h3>
+          <dl class="booking-details-facts">
+            <div class="booking-details-facts__row">
+              <dt>Event date</dt>
+              <dd>{{ b.eventDate | date: 'fullDate' }}</dd>
+            </div>
+            @if (b.guestCount) {
+              <div class="booking-details-facts__row">
+                <dt>Guests</dt>
+                <dd>{{ b.guestCount }}</dd>
+              </div>
+            }
+            @if (b.agreedPrice !== null) {
+              <div class="booking-details-facts__row">
+                <dt>Agreed price</dt>
+                <dd>{{ currency() }} {{ b.agreedPrice | number: '1.0-2' }}</dd>
+              </div>
+            }
+            @if (b.clientMessage) {
+              <div class="booking-details-facts__row">
+                <dt>Your message</dt>
+                <dd>{{ b.clientMessage }}</dd>
+              </div>
+            }
+            @if (b.vendorResponse) {
+              <div class="booking-details-facts__row">
+                <dt>Vendor response</dt>
+                <dd>{{ b.vendorResponse }}</dd>
+              </div>
+            }
+            @if (b.cancellationReason) {
+              <div class="booking-details-facts__row">
+                <dt>Cancellation reason</dt>
+                <dd>{{ b.cancellationReason }}</dd>
+              </div>
+            }
+          </dl>
+
+          @if (b.contractDocumentUrl) {
+            <app-document-download
+              [url]="b.contractDocumentUrl"
+              label="Download booking agreement"
+              variant="button"
+            />
+          }
+        </section>
+
+        <!-- ============ Payment ============ -->
+        <section class="card-luxe luxe-shadow booking-details-section animate-fade-up stagger-2">
+          <h3 class="text-headline-sm booking-details-section__heading">
+            <span class="material-symbols-outlined" aria-hidden="true">payments</span>
+            Payment
+          </h3>
+          <app-payment-breakdown [summary]="b.payment" />
+
+          @if (b.paymentStatus === BookingPaymentStatus.Refunded) {
+            <p class="text-label-sm booking-details-refund-note">
+              <span class="material-symbols-outlined">undo</span>
+              This booking was refunded
+              @if (b.cancellationRefundPercent !== null) {
+                ({{ b.cancellationRefundPercent }}%
+                @if (b.cancellationRefundAmount !== null) {
+                  — {{ currency() }} {{ b.cancellationRefundAmount | number: '1.0-2' }}
+                }
+                )
+              }.
+            </p>
+          }
+        </section>
+
+        <!-- ============ Activity ============ -->
+        <section class="card-luxe luxe-shadow booking-details-section animate-fade-up stagger-3">
+          <h3 class="text-headline-sm booking-details-section__heading">
+            <span class="material-symbols-outlined" aria-hidden="true">history</span>
+            Booking activity
+          </h3>
+          <app-booking-timeline [entries]="timeline()" [loading]="timelineLoading()" [error]="timelineError()" />
+        </section>
+      </div>
+
+      <!-- ============ Actions sidebar ============ -->
+      <aside class="booking-details-actions card-luxe luxe-shadow animate-fade-up stagger-1">
+        <h3 class="text-headline-sm">What you can do</h3>
+
+        @if (b.status === BookingStatus.Pending) {
+          <p class="text-body-md">Waiting on the vendor to respond. You can still cancel this request.</p>
+          <ui-button variant="outline" (click)="openCancel()">
+            <span class="material-symbols-outlined">event_busy</span>
+            Cancel request
+          </ui-button>
+        }
+
+        @if (b.status === BookingStatus.Accepted) {
+          <p class="text-body-md">Confirmed and paid. Need to back out? You can request a cancellation.</p>
+          <ui-button variant="outline" (click)="openRequestCancellation()">
+            <span class="material-symbols-outlined">event_busy</span>
+            Request cancellation
+          </ui-button>
+        }
+
+        @if (b.status === BookingStatus.AwaitingConfirmation) {
+          <p class="text-body-md">
+            The event date has passed. Confirm the vendor delivered the service, or report a problem.
+          </p>
+          <ui-button [loading]="actioning()" (click)="confirmServiceDelivered()">
+            <span class="material-symbols-outlined">task_alt</span>
+            Confirm service delivered
+          </ui-button>
+          <ui-button variant="outline" (click)="openDispute()">
+            <span class="material-symbols-outlined">flag</span>
+            Report a problem
+          </ui-button>
+        }
+
+        @if (b.status === BookingStatus.CancellationRequested) {
+          <p class="text-body-md">
+            Your cancellation request is pending admin review. You'll be notified once it's resolved.
+          </p>
+        }
+
+        @if (b.status === BookingStatus.Completed) {
+          <p class="text-body-md">
+            @if (b.reviewId) {
+              You reviewed this booking {{ b.reviewRating }}/5.
+            } @else {
+              How was your experience? Leave a review for this vendor.
+            }
+          </p>
+          <ui-button (click)="openReview()">
+            <span class="material-symbols-outlined">star</span>
+            {{ b.reviewId ? 'Edit your review' : 'Leave a review' }}
+          </ui-button>
+        }
+
+        @if (
+          b.status === BookingStatus.Rejected ||
+          b.status === BookingStatus.Cancelled ||
+          b.status === BookingStatus.Expired
+        ) {
+          <p class="text-body-md">This booking is closed — no further action is needed.</p>
+        }
+
+        @if (vendor(); as v) {
+          <ui-button variant="ghost" (click)="goToVendor()">
+            <span class="material-symbols-outlined">storefront</span>
+            View {{ v.businessName }}
+          </ui-button>
+        }
+      </aside>
+    </div>
+  }
+</div>
+
+<!-- ============ Cancel confirm ============ -->
+@if (showCancel()) {
+  <ui-confirm-dialog
+    icon="event_busy"
+    title="Cancel this booking request?"
+    message="Are you sure you want to cancel this request?"
+    confirmLabel="Cancel request"
+    cancelLabel="Keep it"
+    variant="danger"
+    [loading]="actioning()"
+    (confirmed)="confirmCancel()"
+    (cancelled)="closeCancel()"
+  />
+}
+
+<!-- ============ Request cancellation ============ -->
+@if (showRequestCancellation()) {
+  <div class="modal-backdrop" (click)="closeRequestCancellation()">
+    <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
+      <div class="booking-details-modal__header">
+        <span class="material-symbols-outlined booking-details-modal__icon" aria-hidden="true">event_busy</span>
+        <h4 class="text-headline-sm">Request cancellation</h4>
+      </div>
+
+      @if (cancellationQuoteLoading()) {
+        <p class="text-body-md">Calculating your estimated refund…</p>
+      } @else if (cancellationQuote(); as quote) {
+        <p class="text-body-md">
+          Based on our cancellation policy ({{ quote.daysUntilEvent }} day(s) before the event), you're
+          estimated to receive a <strong>{{ quote.refundPercent }}%</strong> refund
+          ({{ quote.refundAmount | number: '1.0-2' }} {{ currency() }}).
+          This request will be reviewed by an admin before anything is charged or released.
+        </p>
+      }
+
+      <form [formGroup]="cancellationForm" (ngSubmit)="submitCancellationRequest()">
+        <ui-alert-banner
+          [message]="cancellationError()?.message ?? null"
+          [details]="cancellationError()?.fieldErrors ?? []"
+        />
+        <ui-text-field
+          label="Why are you cancelling?"
+          formControlName="reason"
+          [multiline]="true"
+          [errorMessage]="
+            cancellationForm.get('reason')!.touched && cancellationForm.get('reason')!.invalid
+              ? 'Please provide a reason.'
+              : null
+          "
+        />
+        <div class="booking-details-modal__actions">
+          <ui-button variant="outline" type="button" (click)="closeRequestCancellation()">Keep booking</ui-button>
+          <ui-button type="submit" [loading]="cancellationSubmitting()">Request cancellation</ui-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ============ Dispute ============ -->
+@if (showDispute()) {
+  <div class="modal-backdrop" (click)="closeDispute()">
+    <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
+      <div class="booking-details-modal__header">
+        <span class="material-symbols-outlined booking-details-modal__icon" aria-hidden="true">flag</span>
+        <h4 class="text-headline-sm">Report a problem</h4>
+      </div>
+      <form [formGroup]="disputeForm" (ngSubmit)="submitDispute()">
+        <ui-alert-banner
+          [message]="disputeError()?.message ?? null"
+          [details]="disputeError()?.fieldErrors ?? []"
+        />
+        <ui-text-field
+          label="What happened?"
+          formControlName="reason"
+          [multiline]="true"
+          [errorMessage]="
+            disputeForm.get('reason')!.touched && disputeForm.get('reason')!.invalid
+              ? 'Please describe the issue.'
+              : null
+          "
+        />
+        <div class="booking-details-modal__actions">
+          <ui-button variant="outline" type="button" (click)="closeDispute()">Cancel</ui-button>
+          <ui-button type="submit" [loading]="disputeSubmitting()">Submit report</ui-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ============ Review ============ -->
+@if (showReview()) {
+  <div class="modal-backdrop" (click)="closeReview()">
+    <div class="modal-card card-luxe luxe-shadow" (click)="$event.stopPropagation()">
+      <div class="booking-details-modal__header">
+        <span class="material-symbols-outlined booking-details-modal__icon" aria-hidden="true">star</span>
+        <h4 class="text-headline-sm">{{ booking()?.reviewId ? 'Edit your review' : 'Leave a review' }}</h4>
+      </div>
+      <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+        <ui-alert-banner
+          [message]="reviewError()?.message ?? null"
+          [details]="reviewError()?.fieldErrors ?? []"
+        />
+        <div class="review-modal__stars" role="radiogroup" aria-label="Rating out of 5 stars">
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <button
+              type="button"
+              class="review-modal__star"
+              [class.review-modal__star--filled]="i <= reviewRating()"
+              role="radio"
+              [attr.aria-checked]="i === reviewRating()"
+              [attr.aria-label]="i + (i > 1 ? ' stars' : ' star')"
+              (click)="setReviewRating(i)"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true">star</span>
+            </button>
+          }
+        </div>
+        <ui-text-field
+          label="Comment (optional)"
+          formControlName="comment"
+          [multiline]="true"
+          [errorMessage]="
+            reviewForm.get('comment')!.touched && reviewForm.get('comment')!.invalid
+              ? 'Comment must be 1000 characters or fewer.'
+              : null
+          "
+        />
+        <p class="text-label-sm review-modal__counter">{{ reviewForm.value.comment?.length ?? 0 }}/1000</p>
+        <div class="booking-details-modal__actions">
+          <ui-button variant="outline" type="button" (click)="closeReview()">Cancel</ui-button>
+          <ui-button type="submit" [loading]="reviewSubmitting()">
+            {{ booking()?.reviewId ? 'Save changes' : 'Submit review' }}
+          </ui-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Button } from '../../../shared/ui/button/button';
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { PasswordField } from '../../../shared/ui/password-field/password-field';
@@ -41,13 +41,20 @@ export class AuthPage {
   private readonly onboardingState = inject(VendorOnboardingStateService);
   private readonly vendorService = inject(VendorService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly modeOptions: SegmentedOption[] = [
     { value: 'login', label: 'Login' },
     { value: 'register', label: 'Register' },
   ];
 
-  protected readonly mode = signal<AuthMode>('login');
+  // Query params from the public navbar's "Log In"/"Sign Up" buttons and from
+  // guards redirecting an unauthenticated deep link (e.g. "Book Now" on a
+  // public vendor page) — see authGuard/clientGuard for the returnUrl side.
+  private readonly requestedMode = this.route.snapshot.queryParamMap.get('mode');
+  private readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+
+  protected readonly mode = signal<AuthMode>(this.requestedMode === 'register' ? 'register' : 'login');
   protected readonly role = signal<RegisterRole>('vendor');
   protected readonly loading = signal(false);
   protected readonly error = signal<AppError | null>(null);
@@ -206,7 +213,7 @@ export class AuthPage {
       return;
     }
 
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl(this.returnUrl || '/');
   }
 
   protected async logout(): Promise<void> {

@@ -1,0 +1,80 @@
+<section class="pay-breakdown" [class.pay-breakdown--compact]="compact">
+  <!--
+    Headline first: the single number the user most needs. On the quote path this is what is about to
+    be authorized; on the summary path it is what has actually been captured, which stays at zero
+    while the vendor has not yet accepted.
+  -->
+  <div class="pay-breakdown__headline">
+    <div class="pay-breakdown__primary">
+      <p class="pay-breakdown__primary-label">{{ primaryLabel() }}</p>
+      <p class="pay-breakdown__primary-amount">
+        <span class="pay-breakdown__currency">{{ currency() }}</span>
+        {{ primaryAmount() | number: '1.2-2' }}
+      </p>
+    </div>
+
+    @if (statusLabel(); as status) {
+      <span class="pay-breakdown__status" [attr.data-tone]="statusTone()">
+        <span class="material-symbols-outlined">{{ statusIcon() }}</span>
+        {{ status }}
+      </span>
+    }
+  </div>
+
+  <!-- Supporting figures. Remaining is only rendered when the backend reports a non-zero balance. -->
+  <dl class="pay-breakdown__figures">
+    <div class="pay-breakdown__figure">
+      <dt>Total contract value</dt>
+      <dd>{{ currency() }} {{ total() | number: '1.2-2' }}</dd>
+    </div>
+
+    @if (hasRemaining()) {
+      <div class="pay-breakdown__figure pay-breakdown__figure--muted">
+        <dt>Remaining balance</dt>
+        <dd>{{ currency() }} {{ remaining() | number: '1.2-2' }}</dd>
+      </div>
+    }
+  </dl>
+
+  @if (!compact) {
+    @if (schedule().length > 0) {
+      <ol class="pay-breakdown__schedule">
+        @for (stage of schedule(); track stage.label; let i = $index) {
+          <li class="pay-breakdown__stage" [attr.data-state]="stage.state">
+            <span class="pay-breakdown__stage-icon material-symbols-outlined">
+              {{ stageIcon(stage.state) }}
+            </span>
+            <span class="pay-breakdown__stage-body">
+              <span class="pay-breakdown__stage-head">
+                <span class="pay-breakdown__stage-label">{{ i + 1 }}. {{ stage.label }}</span>
+                <span class="pay-breakdown__stage-amount">
+                  {{ currency() }} {{ stage.amount | number: '1.2-2' }}
+                </span>
+              </span>
+              <span class="pay-breakdown__stage-note">{{ stage.note }}</span>
+            </span>
+          </li>
+        }
+      </ol>
+    }
+
+    @if (depositExplanation(); as explanation) {
+      <p class="pay-breakdown__explain">
+        <span class="material-symbols-outlined">info</span>
+        {{ explanation }}
+      </p>
+    }
+
+    <!--
+      Stated explicitly rather than implied by an empty schedule slot: the platform has no mechanism
+      to collect this balance automatically, so promising a future charge would be untrue.
+    -->
+    @if (remainderUnscheduled()) {
+      <p class="pay-breakdown__explain pay-breakdown__explain--warn">
+        <span class="material-symbols-outlined">event_upcoming</span>
+        The remaining balance is not collected automatically. You'll arrange it with the vendor before
+        the event.
+      </p>
+    }
+  }
+</section>

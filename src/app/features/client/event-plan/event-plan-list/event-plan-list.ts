@@ -80,7 +80,7 @@ export class EventPlanList implements OnInit {
   }
 
   protected bookVendors(plan: EventPlan): void {
-    this.router.navigate(['/client/vendors'], { queryParams: { eventPlanId: plan.id } });
+    this.router.navigate(['/explore/vendors'], { queryParams: { eventPlanId: plan.id } });
   }
 
   protected viewPlan(plan: EventPlan): void {

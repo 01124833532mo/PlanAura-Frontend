@@ -1,18 +1,42 @@
-<ol class="ui-stepper">
-  @for (step of steps; track step; let i = $index) {
-    <li
-      class="ui-stepper__item"
-      [class.ui-stepper__item--active]="i === currentIndex"
-      [class.ui-stepper__item--done]="i < currentIndex"
-    >
-      <span class="ui-stepper__dot">
-        @if (i < currentIndex) {
-          <span class="material-symbols-outlined animate-pop">check</span>
-        } @else {
-          {{ i + 1 }}
-        }
-      </span>
-      <span class="ui-stepper__label">{{ step }}</span>
-    </li>
-  }
-</ol>
+<nav class="ui-stepper-wrap" [attr.aria-label]="'Step ' + currentPosition + ' of ' + steps.length">
+  <ol class="ui-stepper">
+    @for (step of steps; track step; let i = $index) {
+      <li
+        class="ui-stepper__item"
+        [class.ui-stepper__item--active]="i === currentIndex"
+        [class.ui-stepper__item--done]="i < currentIndex"
+        [attr.aria-current]="i === currentIndex ? 'step' : null"
+      >
+        <span class="ui-stepper__dot">
+          @if (i < currentIndex) {
+            <span class="material-symbols-outlined animate-pop">check</span>
+          } @else {
+            {{ i + 1 }}
+          }
+        </span>
+        <span class="ui-stepper__label">{{ step }}</span>
+        <!-- Visible to screen readers only: the visual dot alone doesn't convey completion state. -->
+        <span class="ui-stepper__sr">
+          @if (i < currentIndex) {
+            (completed)
+          } @else if (i === currentIndex) {
+            (current step)
+          } @else {
+            (upcoming)
+          }
+        </span>
+      </li>
+    }
+  </ol>
+
+  <!--
+    Small-screen caption. The per-step labels collapse below 640px to keep five dots from wrapping,
+    so the current step is named here instead of leaving the user with an anonymous numbered dot.
+  -->
+  <p class="ui-stepper__caption">
+    <span class="ui-stepper__caption-step">Step {{ currentPosition }} of {{ steps.length }}</span>
+    @if (currentLabel) {
+      <span class="ui-stepper__caption-label">{{ currentLabel }}</span>
+    }
+  </p>
+</nav>

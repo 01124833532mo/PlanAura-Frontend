@@ -1,0 +1,115 @@
+<header class="public-nav">
+  <div class="public-nav__inner">
+    <a class="public-nav__brand" routerLink="/" (click)="closeMobileMenu()">
+      <span class="material-symbols-outlined public-nav__brand-icon" aria-hidden="true">celebration</span>
+      <span class="public-nav__brand-name">Planura</span>
+    </a>
+
+    <nav class="public-nav__links" aria-label="Primary">
+      <a routerLink="/" routerLinkActive="public-nav__link--active" [routerLinkActiveOptions]="{ exact: true }">
+        Home
+      </a>
+      <a routerLink="/explore/services" routerLinkActive="public-nav__link--active">Explore Services</a>
+      <a routerLink="/explore/vendors" routerLinkActive="public-nav__link--active">Explore Vendors</a>
+      <a routerLink="/how-it-works" routerLinkActive="public-nav__link--active">How Planura Works</a>
+    </nav>
+
+    <div class="public-nav__actions">
+      @if (isAuthenticated() && isClient()) {
+        <app-notification-bell />
+
+        <div class="public-nav__account">
+          <button
+            type="button"
+            class="public-nav__avatar-btn"
+            (click)="toggleAccountMenu(); $event.stopPropagation()"
+            [attr.aria-expanded]="accountMenuOpen()"
+            aria-haspopup="menu"
+          >
+            <span class="public-nav__avatar">
+              @if (clientProfileState.profile()?.avatarUrl && !avatarBroken()) {
+                <img
+                  [src]="clientProfileState.profile()!.avatarUrl"
+                  [alt]="currentUser()?.fullName ?? 'Account'"
+                  (error)="avatarBroken.set(true)"
+                />
+              } @else {
+                {{ (currentUser()?.fullName ?? 'A').charAt(0) }}
+              }
+            </span>
+            <span class="material-symbols-outlined public-nav__avatar-caret">expand_more</span>
+          </button>
+
+          @if (accountMenuOpen()) {
+            <div class="public-nav__dropdown card-luxe luxe-shadow animate-scale-in" role="menu">
+              <a routerLink="/client/dashboard" role="menuitem" (click)="accountMenuOpen.set(false)">
+                <span class="material-symbols-outlined">space_dashboard</span>
+                My Account
+              </a>
+              <a routerLink="/client/bookings" role="menuitem" (click)="accountMenuOpen.set(false)">
+                <span class="material-symbols-outlined">event_available</span>
+                My Bookings
+              </a>
+              <a routerLink="/client/profile" role="menuitem" (click)="accountMenuOpen.set(false)">
+                <span class="material-symbols-outlined">account_circle</span>
+                My Profile
+              </a>
+              <button type="button" role="menuitem" (click)="logout()">
+                <span class="material-symbols-outlined">logout</span>
+                Log Out
+              </button>
+            </div>
+          }
+        </div>
+      } @else if (isAuthenticated()) {
+        <!-- Signed-in vendor/admin browsing the public site -->
+        <a class="public-nav__ghost-btn" [routerLink]="dashboardLink()">
+          <span class="material-symbols-outlined">dashboard</span>
+          My Dashboard
+        </a>
+        <button type="button" class="public-nav__ghost-btn" (click)="logout()">
+          <span class="material-symbols-outlined">logout</span>
+          Log Out
+        </button>
+      } @else {
+        <a class="public-nav__ghost-btn" routerLink="/auth">Log In</a>
+        <a class="btn-gold-gradient public-nav__signup-btn" routerLink="/auth" [queryParams]="{ mode: 'register' }">
+          Sign Up
+        </a>
+      }
+
+      <button
+        type="button"
+        class="public-nav__burger"
+        (click)="toggleMobileMenu()"
+        [attr.aria-expanded]="mobileMenuOpen()"
+        aria-label="Toggle menu"
+        aria-controls="public-nav-mobile"
+      >
+        <span class="material-symbols-outlined">{{ mobileMenuOpen() ? 'close' : 'menu' }}</span>
+      </button>
+    </div>
+  </div>
+
+  @if (mobileMenuOpen()) {
+    <nav id="public-nav-mobile" class="public-nav__mobile animate-fade-down" aria-label="Mobile">
+      <a routerLink="/" (click)="closeMobileMenu()">Home</a>
+      <a routerLink="/explore/services" (click)="closeMobileMenu()">Explore Services</a>
+      <a routerLink="/explore/vendors" (click)="closeMobileMenu()">Explore Vendors</a>
+      <a routerLink="/how-it-works" (click)="closeMobileMenu()">How Planura Works</a>
+      <hr />
+      @if (isAuthenticated() && isClient()) {
+        <a routerLink="/client/dashboard" (click)="closeMobileMenu()">My Account</a>
+        <a routerLink="/client/bookings" (click)="closeMobileMenu()">My Bookings</a>
+        <a routerLink="/client/profile" (click)="closeMobileMenu()">My Profile</a>
+        <button type="button" (click)="logout()">Log Out</button>
+      } @else if (isAuthenticated()) {
+        <a [routerLink]="dashboardLink()" (click)="closeMobileMenu()">My Dashboard</a>
+        <button type="button" (click)="logout()">Log Out</button>
+      } @else {
+        <a routerLink="/auth" (click)="closeMobileMenu()">Log In</a>
+        <a routerLink="/auth" [queryParams]="{ mode: 'register' }" (click)="closeMobileMenu()">Sign Up</a>
+      }
+    </nav>
+  }
+</header>

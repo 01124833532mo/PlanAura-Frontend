@@ -1,27 +1,5 @@
 <div class="home-page">
-  <header class="home-topbar glass-panel">
-    <span class="home-topbar__brand">
-      <span class="material-symbols-outlined home-topbar__brand-icon" aria-hidden="true">celebration</span>
-      Planura
-    </span>
-    <!-- Labels are wrapped so the mobile layer can collapse these to icon-only
-         buttons; the aria-labels keep them announced either way. -->
-    <nav class="home-topbar__actions">
-      <a class="home-topbar__link" routerLink="/client/vendors" aria-label="Browse Vendors">
-        <span class="material-symbols-outlined">storefront</span>
-        <span class="home-topbar__link-label">Browse Vendors</span>
-      </a>
-      <button class="home-topbar__link" type="button" (click)="goToDashboard()" aria-label="Dashboard">
-        <span class="material-symbols-outlined">dashboard</span>
-        <span class="home-topbar__link-label">Dashboard</span>
-      </button>
-      <button class="home-topbar__link" type="button" (click)="logout()" aria-label="Log Out">
-        <span class="material-symbols-outlined">logout</span>
-        <span class="home-topbar__link-label">Log Out</span>
-      </button>
-    </nav>
-  </header>
-
+  <!-- ============ Hero ============ -->
   <section class="home-hero bg-mesh">
     <span class="floating-blob home-hero__blob home-hero__blob--one" aria-hidden="true"></span>
     <span class="floating-blob home-hero__blob home-hero__blob--two" aria-hidden="true"></span>
@@ -31,59 +9,26 @@
       <div class="home-hero__content">
         <span class="home-hero__eyebrow animate-fade-down">
           <span class="material-symbols-outlined">auto_awesome</span>
-          Every occasion, beautifully planned
+          Plan today, enjoy tomorrow
         </span>
 
-        <h1 class="home-hero__headline animate-fade-up stagger-1">Plan Your Perfect Event</h1>
+        <h1 class="home-hero__headline animate-fade-up stagger-1">
+          Plan your perfect event, with the right people.
+        </h1>
         <p class="home-hero__subhead animate-fade-up stagger-2">
-          Discover trusted vendors and bring your vision to life, all in one place.
+          Discover trusted vendors, compare services, and bring your plans to life — all in one
+          place, from first idea to the big day.
         </p>
 
-        <form
-          class="home-hero__search glass-panel animate-fade-up stagger-3"
-          (submit)="$event.preventDefault(); searchVendors()"
-        >
-          <label class="home-hero__search-field">
-            <span class="material-symbols-outlined">search</span>
-            <input
-              type="text"
-              placeholder="What are you planning? (e.g. Wedding, Birthday)"
-              [ngModel]="heroSearchTerm()"
-              (ngModelChange)="heroSearchTerm.set($event)"
-              name="heroSearchTerm"
-              list="home-category-suggestions"
-            />
-            <datalist id="home-category-suggestions">
-              @for (category of categories(); track category.id) {
-                <option [value]="category.nameEn"></option>
-              }
-            </datalist>
-          </label>
-          <label class="home-hero__search-field">
-            <span class="material-symbols-outlined">location_on</span>
-            <input
-              type="text"
-              placeholder="City"
-              [ngModel]="heroCity()"
-              (ngModelChange)="heroCity.set($event)"
-              name="heroCity"
-            />
-          </label>
-          <button class="btn-gold-gradient home-hero__search-btn" type="submit">
-            <span class="material-symbols-outlined">search</span>
-            Search
-          </button>
-        </form>
-
-        <div class="home-hero__actions animate-fade-up stagger-4">
-          <button class="btn-gold-gradient home-hero__cta" type="button" (click)="goToNewPlan()">
-            <span class="material-symbols-outlined">add</span>
-            Start a New Event Plan
-          </button>
-          <span class="home-hero__actions-hint">
-            <span class="material-symbols-outlined">bolt</span>
-            No commitment — plan first, book when ready
-          </span>
+        <div class="home-hero__actions animate-fade-up stagger-3">
+          <a class="btn-gold-gradient home-hero__cta" routerLink="/explore/vendors">
+            <span class="material-symbols-outlined">storefront</span>
+            Explore Vendors
+          </a>
+          <a class="home-hero__cta-secondary" routerLink="/explore/services">
+            <span class="material-symbols-outlined">category</span>
+            Explore Services
+          </a>
         </div>
       </div>
 
@@ -107,52 +52,99 @@
             alt="Beautifully styled event table setting"
             loading="lazy"
           />
-          <div class="home-hero__floatcard glass-panel animate-fade-up stagger-5" aria-hidden="true">
-            <span class="home-hero__floatcard-icon material-symbols-outlined">verified</span>
-            <div>
-              <strong>1,200+</strong>
-              <span>Vetted vendors</span>
-            </div>
-          </div>
+          @if (totalVendorCount(); as count) {
+            @if (count > 0) {
+              <div class="home-hero__floatcard glass-panel animate-fade-up stagger-5" aria-hidden="true">
+                <span class="home-hero__floatcard-icon material-symbols-outlined">verified</span>
+                <div>
+                  <strong>{{ count }}+</strong>
+                  <span>Vendors on Planura</span>
+                </div>
+              </div>
+            }
+          }
         </div>
       </div>
     </div>
   </section>
 
-  <section class="home-stats">
-    <div class="home-stats__inner">
-      <div class="home-stats__item animate-fade-up stagger-1">
-        <span class="home-stats__number">1,200+</span>
-        <span class="home-stats__label">Vetted vendors</span>
-      </div>
-      <div class="home-stats__divider" aria-hidden="true"></div>
-      <div class="home-stats__item animate-fade-up stagger-2">
-        <span class="home-stats__number">8,500+</span>
-        <span class="home-stats__label">Events planned</span>
-      </div>
-      <div class="home-stats__divider" aria-hidden="true"></div>
-      <div class="home-stats__item animate-fade-up stagger-3">
-        <span class="home-stats__number">4.9/5</span>
-        <span class="home-stats__label">Average rating</span>
-      </div>
-      <div class="home-stats__divider" aria-hidden="true"></div>
-      <div class="home-stats__item animate-fade-up stagger-4">
-        <span class="home-stats__number">40+</span>
-        <span class="home-stats__label">Cities covered</span>
-      </div>
-    </div>
-  </section>
-
-  @if (categories().length > 0) {
-    <section class="home-section">
+  <!-- ============ Discover / Search ============ -->
+  <section class="home-discover">
+    <div class="home-discover__inner">
       <div class="home-section__header animate-fade-up">
-        <span class="home-section__eyebrow">Browse by occasion</span>
-        <h2 class="text-headline-md">Signature Occasions</h2>
+        <span class="home-section__eyebrow">Start here</span>
+        <h2 class="text-headline-md">What are you planning?</h2>
         <p class="text-body-md home-section__subhead">
-          Browse vendors by the type of event you're planning.
+          Search by service and city, or jump straight into a category below.
         </p>
       </div>
 
+      <form
+        class="home-discover__search glass-panel animate-fade-up stagger-1"
+        (submit)="$event.preventDefault(); searchVendors()"
+      >
+        <label class="home-discover__search-field">
+          <span class="material-symbols-outlined">search</span>
+          <input
+            type="text"
+            placeholder="What are you planning? (e.g. Photography, Catering)"
+            [ngModel]="heroSearchTerm()"
+            (ngModelChange)="heroSearchTerm.set($event)"
+            name="heroSearchTerm"
+            list="home-category-suggestions"
+          />
+          <datalist id="home-category-suggestions">
+            @for (category of categories(); track category.id) {
+              <option [value]="category.nameEn"></option>
+            }
+          </datalist>
+        </label>
+        <span class="home-discover__search-divider" aria-hidden="true"></span>
+        <label class="home-discover__search-field">
+          <span class="material-symbols-outlined">location_on</span>
+          <input
+            type="text"
+            placeholder="City"
+            [ngModel]="heroCity()"
+            (ngModelChange)="heroCity.set($event)"
+            name="heroCity"
+          />
+        </label>
+        <button class="btn-gold-gradient home-discover__search-btn" type="submit">
+          <span class="material-symbols-outlined">search</span>
+          Search
+        </button>
+      </form>
+
+      @if (!categoriesLoading() && categories().length > 0) {
+        <div class="home-discover__chips animate-fade-up stagger-2">
+          @for (category of categories().slice(0, 8); track category.id) {
+            <button type="button" class="home-discover__chip" (click)="browseCategory(category)">
+              {{ category.nameEn }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ============ Popular Categories ============ -->
+  <section class="home-section">
+    <div class="home-section__header animate-fade-up">
+      <span class="home-section__eyebrow">Browse by category</span>
+      <h2 class="text-headline-md">Popular Categories</h2>
+      <p class="text-body-md home-section__subhead">
+        Browse vendors by the type of service you're planning.
+      </p>
+    </div>
+
+    @if (categoriesLoading()) {
+      <div class="home-category-grid">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="skeleton home-category-skeleton"></div>
+        }
+      </div>
+    } @else if (categories().length > 0) {
       <div class="home-category-carousel">
         @if (canScrollCategoriesPrev()) {
           <button
@@ -165,36 +157,9 @@
           </button>
         }
 
-        <div
-          class="home-category-grid"
-          #categoryScroll
-          (scroll)="updateCategoryScrollState()"
-        >
+        <div class="home-category-grid" #categoryScroll (scroll)="updateCategoryScrollState()">
           @for (category of categories(); track category.id) {
-            <a
-              class="category-tile hover-lift animate-fade-up"
-              [routerLink]="['/client/vendors']"
-              [queryParams]="{ category: category.slug }"
-            >
-              @if (category.iconUrl && !failedCategoryImages().has(category.id)) {
-                <img
-                  [src]="category.iconUrl"
-                  alt="{{ category.nameEn }}"
-                  title="{{ category.nameEn }}"
-                  class="category-tile__image"
-                  (error)="onCategoryImageError(category.id)"
-                />
-              } @else {
-                <div class="category-tile__image category-tile__image--fallback">
-                  <span class="material-symbols-outlined">{{ categoryIcon(category.slug) }}</span>
-                </div>
-              }
-              <div class="category-tile__overlay"></div>
-              <span class="category-tile__label">
-                {{ category.nameEn }}
-                <span class="material-symbols-outlined category-tile__arrow">arrow_forward</span>
-              </span>
-            </a>
+            <ui-category-card class="animate-fade-up" [category]="category" />
           }
         </div>
 
@@ -209,9 +174,53 @@
           </button>
         }
       </div>
-    </section>
-  }
 
+      <div class="home-section__more animate-fade-up">
+        <a routerLink="/explore/services" class="home-section__more-link">
+          See all categories
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
+      </div>
+    } @else {
+      <p class="text-body-md home-section__empty">Categories will appear here soon.</p>
+    }
+  </section>
+
+  <!-- ============ Featured Vendors ============ -->
+  <section class="home-section">
+    <div class="home-section__header animate-fade-up">
+      <span class="home-section__eyebrow">Loved by hosts</span>
+      <h2 class="text-headline-md">Meet the people behind your perfect event</h2>
+      <p class="text-body-md home-section__subhead">A few of our top-rated partners.</p>
+    </div>
+
+    @if (featuredLoading()) {
+      <div class="home-vendor-grid">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="skeleton home-vendor-skeleton"></div>
+        }
+      </div>
+    } @else if (featuredVendors().length > 0) {
+      <div class="home-vendor-grid">
+        @for (vendor of featuredVendors(); track vendor.id) {
+          <ui-vendor-card class="animate-fade-up" [vendor]="vendor" />
+        }
+      </div>
+
+      <div class="home-section__more animate-fade-up">
+        <a routerLink="/explore/vendors" class="home-section__more-link">
+          Explore all vendors
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
+      </div>
+    } @else {
+      <p class="text-body-md home-section__empty">
+        Vendors will appear here as they join Planura.
+      </p>
+    }
+  </section>
+
+  <!-- ============ How Planura Works ============ -->
   <section class="home-how">
     <div class="home-how__inner">
       <div class="home-section__header animate-fade-up">
@@ -231,124 +240,84 @@
         </div>
         <div class="home-how__step animate-fade-up stagger-2">
           <span class="home-how__step-index">02</span>
-          <span class="home-how__step-icon material-symbols-outlined">edit_calendar</span>
-          <h3 class="text-headline-sm">Plan</h3>
-          <p class="text-body-md">Build your event plan and manage every detail in one place.</p>
+          <span class="home-how__step-icon material-symbols-outlined">compare_arrows</span>
+          <h3 class="text-headline-sm">Compare</h3>
+          <p class="text-body-md">Weigh packages, pricing, and reviews side by side.</p>
         </div>
         <div class="home-how__step animate-fade-up stagger-3">
           <span class="home-how__step-index">03</span>
           <span class="home-how__step-icon material-symbols-outlined">credit_card</span>
-          <h3 class="text-headline-sm">Book &amp; Pay</h3>
-          <p class="text-body-md">Secure your vendors with safe, simple online payments.</p>
+          <h3 class="text-headline-sm">Book</h3>
+          <p class="text-body-md">Secure your date with safe, simple online payment.</p>
         </div>
         <div class="home-how__step animate-fade-up stagger-4">
           <span class="home-how__step-index">04</span>
           <span class="home-how__step-icon material-symbols-outlined">celebration</span>
-          <h3 class="text-headline-sm">Celebrate</h3>
+          <h3 class="text-headline-sm">Enjoy</h3>
           <p class="text-body-md">Sit back and enjoy an event brought to life by the right team.</p>
         </div>
       </div>
-    </div>
-  </section>
 
-  @if (featuredVendors().length > 0) {
-    <section class="home-section">
-      <div class="home-section__header animate-fade-up">
-        <span class="home-section__eyebrow">Loved by hosts</span>
-        <h2 class="text-headline-md">Featured Vendors</h2>
-        <p class="text-body-md home-section__subhead">A few of our top-rated partners.</p>
-      </div>
-
-      <div class="home-vendor-grid">
-        @for (vendor of featuredVendors(); track vendor.id) {
-          <ui-vendor-card class="animate-fade-up" [vendor]="vendor" />
-        }
-      </div>
-    </section>
-  }
-
-  <section class="home-testimonials">
-    <div class="home-testimonials__inner">
-      <div class="home-section__header animate-fade-up">
-        <span class="home-section__eyebrow">What hosts are saying</span>
-        <h2 class="text-headline-md">Trusted for moments that matter</h2>
-      </div>
-
-      <div class="home-testimonials__grid">
-        <blockquote class="home-testimonial card-luxe hover-lift animate-fade-up stagger-1">
-          <span class="material-symbols-outlined home-testimonial__quote-icon" aria-hidden="true">format_quote</span>
-          <p class="home-testimonial__quote">
-            Planura made coordinating every vendor for our engagement party effortless. Everything lived in one
-            place, from budget to bookings.
-          </p>
-          <footer class="home-testimonial__author">
-            <span class="home-testimonial__avatar">AR</span>
-            <div>
-              <strong>Amara R.</strong>
-              <span>Engagement Party Host</span>
-            </div>
-          </footer>
-        </blockquote>
-
-        <blockquote class="home-testimonial card-luxe hover-lift animate-fade-up stagger-2">
-          <span class="material-symbols-outlined home-testimonial__quote-icon" aria-hidden="true">format_quote</span>
-          <p class="home-testimonial__quote">
-            We planned our entire product launch through Planura — from venue to catering. Genuinely premium
-            experience for a corporate event.
-          </p>
-          <footer class="home-testimonial__author">
-            <span class="home-testimonial__avatar">YK</span>
-            <div>
-              <strong>Youssef K.</strong>
-              <span>Corporate Event Lead</span>
-            </div>
-          </footer>
-        </blockquote>
-
-        <blockquote class="home-testimonial card-luxe hover-lift animate-fade-up stagger-3">
-          <span class="material-symbols-outlined home-testimonial__quote-icon" aria-hidden="true">format_quote</span>
-          <p class="home-testimonial__quote">
-            Booking a caterer and a decorator for my daughter's birthday took minutes, not weeks. Payments felt
-            secure the whole way through.
-          </p>
-          <footer class="home-testimonial__author">
-            <span class="home-testimonial__avatar">NH</span>
-            <div>
-              <strong>Nadine H.</strong>
-              <span>Birthday Host</span>
-            </div>
-          </footer>
-        </blockquote>
+      <div class="home-how__more">
+        <a routerLink="/how-it-works" class="home-section__more-link">
+          More about how Planura works
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
       </div>
     </div>
   </section>
 
+  <!-- ============ Trust / Value ============ -->
+  <section class="home-trust">
+    <div class="home-section__header animate-fade-up">
+      <span class="home-section__eyebrow">Why Planura</span>
+      <h2 class="text-headline-md">Built to make planning easy</h2>
+      <p class="text-body-md home-section__subhead">
+        No guesswork, no back-and-forth — just what you need to plan with confidence.
+      </p>
+    </div>
+
+    <div class="home-trust__grid">
+      <div class="home-trust__card animate-fade-up stagger-1">
+        <span class="home-trust__icon material-symbols-outlined">verified</span>
+        <h3 class="text-headline-sm">Verified vendors</h3>
+        <p class="text-body-md">
+          Every vendor on Planura is reviewed before they're listed, so you know who you're
+          booking with.
+        </p>
+      </div>
+      <div class="home-trust__card animate-fade-up stagger-2">
+        <span class="home-trust__icon material-symbols-outlined">travel_explore</span>
+        <h3 class="text-headline-sm">Easy discovery</h3>
+        <p class="text-body-md">
+          Filter by category, city, and budget to find the right match in minutes, not weeks.
+        </p>
+      </div>
+      <div class="home-trust__card animate-fade-up stagger-3">
+        <span class="home-trust__icon material-symbols-outlined">receipt_long</span>
+        <h3 class="text-headline-sm">Clear packages &amp; pricing</h3>
+        <p class="text-body-md">
+          Compare what's included and what it costs upfront — no hidden fees, no surprises.
+        </p>
+      </div>
+      <div class="home-trust__card animate-fade-up stagger-4">
+        <span class="home-trust__icon material-symbols-outlined">lock</span>
+        <h3 class="text-headline-sm">Simple, secure booking</h3>
+        <p class="text-body-md">
+          Request, confirm, and pay for your booking online — track it all from one place.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Closing CTA ============ -->
   <section class="home-cta bg-mesh animate-fade-up">
     <span class="floating-blob home-cta__blob" aria-hidden="true"></span>
     <h2 class="text-headline-md">Ready to start planning?</h2>
-    <p class="text-body-md">Create your first event plan and start connecting with vendors.</p>
-    <button class="btn-gold-gradient" type="button" (click)="goToNewPlan()">
-      <span class="material-symbols-outlined">add</span>
-      New Event
-    </button>
+    <p class="text-body-md">Explore vendors and services, compare options, and book when you're ready.</p>
+    <a class="btn-gold-gradient" routerLink="/explore/vendors">
+      <span class="material-symbols-outlined">storefront</span>
+      Explore Vendors
+    </a>
   </section>
-
-  <footer class="home-footer">
-    <div class="home-footer__inner">
-      <div class="home-footer__brand">
-        <span class="home-footer__brand-name">
-          <span class="material-symbols-outlined" aria-hidden="true">celebration</span>
-          Planura
-        </span>
-        <p class="text-body-md">The all-in-one platform for planning every kind of celebration.</p>
-      </div>
-      <nav class="home-footer__links" aria-label="Footer">
-        <a routerLink="/client/vendors">Browse Vendors</a>
-        <a routerLink="/client/event-plans">Event Plans</a>
-        <a routerLink="/terms">Terms</a>
-        <a routerLink="/privacy">Privacy</a>
-      </nav>
-    </div>
-    <p class="home-footer__copy">&copy; Planura. All rights reserved.</p>
-  </footer>
 </div>

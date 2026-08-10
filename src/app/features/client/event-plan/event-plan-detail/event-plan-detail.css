@@ -191,63 +191,101 @@
 .booking-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 .booking-row {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  padding: var(--space-lg);
+  gap: var(--space-lg);
+  padding: var(--space-xl);
 }
 
-/* Vendor identity + date/guests/price — free to wrap between themselves,
-   but always separate from the status/actions zone below (own row, gated
-   by .booking-row__footer) so a long status label can never overlap them. */
-.booking-row__main {
+/* Two-column info zone: vendor identity on the left, event details + price on
+   the right, split by a vertical rule. Each column is free to wrap onto its
+   own line on narrow viewports (see the 900px query), so payment/actions
+   below always get their own dedicated full-width rows. */
+.booking-row__info {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--gutter);
+  align-items: stretch;
+  gap: var(--space-xl);
 }
 
 .booking-row__vendor {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  flex: 1;
-  min-width: 200px;
+  gap: var(--space-md);
+  flex: 1.3;
+  min-width: 220px;
 }
 
-.booking-row__logo,
-.booking-row__logo-placeholder {
-  width: 56px;
-  height: 56px;
+.booking-row__cover,
+.booking-row__cover--placeholder {
+  width: 92px;
+  height: 92px;
   border-radius: var(--radius-lg);
   flex-shrink: 0;
 }
 
-.booking-row__logo {
+.booking-row__cover {
   object-fit: cover;
 }
 
-.booking-row__logo-placeholder {
+.booking-row__cover--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, var(--color-soft-beige) 0%, var(--color-primary-fixed) 100%);
   color: var(--color-primary);
-  font-size: 1.5rem;
+  font-size: 2.1rem;
+}
+
+.booking-row__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.booking-row__name {
+  font-family: var(--font-family-display);
 }
 
 .booking-row__package {
   color: var(--color-secondary);
 }
 
+.booking-row__location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--color-secondary);
+}
+
+.booking-row__location .material-symbols-outlined {
+  font-size: 1.05rem;
+  color: var(--color-primary);
+}
+
+.booking-row__info-divider {
+  align-self: stretch;
+  width: 1px;
+  background: var(--color-subtle-border);
+  flex-shrink: 0;
+}
+
+.booking-row__event {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+  flex: 1;
+  min-width: 220px;
+}
+
 .booking-row__meta {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.55rem;
   min-width: 140px;
   color: var(--color-secondary);
 }
@@ -255,63 +293,102 @@
 .booking-row__meta > span {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.5rem;
 }
 
 .booking-row__meta .material-symbols-outlined {
   font-size: 1.1rem;
+  color: var(--color-primary);
 }
 
-.booking-row__price {
-  font-weight: 700;
-  color: var(--color-charcoal);
-}
-
-/* Status + actions: their own full-width row beneath .booking-row__main —
-   the Pending badge's label ("Awaiting vendor response — payment
-   authorized") is long and never wraps (ui-status-badge forces
-   white-space: nowrap), so it previously overflowed the max-width column
-   it shared inline with the price/actions and visually overlapped them.
-   A dedicated row gives it the card's full width to render in instead. */
-.booking-row__footer {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-sm);
-}
-
-.booking-row__status {
+.booking-row__price-col {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  min-width: 0;
+  margin-left: auto;
+}
+
+.booking-row__price-label {
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.booking-row__price {
+  font-size: var(--font-headline-md-size, 1.5rem);
+  font-weight: 700;
+  color: var(--color-charcoal);
+  white-space: nowrap;
+}
+
+/* Payment status: its own full-width band beneath the info zone — the
+   Pending badge's label ("Awaiting vendor response — payment authorized")
+   is long and never wraps (ui-status-badge forces white-space: nowrap), so
+   it needs the card's full width rather than sharing a row with anything
+   else. */
+.booking-row__payment {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-subtle-border);
 }
 
 .booking-row__status-note {
   color: var(--color-secondary);
 }
 
+.booking-row__pay-btn {
+  margin-top: 0.3rem;
+}
+
+.booking-row__pay-btn ::ng-deep .ui-btn {
+  padding: 1.1rem 2.25rem;
+  font-size: var(--font-label-md-size);
+}
+
 .booking-row__actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: var(--space-md);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-subtle-border);
+}
+
+.booking-row__actions > *:not(:first-child) {
+  margin-left: var(--space-sm);
+  padding-left: calc(var(--space-sm) + var(--space-md));
+  border-left: 1px solid var(--color-subtle-border);
 }
 
 .booking-row__report {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   border: none;
   background: transparent;
   color: var(--color-secondary);
   font-family: var(--font-family-base);
-  font-size: var(--font-label-sm-size);
+  font-size: var(--font-label-md-size);
+  font-weight: 600;
   cursor: pointer;
-  text-decoration: underline;
-  padding: 0.4rem;
+  transition: color var(--dur-fast, 0.15s) var(--ease-smooth, ease);
+}
+
+.booking-row__report .material-symbols-outlined {
+  font-size: 1.1rem;
+}
+
+.booking-row__report-chevron {
+  font-size: 1.05rem;
+  margin-left: -0.15rem;
 }
 
 .booking-row__report:hover {
-  color: var(--color-error);
+  color: var(--color-primary);
 }
 
 .event-plan-detail-modal__header {
@@ -380,14 +457,24 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .booking-row__main {
+  .booking-row__info {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: var(--space-lg);
   }
 
-  .booking-row__footer {
-    flex-direction: column;
-    align-items: flex-start;
+  .booking-row__info-divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .booking-row__event {
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .booking-row__price-col {
+    margin-left: 0;
   }
 }
 
@@ -406,18 +493,39 @@
   }
 
   .booking-row {
-    padding: var(--space-md);
+    padding: var(--space-lg);
+    gap: var(--space-md);
   }
 
   .booking-row__vendor,
+  .booking-row__event,
   .booking-row__meta {
     min-width: 0;
+    width: 100%;
+  }
+
+  .booking-row__price-col {
+    margin-left: 0;
+  }
+
+  .booking-row__payment,
+  .booking-row__actions {
+    padding-top: var(--space-md);
+  }
+
+  .booking-row__pay-btn ::ng-deep .ui-btn {
     width: 100%;
   }
 
   .booking-row__actions {
     width: 100%;
     flex-wrap: wrap;
+  }
+
+  .booking-row__actions > *:not(:first-child) {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
   }
 
   /* Text input + "Add" button on one row leaves the input ~120px wide. */
@@ -445,5 +553,15 @@
   .event-plan-detail-header__grid {
     grid-template-columns: 1fr;
     gap: var(--space-sm);
+  }
+
+  .booking-row__event {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .booking-row__price-col {
+    margin-left: 0;
   }
 }

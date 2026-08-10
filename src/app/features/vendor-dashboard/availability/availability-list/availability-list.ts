@@ -15,6 +15,7 @@ import { VendorBookingRequestService } from '../../../../core/services/vendor-bo
 import { VendorProfileStateService } from '../../../../core/services/vendor-profile-state.service';
 import { AvailabilityForm } from '../availability-form/availability-form';
 import { BookingRequestDetails } from '../../booking-requests/booking-request-details/booking-request-details';
+import { confirmAcceptBooking } from '../../../../shared/utils/confirm-accept-booking';
 import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
 
 /** One slot as it appears on a single day cell (a multi-day slot yields one per covered day). */
@@ -302,8 +303,8 @@ export class AvailabilityList {
     this.bookingDetails.set(null);
   }
 
-  protected acceptBooking(booking: BookingRequest): void {
-    if (!confirm('Accept this booking request? The client will be charged now.')) {
+  protected async acceptBooking(booking: BookingRequest): Promise<void> {
+    if (!(await confirmAcceptBooking())) {
       return;
     }
 

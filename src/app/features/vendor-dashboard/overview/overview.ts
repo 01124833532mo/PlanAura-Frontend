@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, Injector, OnInit, computed, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { filter, take } from 'rxjs';
@@ -85,6 +85,7 @@ export class Overview implements OnInit {
   private readonly bookingService = inject(VendorBookingRequestService);
   private readonly packageService = inject(VendorPackageService);
   private readonly availabilityService = inject(VendorAvailabilityService);
+  private readonly injector = inject(Injector);
   private readonly decimal = new DecimalPipe('en-US');
 
   protected readonly vendorProfileState = inject(VendorProfileStateService);
@@ -123,7 +124,17 @@ export class Overview implements OnInit {
     // Packages/availability need the vendor id, which the shell resolves
     // asynchronously via getMyProfile() — wait for it once rather than
     // polling, then fetch both in parallel.
-    toObservable(this.vendorProfileState.vendorId)
+    //
+    // toObservable() calls inject(Injector) internally, which requires an
+    // injection context — ngOnInit is not one, so this throws without the
+    // explicit `injector` option (silently, past ngDevMode's dev-only assert,
+    // since the inject() call itself is unconditional). Left implicit, that
+    // exception aborts this method before .subscribe() ever runs, so
+    // loadPackagesAndAvailability() is never called and packagesLoading /
+    // availabilityLoading are stuck at their initial `true` forever — Top
+    // Packages and Availability Overview spin indefinitely while every other
+    // section (which doesn't wait on this observable) loads normally.
+    toObservable(this.vendorProfileState.vendorId, { injector: this.injector })
       .pipe(
         filter((id): id is number => id !== null),
         take(1),

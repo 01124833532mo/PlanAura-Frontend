@@ -31,8 +31,8 @@ export interface UpdateVendorAvailabilityPayload {
 
 /**
  * Mirrors Planura.Core.Application.Models.CreateRecurringAvailabilityDto. StartTime/EndTime are
- * "HH:mm" strings (TimeOnly on the backend), interpreted as UTC — matching how single-slot
- * startAt/endAt already arrive as UTC ISO strings.
+ * plain "HH:mm" wall-clock strings (TimeOnly on the backend) as the vendor typed them — the backend
+ * interprets them as Egypt local time (UTC+3), not UTC.
  */
 export interface CreateRecurringAvailabilityPayload {
   /** 0=Sunday .. 6=Saturday (JS Date#getDay() numbering, matches System.DayOfWeek). */

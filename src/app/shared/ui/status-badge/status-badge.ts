@@ -31,6 +31,20 @@ export class StatusBadge {
     return this.resolve().tone;
   }
 
+  protected get icon(): string {
+    switch (this.tone) {
+      case 'success':
+      case 'gold':
+        return 'check_circle';
+      case 'error':
+        return 'error';
+      case 'pending':
+        return 'schedule';
+      default:
+        return 'info';
+    }
+  }
+
   private resolve(): { label: string; tone: BadgeTone } {
     if (this.paymentStatus === BookingPaymentStatus.Refunded) {
       return { label: 'Refunded', tone: 'muted' };

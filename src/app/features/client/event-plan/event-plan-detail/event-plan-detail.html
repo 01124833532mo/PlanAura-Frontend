@@ -163,167 +163,186 @@
         <div class="booking-list">
           @for (booking of bookings(); track booking.id) {
             <div class="card-luxe luxe-shadow hover-lift booking-row">
-              <div class="booking-row__main">
+              <div class="booking-row__info">
                 <div class="booking-row__vendor">
-                  @if (vendorLogo(booking); as logo) {
-                    <img [src]="logo" [alt]="vendorName(booking)" class="booking-row__logo" />
+                  @if (vendorCoverImage(booking) ?? vendorLogo(booking); as thumbnail) {
+                    <img [src]="thumbnail" [alt]="vendorName(booking)" class="booking-row__cover" />
                   } @else {
-                    <div class="booking-row__logo-placeholder">
+                    <div class="booking-row__cover booking-row__cover--placeholder">
                       <span class="material-symbols-outlined">storefront</span>
                     </div>
                   }
-                  <div>
-                    <h4 class="text-headline-sm">{{ vendorName(booking) }}</h4>
-                    @if (packageTitle(booking); as title) {
-                      <p class="text-body-md booking-row__package">{{ title }}</p>
+
+                  <div class="booking-row__identity">
+                    <h4 class="text-headline-md booking-row__name">{{ vendorName(booking) }}</h4>
+                    @if (packageTitle(booking) ?? vendorCategory(booking); as subtitle) {
+                      <p class="text-body-md booking-row__package">{{ subtitle }}</p>
+                    }
+                    @if (vendorCity(booking); as city) {
+                      <p class="text-label-sm booking-row__location">
+                        <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+                        {{ city }}
+                      </p>
                     }
                   </div>
                 </div>
 
-                <div class="booking-row__meta">
-                  <span>
-                    <span class="material-symbols-outlined">event</span>
-                    {{ booking.eventDate | date: 'mediumDate' }}
-                    @if (booking.slotStartAt) {
-                      , {{ booking.slotStartAt | date: 'shortTime' }}
-                      @if (booking.slotEndAt) {
-                        – {{ booking.slotEndAt | date: 'shortTime' }}
-                      }
-                    }
-                  </span>
-                  @if (booking.guestCount) {
+                <div class="booking-row__info-divider" aria-hidden="true"></div>
+
+                <div class="booking-row__event">
+                  <div class="booking-row__meta">
                     <span>
-                      <span class="material-symbols-outlined">groups</span>
-                      {{ booking.guestCount }} guests
+                      <span class="material-symbols-outlined" aria-hidden="true">event</span>
+                      {{ booking.eventDate | date: 'mediumDate' }}
                     </span>
-                  }
+                    @if (booking.slotStartAt) {
+                      <span>
+                        <span class="material-symbols-outlined" aria-hidden="true">schedule</span>
+                        {{ booking.slotStartAt | date: 'shortTime' }}
+                        @if (booking.slotEndAt) {
+                          – {{ booking.slotEndAt | date: 'shortTime' }}
+                        }
+                      </span>
+                    }
+                    @if (booking.guestCount) {
+                      <span>
+                        <span class="material-symbols-outlined" aria-hidden="true">groups</span>
+                        {{ booking.guestCount }} guests
+                      </span>
+                    }
+                  </div>
+
                   @if (booking.agreedPrice !== null) {
-                    <span class="booking-row__price">
-                      {{ priceCurrency(booking) }} {{ booking.agreedPrice | number: '1.0-2' }}
-                    </span>
+                    <div class="booking-row__price-col">
+                      <span class="text-label-sm booking-row__price-label">Total price</span>
+                      <span class="booking-row__price">
+                        {{ priceCurrency(booking) }} {{ booking.agreedPrice | number: '1.0-2' }}
+                      </span>
+                    </div>
                   }
                 </div>
               </div>
 
-              <div class="booking-row__footer">
-                <div class="booking-row__status">
-                  <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
-                  @if (booking.paymentStatus === BookingPaymentStatus.Refunded) {
-                    <p class="text-label-sm booking-row__status-note">
-                      @if (booking.cancellationRefundAmount != null) {
-                        @if ((booking.cancellationRefundPercent ?? 0) >= 100) {
-                          Your full refund of {{ booking.cancellationRefundAmount | number: '1.0-2' }}
-                          {{ priceCurrency(booking) }} is on its way to your account.
-                        } @else {
-                          Your refund of {{ booking.cancellationRefundAmount | number: '1.0-2' }}
-                          {{ priceCurrency(booking) }} is on its way to your account.
-                        }
+              <div class="booking-row__payment">
+                <ui-status-badge [status]="booking.status" [paymentStatus]="booking.paymentStatus" />
+                @if (booking.paymentStatus === BookingPaymentStatus.Refunded) {
+                  <p class="text-body-md booking-row__status-note">
+                    @if (booking.cancellationRefundAmount != null) {
+                      @if ((booking.cancellationRefundPercent ?? 0) >= 100) {
+                        Your full refund of {{ booking.cancellationRefundAmount | number: '1.0-2' }}
+                        {{ priceCurrency(booking) }} is on its way to your account.
                       } @else {
-                        Your refund is on its way to your account.
+                        Your refund of {{ booking.cancellationRefundAmount | number: '1.0-2' }}
+                        {{ priceCurrency(booking) }} is on its way to your account.
                       }
-                    </p>
-                  } @else if (booking.paymentStatus === BookingPaymentStatus.DepositPaid) {
-                    <p class="text-label-sm booking-row__status-note">
-                      Remaining {{ priceCurrency(booking) }} {{ remainderAmount(booking) | number: '1.0-2' }}
-                      due before your event.
-                    </p>
-                    <ui-button
-                      variant="outline"
-                      [fullWidth]="false"
-                      [loading]="payingRemainderId() === booking.id"
-                      (click)="payRemainder(booking)"
-                    >
-                      Pay remainder now
-                    </ui-button>
-                    @if (payingRemainderId() === booking.id && remainderStatusMessage(); as msg) {
-                      <p class="text-label-sm booking-row__status-note">{{ msg }}</p>
+                    } @else {
+                      Your refund is on its way to your account.
                     }
-                  } @else if (booking.paymentStatus === BookingPaymentStatus.RemainderFailed) {
-                    <p class="text-label-sm booking-row__status-note">
-                      We couldn't charge the remaining {{ priceCurrency(booking) }}
-                      {{ remainderAmount(booking) | number: '1.0-2' }}. Please pay to keep your booking.
-                    </p>
-                    <ui-button
-                      variant="outline"
-                      [fullWidth]="false"
-                      [loading]="payingRemainderId() === booking.id"
-                      (click)="payRemainder(booking)"
-                    >
-                      Pay remainder now
-                    </ui-button>
-                    @if (payingRemainderId() === booking.id && remainderStatusMessage(); as msg) {
-                      <p class="text-label-sm booking-row__status-note">{{ msg }}</p>
-                    }
-                  }
-                </div>
-
-                <div class="booking-row__actions">
-                  @if (booking.contractDocumentUrl) {
-                    <app-document-download
-                      [url]="booking.contractDocumentUrl"
-                      label="Booking Contract"
-                      icon="description"
-                    />
-                  }
-                  @if (booking.status === BookingStatus.Pending) {
-                    <ui-button
-                      variant="outline"
-                      [fullWidth]="false"
-                      [loading]="actioningId() === booking.id"
-                      (click)="cancelBooking(booking)"
-                    >
-                      Cancel request
-                    </ui-button>
-                  }
-                  @if (booking.status === BookingStatus.Accepted) {
-                    <ui-button
-                      variant="outline"
-                      [fullWidth]="false"
-                      (click)="openRequestCancellation(booking)"
-                    >
-                      Request cancellation
-                    </ui-button>
-                  }
-                  @if (booking.status === BookingStatus.CancellationRequested) {
-                    <p class="text-label-sm booking-row__status-note">
-                      Cancellation requested{{ booking.cancellationRefundPercent !== null
-                        ? ' — estimated refund ' + booking.cancellationRefundPercent + '%'
-                        : '' }}. Waiting on admin review.
-                    </p>
-                  }
-                  @if (booking.status === BookingStatus.AwaitingConfirmation) {
-                    <ui-button
-                      [fullWidth]="false"
-                      [loading]="confirmingCompletionId() === booking.id"
-                      (click)="confirmServiceDelivered(booking)"
-                    >
-                      Confirm service delivered
-                    </ui-button>
-                  }
-                  @if (booking.status === BookingStatus.Completed) {
-                    <ui-button variant="outline" [fullWidth]="false" (click)="openReview(booking)">
-                      {{ booking.reviewId ? 'Edit your review' : 'Leave a review' }}
-                    </ui-button>
-                  }
-                  @if (
-                    (booking.status === BookingStatus.Accepted ||
-                      booking.status === BookingStatus.AwaitingConfirmation ||
-                      booking.status === BookingStatus.Completed) &&
-                    booking.disputeStatus !== DisputeStatus.Open
-                  ) {
-                    <button class="booking-row__report" type="button" (click)="openDispute(booking)">
-                      Report a problem
-                    </button>
-                  }
-
-                  <button
-                    class="booking-row__report"
-                    type="button"
-                    (click)="toggleTimeline(booking)"
+                  </p>
+                } @else if (booking.paymentStatus === BookingPaymentStatus.DepositPaid) {
+                  <p class="text-body-md booking-row__status-note">
+                    Remaining {{ priceCurrency(booking) }} {{ remainderAmount(booking) | number: '1.0-2' }}
+                    due before your event.
+                  </p>
+                  <ui-button
+                    class="booking-row__pay-btn"
+                    [fullWidth]="false"
+                    [loading]="payingRemainderId() === booking.id"
+                    (click)="payRemainder(booking)"
                   >
-                    {{ timelineOpenId() === booking.id ? 'Hide activity' : 'View activity' }}
+                    <span class="material-symbols-outlined" aria-hidden="true">payments</span>
+                    Pay remainder now
+                  </ui-button>
+                  @if (payingRemainderId() === booking.id && remainderStatusMessage(); as msg) {
+                    <p class="text-label-sm booking-row__status-note">{{ msg }}</p>
+                  }
+                } @else if (booking.paymentStatus === BookingPaymentStatus.RemainderFailed) {
+                  <p class="text-body-md booking-row__status-note">
+                    We couldn't charge the remaining {{ priceCurrency(booking) }}
+                    {{ remainderAmount(booking) | number: '1.0-2' }}. Please pay to keep your booking.
+                  </p>
+                  <ui-button
+                    class="booking-row__pay-btn"
+                    [fullWidth]="false"
+                    [loading]="payingRemainderId() === booking.id"
+                    (click)="payRemainder(booking)"
+                  >
+                    <span class="material-symbols-outlined" aria-hidden="true">payments</span>
+                    Pay remainder now
+                  </ui-button>
+                  @if (payingRemainderId() === booking.id && remainderStatusMessage(); as msg) {
+                    <p class="text-label-sm booking-row__status-note">{{ msg }}</p>
+                  }
+                }
+                @if (booking.status === BookingStatus.CancellationRequested) {
+                  <p class="text-body-md booking-row__status-note">
+                    Cancellation requested{{ booking.cancellationRefundPercent !== null
+                      ? ' — estimated refund ' + booking.cancellationRefundPercent + '%'
+                      : '' }}. Waiting on admin review.
+                  </p>
+                }
+              </div>
+
+              <div class="booking-row__actions">
+                @if (booking.contractDocumentUrl) {
+                  <app-document-download
+                    [url]="booking.contractDocumentUrl"
+                    label="Booking Contract"
+                    icon="description"
+                  />
+                }
+                @if (booking.status === BookingStatus.Pending) {
+                  <ui-button
+                    variant="outline"
+                    [fullWidth]="false"
+                    [loading]="actioningId() === booking.id"
+                    (click)="cancelBooking(booking)"
+                  >
+                    Cancel request
+                  </ui-button>
+                }
+                @if (booking.status === BookingStatus.Accepted) {
+                  <ui-button
+                    variant="outline"
+                    [fullWidth]="false"
+                    (click)="openRequestCancellation(booking)"
+                  >
+                    Request cancellation
+                  </ui-button>
+                }
+                @if (booking.status === BookingStatus.AwaitingConfirmation) {
+                  <ui-button
+                    [fullWidth]="false"
+                    [loading]="confirmingCompletionId() === booking.id"
+                    (click)="confirmServiceDelivered(booking)"
+                  >
+                    Confirm service delivered
+                  </ui-button>
+                }
+                @if (booking.status === BookingStatus.Completed) {
+                  <ui-button variant="outline" [fullWidth]="false" (click)="openReview(booking)">
+                    {{ booking.reviewId ? 'Edit your review' : 'Leave a review' }}
+                  </ui-button>
+                }
+                @if (
+                  (booking.status === BookingStatus.Accepted ||
+                    booking.status === BookingStatus.AwaitingConfirmation ||
+                    booking.status === BookingStatus.Completed) &&
+                  booking.disputeStatus !== DisputeStatus.Open
+                ) {
+                  <button class="booking-row__report" type="button" (click)="openDispute(booking)">
+                    <span class="material-symbols-outlined" aria-hidden="true">flag</span>
+                    Report a problem
                   </button>
-                </div>
+                }
+
+                <button class="booking-row__report" type="button" (click)="toggleTimeline(booking)">
+                  <span class="material-symbols-outlined" aria-hidden="true">history</span>
+                  {{ timelineOpenId() === booking.id ? 'Hide activity' : 'View activity' }}
+                  <span class="material-symbols-outlined booking-row__report-chevron" aria-hidden="true">
+                    {{ timelineOpenId() === booking.id ? 'expand_less' : 'chevron_right' }}
+                  </span>
+                </button>
               </div>
 
               @if (timelineOpenId() === booking.id) {

@@ -220,6 +220,18 @@ export class EventPlanDetail implements OnInit {
     return this.vendorsById().get(booking.vendorId)?.logoUrl ?? null;
   }
 
+  protected vendorCoverImage(booking: BookingRequest): string | null {
+    return this.vendorsById().get(booking.vendorId)?.coverImageUrl ?? null;
+  }
+
+  protected vendorCategory(booking: BookingRequest): string | null {
+    return this.vendorsById().get(booking.vendorId)?.categoryName ?? null;
+  }
+
+  protected vendorCity(booking: BookingRequest): string | null {
+    return this.vendorsById().get(booking.vendorId)?.city ?? null;
+  }
+
   protected packageTitle(booking: BookingRequest): string | null {
     return booking.vendorPackageId
       ? (this.packagesById().get(booking.vendorPackageId)?.title ?? null)

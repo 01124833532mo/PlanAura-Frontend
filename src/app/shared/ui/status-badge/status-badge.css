@@ -1,11 +1,16 @@
 .status-badge {
   display: inline-flex;
   align-items: center;
+  gap: 0.3rem;
   padding: 0.3rem 0.85rem;
   border-radius: var(--radius-full);
   font-size: var(--font-label-sm-size);
   font-weight: 700;
   white-space: nowrap;
+}
+
+.status-badge__icon {
+  font-size: 1.05rem;
 }
 
 .status-badge--pending {

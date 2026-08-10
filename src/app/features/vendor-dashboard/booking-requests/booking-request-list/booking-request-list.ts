@@ -17,6 +17,7 @@ import { VendorPackage } from '../../../../core/interfaces/vendor-package.model'
 import { VendorBookingRequestService } from '../../../../core/services/vendor-booking-request.service';
 import { VendorPackageService } from '../../../../core/services/vendor-package.service';
 import { VendorProfileStateService } from '../../../../core/services/vendor-profile-state.service';
+import { confirmAcceptBooking } from '../../../../shared/utils/confirm-accept-booking';
 import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
 import { BookingRequestDetails } from '../booking-request-details/booking-request-details';
 import { RejectBookingDialog } from '../reject-booking-dialog/reject-booking-dialog';
@@ -257,8 +258,8 @@ export class BookingRequestList implements OnInit {
     this.detailsTarget.set(null);
   }
 
-  protected accept(booking: BookingRequest): void {
-    if (!confirm('Accept this booking request? The client will be charged now.')) {
+  protected async accept(booking: BookingRequest): Promise<void> {
+    if (!(await confirmAcceptBooking())) {
       return;
     }
 

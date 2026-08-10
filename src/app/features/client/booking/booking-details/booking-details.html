@@ -120,6 +120,17 @@
           }
         </section>
 
+        <!-- ============ Messages (unlocked once the vendor accepts) ============ -->
+        @if (b.vendorAgreedAt) {
+          <section class="card-luxe luxe-shadow booking-details-section animate-fade-up stagger-3">
+            <h3 class="text-headline-sm booking-details-section__heading">
+              <span class="material-symbols-outlined" aria-hidden="true">forum</span>
+              Message the vendor
+            </h3>
+            <app-booking-chat [messages]="chatMessages()" [sending]="chatSending()" (send)="sendChatMessage($event)" />
+          </section>
+        }
+
         <!-- ============ Activity ============ -->
         <section class="card-luxe luxe-shadow booking-details-section animate-fade-up stagger-3">
           <h3 class="text-headline-sm booking-details-section__heading">

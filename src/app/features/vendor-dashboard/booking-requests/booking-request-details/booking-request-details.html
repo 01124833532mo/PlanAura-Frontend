@@ -131,6 +131,10 @@
       </div>
     }
 
+    @if (booking.vendorAgreedAt) {
+      <app-booking-chat [messages]="chatMessages()" [sending]="chatSending()" (send)="sendChatMessage($event)" />
+    }
+
     <app-booking-timeline
       [entries]="timelineEntries()"
       [loading]="timelineLoading()"

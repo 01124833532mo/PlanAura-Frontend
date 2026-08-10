@@ -5,6 +5,7 @@ import { API_BASE_URL } from '../config/app-config';
 import {
   AgreementPreviewRequest,
   AgreementPreviewResult,
+  BookingChatMessage,
   BookingPaymentQuote,
   BookingPaymentQuoteRequest,
   BookingRequest,
@@ -126,6 +127,30 @@ export class BookingRequestService {
   disputeBooking(id: number, reason: string): Observable<BookingRequest> {
     return this.http.post<BookingRequest>(`${API_BASE_URL}/booking-requests/${id}/dispute`, {
       reason,
+    });
+  }
+
+  /**
+   * POST /api/booking-requests/{id}/messages — sends a message on this booking's client/vendor chat
+   * thread. Only valid once the vendor has accepted (see BookingRequest.vendorAgreedAt).
+   */
+  sendChatMessage(id: number, content: string): Observable<BookingChatMessage> {
+    return this.http.post<BookingChatMessage>(`${API_BASE_URL}/booking-requests/${id}/messages`, {
+      content,
+    });
+  }
+
+  /**
+   * GET /api/booking-requests/{id}/messages — this booking's chat messages, oldest first. Pass
+   * afterId (the last message id already held) to fetch only newer ones when polling.
+   */
+  getChatMessages(id: number, afterId?: number): Observable<BookingChatMessage[]> {
+    let params = new HttpParams();
+    if (afterId !== undefined) {
+      params = params.set('afterId', afterId);
+    }
+    return this.http.get<BookingChatMessage[]>(`${API_BASE_URL}/booking-requests/${id}/messages`, {
+      params,
     });
   }
 }

@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../config/app-config';
 import {
+  BookingChatMessage,
   BookingRequest,
   BookingRequestFilter,
   BookingStatusHistoryEntry,
@@ -91,6 +92,32 @@ export class VendorBookingRequestService {
     return this.http.post<BookingRequest>(
       `${API_BASE_URL}/booking-requests/incoming/${id}/dispute`,
       { reason },
+    );
+  }
+
+  /**
+   * POST /api/booking-requests/incoming/{id}/messages — sends a message on this booking's
+   * client/vendor chat thread. Only valid once this vendor has accepted the request.
+   */
+  sendChatMessage(id: number, content: string): Observable<BookingChatMessage> {
+    return this.http.post<BookingChatMessage>(
+      `${API_BASE_URL}/booking-requests/incoming/${id}/messages`,
+      { content },
+    );
+  }
+
+  /**
+   * GET /api/booking-requests/incoming/{id}/messages — this booking's chat messages, oldest first.
+   * Pass afterId (the last message id already held) to fetch only newer ones when polling.
+   */
+  getChatMessages(id: number, afterId?: number): Observable<BookingChatMessage[]> {
+    let params = new HttpParams();
+    if (afterId !== undefined) {
+      params = params.set('afterId', afterId);
+    }
+    return this.http.get<BookingChatMessage[]>(
+      `${API_BASE_URL}/booking-requests/incoming/${id}/messages`,
+      { params },
     );
   }
 }

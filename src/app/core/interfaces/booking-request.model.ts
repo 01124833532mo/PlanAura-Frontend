@@ -295,3 +295,17 @@ export interface PagedBookingRequestList {
   page: number;
   pageSize: number;
 }
+
+/**
+ * Mirrors Planura.Core.Application.Models.BookingChatMessageDto — one message on the booking's
+ * client/vendor chat thread, unlocked once the vendor has accepted (see BookingRequest.vendorAgreedAt).
+ */
+export interface BookingChatMessage {
+  id: number;
+  bookingRequestId: number;
+  senderUserId: number;
+  senderName: string;
+  isMine: boolean;
+  content: string;
+  createdAt: string;
+}

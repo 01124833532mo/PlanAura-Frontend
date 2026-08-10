@@ -1,0 +1,43 @@
+<div class="booking-chat">
+  <div class="booking-chat__header">
+    <span class="material-symbols-outlined" aria-hidden="true">forum</span>
+    <h4 class="text-title-md">Messages</h4>
+  </div>
+
+  <div class="booking-chat__list">
+    @if (messages.length === 0) {
+      <p class="text-body-md booking-chat__empty">
+        No messages yet — say hello and coordinate the details here.
+      </p>
+    }
+
+    @for (message of messages; track message.id) {
+      <div class="booking-chat__row" [class.booking-chat__row--mine]="message.isMine">
+        <div class="booking-chat__bubble">
+          @if (!message.isMine) {
+            <span class="text-label-sm booking-chat__sender">{{ message.senderName }}</span>
+          }
+          <p class="text-body-md booking-chat__text">{{ message.content }}</p>
+          <span class="text-label-sm booking-chat__at">{{ message.createdAt | date: 'shortTime' }}</span>
+        </div>
+      </div>
+    }
+
+    <div #scrollAnchor></div>
+  </div>
+
+  <form class="booking-chat__composer" (submit)="$event.preventDefault(); submit()">
+    <input
+      #composer
+      class="booking-chat__input"
+      type="text"
+      placeholder="Type a message…"
+      maxlength="2000"
+      [disabled]="sending"
+      (keydown.enter)="$event.preventDefault(); submit()"
+    />
+    <button class="booking-chat__send" type="submit" [disabled]="sending" aria-label="Send message">
+      <span class="material-symbols-outlined" aria-hidden="true">send</span>
+    </button>
+  </form>
+</div>

@@ -1,8 +1,10 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Subscription, interval, startWith, switchMap } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
+import { BookingChat } from '../../../../shared/ui/booking-chat/booking-chat';
 import { Button } from '../../../../shared/ui/button/button';
 import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
 import { DocumentDownload } from '../../../../shared/ui/document-download/document-download';
@@ -12,6 +14,7 @@ import { PaymentBreakdown } from '../../../../shared/ui/payment-breakdown/paymen
 import { BookingTimeline } from '../../../../shared/ui/booking-timeline/booking-timeline';
 import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
+  BookingChatMessage,
   BookingPaymentStatus,
   BookingRequest,
   BookingStatus,
@@ -44,6 +47,7 @@ import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
     RouterLink,
     ReactiveFormsModule,
     AlertBanner,
+    BookingChat,
     Button,
     ConfirmDialog,
     DocumentDownload,
@@ -57,7 +61,7 @@ import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
   templateUrl: './booking-details.html',
   styleUrl: './booking-details.css',
 })
-export class BookingDetails implements OnInit {
+export class BookingDetails implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
@@ -82,6 +86,11 @@ export class BookingDetails implements OnInit {
   protected readonly timeline = signal<BookingStatusHistoryEntry[] | null>(null);
   protected readonly timelineLoading = signal(false);
   protected readonly timelineError = signal<string | null>(null);
+
+  // Chat (unlocked once vendorAgreedAt is set) — polled, not push, see BookingChat/BookingRequestService.
+  protected readonly chatMessages = signal<BookingChatMessage[]>([]);
+  protected readonly chatSending = signal(false);
+  private chatPollSubscription: Subscription | null = null;
 
   /** agreedPrice has no currency field of its own — sourced from the package, EGP fallback otherwise. */
   protected readonly currency = computed(() => this.pkg()?.currency ?? 'EGP');
@@ -119,6 +128,10 @@ export class BookingDetails implements OnInit {
     this.load();
   }
 
+  ngOnDestroy(): void {
+    this.chatPollSubscription?.unsubscribe();
+  }
+
   private load(): void {
     this.loading.set(true);
     this.error.set(null);
@@ -129,10 +142,51 @@ export class BookingDetails implements OnInit {
         this.loading.set(false);
         this.loadRelated(booking);
         this.loadTimeline();
+        if (booking.vendorAgreedAt) {
+          this.startChatPolling();
+        }
       },
       error: (err: AppError) => {
         this.error.set(err);
         this.loading.set(false);
+      },
+    });
+  }
+
+  // ---- Chat (unlocked once vendorAgreedAt is set) ----
+
+  /** Polls every 6s for messages newer than the last one already held — see BookingChat's header comment. */
+  private startChatPolling(): void {
+    this.chatPollSubscription?.unsubscribe();
+    this.chatPollSubscription = interval(6000)
+      .pipe(
+        startWith(0),
+        switchMap(() => {
+          const lastId = this.chatMessages().at(-1)?.id;
+          return this.bookingService.getChatMessages(this.bookingId, lastId);
+        }),
+      )
+      .subscribe({
+        next: (newMessages) => {
+          if (newMessages.length > 0) {
+            this.chatMessages.update((list) => [...list, ...newMessages]);
+          }
+        },
+        // A poll hiccup shouldn't surface as a page-level error or stop future polls.
+        error: () => undefined,
+      });
+  }
+
+  protected sendChatMessage(content: string): void {
+    this.chatSending.set(true);
+    this.bookingService.sendChatMessage(this.bookingId, content).subscribe({
+      next: (message) => {
+        this.chatMessages.update((list) => [...list, message]);
+        this.chatSending.set(false);
+      },
+      error: (err: AppError) => {
+        this.chatSending.set(false);
+        notifyError('Could not send message', err.message);
       },
     });
   }

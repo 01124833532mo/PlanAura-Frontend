@@ -7,7 +7,7 @@
   font-size: var(--font-label-md-size);
   font-weight: var(--font-label-md-weight);
   color: var(--color-charcoal);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .ui-dropzone {
@@ -45,13 +45,19 @@
   cursor: pointer;
 }
 
+/* The box itself centers its content on both axes (not just text-align on
+   the labels) — flex column, centered cross-axis (horizontal) and centered
+   main-axis (vertical), so icon + title + hint form one centered vertical
+   composition instead of a left-aligned row. Padding stays compact (was
+   28px top/bottom pre-redesign) so this still reads as a slim control, not
+   the old oversized rectangle — centering, not height, was the fix here. */
 .ui-dropzone__prompt {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1.75rem 1rem;
+  gap: 0.4rem;
+  padding: 1rem 0.9rem;
   color: var(--color-secondary);
   cursor: pointer;
   text-align: center;
@@ -61,14 +67,28 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
   border-radius: var(--radius-full);
   background: var(--gradient-primary-soft);
   color: var(--color-primary);
   transition:
     transform var(--dur-base) var(--ease-spring),
     background var(--dur-base) var(--ease-smooth);
+}
+
+.ui-dropzone__icon-wrap .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.ui-dropzone__prompt-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  min-width: 0;
+  text-align: center;
 }
 
 .ui-dropzone--dragging .ui-dropzone__icon-wrap {
@@ -86,54 +106,84 @@
   color: var(--color-secondary);
 }
 
-.ui-dropzone__list {
+/* ---- Thumbnail previews — a real image, not a filename chip, so a vendor can confirm at a
+   glance that the right ID photo / portfolio shot actually got picked up. ---- */
+.ui-dropzone__previews {
   list-style: none;
   margin: 0.75rem 0 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.6rem;
 }
 
-.ui-dropzone__chip {
+.ui-dropzone__preview {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface-container);
+  box-shadow: inset 0 0 0 1px var(--color-subtle-border);
+  transition: box-shadow var(--dur-fast) var(--ease-smooth);
+}
+
+.ui-dropzone__preview:hover {
+  box-shadow: inset 0 0 0 1px var(--color-primary-container), var(--shadow-sm);
+}
+
+.ui-dropzone__preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ui-dropzone__preview-scrim {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 55%;
+  background: linear-gradient(0deg, rgba(26, 22, 19, 0.72) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.ui-dropzone__preview-remove {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.6rem;
-  background: var(--color-surface-container-lowest);
-  border: 1px solid var(--color-subtle-border);
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
   border-radius: var(--radius-full);
-  font-size: var(--font-label-sm-size);
-  color: var(--color-charcoal);
-  box-shadow: var(--shadow-xs);
-  transition: box-shadow var(--dur-fast) var(--ease-smooth), border-color var(--dur-fast) var(--ease-smooth);
+  background: rgba(26, 22, 19, 0.55);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-smooth), transform var(--dur-fast) var(--ease-spring);
 }
 
-.ui-dropzone__chip:hover {
-  border-color: var(--color-primary-container);
-  box-shadow: var(--shadow-sm);
+.ui-dropzone__preview-remove:hover {
+  background: var(--color-error);
+  transform: scale(1.08);
 }
 
-.ui-dropzone__chip-name {
-  max-width: 160px;
+.ui-dropzone__preview-remove .material-symbols-outlined {
+  font-size: 15px;
+}
+
+.ui-dropzone__preview-name {
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.4rem;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.ui-dropzone__chip-remove {
-  display: flex;
-  background: none;
-  border: none;
-  color: var(--color-secondary);
-  cursor: pointer;
-  padding: 0;
-  border-radius: var(--radius-full);
-  transition: color var(--dur-fast) var(--ease-smooth);
-}
-
-.ui-dropzone__chip-remove:hover {
-  color: var(--color-error);
 }
 
 .ui-field__error {

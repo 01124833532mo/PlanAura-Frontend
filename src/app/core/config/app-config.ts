@@ -12,7 +12,6 @@
  * Planura.Apis/Properties/launchSettings.json ("https": https://localhost:7123).
  */
 export const API_BASE_URL = 'https://planaura.runasp.net/api';
-
 /**
  * Origin the API server also serves static files from (wwwroot), i.e.
  * API_BASE_URL without the trailing "/api". Some endpoints (e.g. admin

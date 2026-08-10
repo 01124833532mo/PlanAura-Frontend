@@ -42,7 +42,7 @@
   font-size: 16px;
 }
 .admin-timeline__dot--purple { background: var(--admin-purple-100); color: var(--admin-purple-600); }
-.admin-timeline__dot--cyan { background: var(--admin-cyan-100); color: #0e7490; }
+.admin-timeline__dot--cyan { background: var(--admin-cyan-100); color: #4d6aa0; }
 .admin-timeline__dot--success { background: var(--admin-success-100); color: var(--admin-success-600); }
 .admin-timeline__dot--warning { background: var(--admin-warning-100); color: var(--admin-warning-600); }
 .admin-timeline__dot--danger { background: var(--admin-danger-100); color: var(--admin-danger-600); }

@@ -398,6 +398,12 @@ export const routes: Routes = [
           import('./features/client/booking/my-bookings/my-bookings').then((m) => m.MyBookings),
       },
       {
+        path: 'favorites',
+        data: { title: 'My Favorites' },
+        loadComponent: () =>
+          import('./features/client/favorites/favorites').then((m) => m.Favorites),
+      },
+      {
         // Must come after 'bookings' (2-segment, matches first) — a distinct
         // 2-segment path itself, so no ambiguity with event-plans' pattern.
         path: 'bookings/:id',

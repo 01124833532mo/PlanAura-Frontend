@@ -53,6 +53,17 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 14%, transparent);
 }
 
+/* Opt-in compact mode, matching text-field/password-field's — same font
+   size (never shrink text), tighter padding for density-sensitive layouts
+   like the vendor onboarding wizard. */
+.ui-field__label--compact {
+  margin-bottom: 0.3rem;
+}
+
+.ui-field__input--compact.ui-select {
+  padding: 0.6rem 2.6rem 0.6rem 0.9rem;
+}
+
 .ui-select__chevron {
   position: absolute;
   top: 50%;

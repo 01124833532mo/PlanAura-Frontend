@@ -1,8 +1,21 @@
 <div class="client-dashboard">
-  <div class="client-dashboard__header animate-fade-up">
+  <div class="client-dashboard__header bg-mesh animate-fade-up">
     <div>
-      <h1 class="text-headline-md">Welcome back</h1>
-      <p class="text-body-md">Here's what's happening with your events.</p>
+      <span class="kicker">Your account</span>
+      <h1 class="client-dashboard__headline">
+        @if (firstName(); as name) {
+          Welcome back, <span class="ink">{{ name }}</span>
+        } @else {
+          Welcome back
+        }
+      </h1>
+      <p class="text-body-md">
+        @if (nextBooking(); as next) {
+          Your next event is {{ next.eventDate | date: 'mediumDate' }} — here's what's happening.
+        } @else {
+          Here's what's happening with your events.
+        }
+      </p>
     </div>
     <ui-button [fullWidth]="false" (click)="goToNewPlan()">
       <span class="material-symbols-outlined">add</span>
@@ -11,6 +24,39 @@
   </div>
 
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  <!-- ============ Needs your attention — the whole point of the rebuild: surface booking/payment
+       state that the old dashboard ignored entirely. ============ -->
+  @if (!loading() && attentionItems().length > 0) {
+    <section class="client-dashboard__attention animate-fade-up stagger-1">
+      <div class="client-dashboard__attention-heading">
+        <span class="material-symbols-outlined" aria-hidden="true">notification_important</span>
+        <h3 class="text-headline-sm">Needs your attention</h3>
+      </div>
+      <div class="client-dashboard__attention-list">
+        @for (item of attentionItems(); track item.bookingId) {
+          <button
+            type="button"
+            class="client-dashboard__attention-item"
+            [class.client-dashboard__attention-item--error]="item.tone === 'error'"
+            (click)="viewBooking(item.bookingId)"
+          >
+            <span class="client-dashboard__attention-icon material-symbols-outlined" aria-hidden="true">
+              {{ item.icon }}
+            </span>
+            <span class="client-dashboard__attention-body">
+              <span class="text-label-md">{{ item.title }}</span>
+              <span class="text-label-sm client-dashboard__attention-detail">{{ item.detail }}</span>
+            </span>
+            <span class="client-dashboard__attention-cta">
+              {{ item.cta }}
+              <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+            </span>
+          </button>
+        }
+      </div>
+    </section>
+  }
 
   <div class="client-dashboard__stats animate-fade-up stagger-1">
     <button class="client-dashboard__stat hover-lift" type="button" (click)="goToPlans()">
@@ -27,6 +73,15 @@
       <span class="client-dashboard__stat-body">
         <span class="client-dashboard__stat-value">{{ upcomingCount() }}</span>
         <span class="client-dashboard__stat-label">Upcoming</span>
+      </span>
+    </button>
+    <button class="client-dashboard__stat hover-lift" type="button" (click)="goToBookings()">
+      <span class="client-dashboard__stat-icon client-dashboard__stat-icon--alt material-symbols-outlined" aria-hidden="true">
+        event_available
+      </span>
+      <span class="client-dashboard__stat-body">
+        <span class="client-dashboard__stat-value">{{ activeBookingsCount() }}</span>
+        <span class="client-dashboard__stat-label">Confirmed Bookings</span>
       </span>
     </button>
   </div>
@@ -132,16 +187,99 @@
               chevron_right
             </span>
           </a>
+          <a class="client-dashboard__action" routerLink="/client/favorites">
+            <span class="client-dashboard__action-icon material-symbols-outlined" aria-hidden="true">
+              favorite
+            </span>
+            <span class="client-dashboard__action-body">
+              <span class="text-label-md">Saved vendors</span>
+              <span class="text-label-sm client-dashboard__action-sub">Your favorites list</span>
+            </span>
+            <span class="material-symbols-outlined client-dashboard__action-chevron" aria-hidden="true">
+              chevron_right
+            </span>
+          </a>
         </div>
       </section>
 
-      <section class="client-dashboard__panel client-dashboard__tip">
-        <span class="client-dashboard__tip-icon material-symbols-outlined" aria-hidden="true">tips_and_updates</span>
-        <p class="text-body-md">
-          <strong>Tip —</strong>
-          add style notes to your event plan to help vendors tailor their proposals to you.
-        </p>
+      <!-- ============ Recent notifications — a glanceable slice; the bell owns full read/mark-read. ============ -->
+      <section class="client-dashboard__panel">
+        <div class="client-dashboard__panel-header client-dashboard__panel-header--compact">
+          <span class="client-dashboard__panel-icon material-symbols-outlined" aria-hidden="true">notifications</span>
+          <h3 class="text-headline-sm">Recent activity</h3>
+        </div>
+
+        @if (notificationsLoading() && notifications().length === 0) {
+          <div class="client-dashboard__notif-list">
+            <div class="skeleton client-dashboard__notif-skeleton"></div>
+            <div class="skeleton client-dashboard__notif-skeleton"></div>
+          </div>
+        } @else if (recentNotifications().length === 0) {
+          <p class="text-body-md client-dashboard__notif-empty">You're all caught up — nothing new to report.</p>
+        } @else {
+          <div class="client-dashboard__notif-list">
+            @for (n of recentNotifications(); track n.id) {
+              <button
+                type="button"
+                class="client-dashboard__notif"
+                [class.client-dashboard__notif--unread]="!n.isRead"
+                (click)="onNotificationClick(n.id, n.isRead)"
+              >
+                <span class="client-dashboard__notif-dot" aria-hidden="true"></span>
+                <span class="client-dashboard__notif-body">
+                  <span class="text-label-md">{{ n.title }}</span>
+                  <span class="text-label-sm client-dashboard__notif-time">{{ n.createdAt | date: 'MMM d, h:mm a' }}</span>
+                </span>
+              </button>
+            }
+          </div>
+        }
       </section>
+
+      <!-- ============ Recommended vendors — real data (top-rated via the existing browse sort). ============ -->
+      @if (recommendedLoading() || recommendedVendors().length > 0) {
+        <section class="client-dashboard__panel">
+          <div class="client-dashboard__panel-header client-dashboard__panel-header--compact">
+            <span class="client-dashboard__panel-icon material-symbols-outlined" aria-hidden="true">star</span>
+            <h3 class="text-headline-sm">Top-rated for you</h3>
+          </div>
+
+          @if (recommendedLoading()) {
+            <div class="client-dashboard__reco-list">
+              <div class="skeleton client-dashboard__reco-skeleton"></div>
+              <div class="skeleton client-dashboard__reco-skeleton"></div>
+            </div>
+          } @else {
+            <div class="client-dashboard__reco-list">
+              @for (v of recommendedVendors(); track v.id) {
+                <a class="client-dashboard__reco" [routerLink]="['/vendors', v.id]">
+                  <span class="client-dashboard__reco-media">
+                    @if (v.logoUrl) {
+                      <img [src]="v.logoUrl" [alt]="v.businessName" loading="lazy" />
+                    } @else {
+                      <span class="material-symbols-outlined">storefront</span>
+                    }
+                  </span>
+                  <span class="client-dashboard__reco-body">
+                    <span class="text-label-md client-dashboard__reco-title">{{ v.businessName }}</span>
+                    <span class="text-label-sm client-dashboard__reco-meta">
+                      @if (v.reviewCount > 0) {
+                        <span class="material-symbols-outlined">star</span>
+                        {{ v.avgRating | number: '1.1-1' }}
+                        @if (v.category) {
+                          · {{ v.category }}
+                        }
+                      } @else if (v.category) {
+                        {{ v.category }}
+                      }
+                    </span>
+                  </span>
+                </a>
+              }
+            </div>
+          }
+        </section>
+      }
     </aside>
   </div>
 </div>

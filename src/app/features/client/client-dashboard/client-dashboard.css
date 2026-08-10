@@ -14,15 +14,28 @@
   justify-content: space-between;
   gap: var(--space-md);
   flex-wrap: wrap;
+  padding: var(--space-lg) var(--space-xl);
+  border-radius: var(--radius-2xl);
+  background: var(--gradient-warm-bg);
+  border: 1px solid var(--color-subtle-border);
+  overflow: hidden;
 }
 
-.client-dashboard__header h1 {
+.client-dashboard__header .kicker {
+  margin-bottom: 0.5rem;
+}
+
+.client-dashboard__headline {
   font-family: var(--font-family-display);
+  font-size: var(--font-headline-md-size);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-charcoal);
 }
 
 .client-dashboard__header p {
   color: var(--color-secondary);
-  margin-top: 0.25rem;
+  margin-top: 0.35rem;
 }
 
 /* ==========================================================================
@@ -31,8 +44,14 @@
 
 .client-dashboard__stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--gutter);
+}
+
+@media (max-width: 900px) {
+  .client-dashboard__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .client-dashboard__stat {
@@ -417,29 +436,247 @@ button.client-dashboard__stat {
 }
 
 /* ==========================================================================
-   Tip card
+   Needs your attention — bookings with a payment failure or awaiting the
+   client's delivery confirmation. The single biggest gap the old dashboard
+   had: it never looked at booking/payment state at all.
    ========================================================================== */
 
-.client-dashboard__tip {
-  flex-direction: row;
-  align-items: flex-start;
+.client-dashboard__attention {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-sm);
-  background: var(--gradient-primary-soft);
-  border-color: transparent;
+  padding: var(--space-lg);
+  background: var(--color-error-container);
+  border: 1px solid rgba(196, 69, 58, 0.2);
+  border-radius: var(--radius-xl);
 }
 
-.client-dashboard__tip-icon {
-  flex-shrink: 0;
-  color: var(--color-primary);
+.client-dashboard__attention-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-error);
+}
+
+.client-dashboard__attention-heading .material-symbols-outlined {
   font-size: 22px;
 }
 
-.client-dashboard__tip p {
-  color: var(--color-dark-gray);
+.client-dashboard__attention-heading h3 {
+  color: var(--color-charcoal);
 }
 
-.client-dashboard__tip strong {
+.client-dashboard__attention-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.client-dashboard__attention-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-lowest);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  transition: transform var(--dur-fast) var(--ease-out-expo), box-shadow var(--dur-fast) var(--ease-smooth);
+}
+
+.client-dashboard__attention-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.client-dashboard__attention-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary);
+}
+
+.client-dashboard__attention-item--error .client-dashboard__attention-icon {
+  background: var(--color-error-container);
+  color: var(--color-error);
+}
+
+.client-dashboard__attention-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.client-dashboard__attention-detail {
+  color: var(--color-secondary);
+}
+
+.client-dashboard__attention-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  flex-shrink: 0;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: var(--font-label-sm-size);
+  white-space: nowrap;
+}
+
+.client-dashboard__attention-item--error .client-dashboard__attention-cta {
+  color: var(--color-error);
+}
+
+/* ==========================================================================
+   Recent activity (notifications mini-panel)
+   ========================================================================== */
+
+.client-dashboard__notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.client-dashboard__notif-skeleton {
+  height: 48px;
+  border-radius: var(--radius-md);
+}
+
+.client-dashboard__notif-empty {
+  color: var(--color-secondary);
+}
+
+.client-dashboard__notif {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.6rem 0.5rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  transition: background var(--dur-fast) var(--ease-smooth);
+}
+
+.client-dashboard__notif:hover {
+  background: var(--color-soft-beige);
+}
+
+.client-dashboard__notif-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-top: 0.4rem;
+  border-radius: var(--radius-full);
+  background: transparent;
+}
+
+.client-dashboard__notif--unread .client-dashboard__notif-dot {
+  background: var(--color-primary);
+}
+
+.client-dashboard__notif-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.client-dashboard__notif-body .text-label-md {
   color: var(--color-charcoal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.client-dashboard__notif-time {
+  color: var(--color-secondary);
+}
+
+/* ==========================================================================
+   Recommended vendors (top-rated) mini-panel
+   ========================================================================== */
+
+.client-dashboard__reco-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.client-dashboard__reco-skeleton {
+  height: 56px;
+  border-radius: var(--radius-lg);
+}
+
+.client-dashboard__reco {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: background var(--dur-fast) var(--ease-smooth);
+}
+
+.client-dashboard__reco:hover {
+  background: var(--color-soft-beige);
+}
+
+.client-dashboard__reco-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--gradient-primary-soft);
+  color: var(--color-primary);
+}
+
+.client-dashboard__reco-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.client-dashboard__reco-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.client-dashboard__reco-title {
+  color: var(--color-charcoal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.client-dashboard__reco-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--color-secondary);
+}
+
+.client-dashboard__reco-meta .material-symbols-outlined {
+  font-size: 14px;
+  color: var(--color-rose-gold);
 }
 
 /* ==========================================================================
@@ -452,6 +689,7 @@ button.client-dashboard__stat {
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-sm);
+    padding: var(--space-md);
   }
 
   .client-dashboard__header ui-button {
@@ -476,9 +714,13 @@ button.client-dashboard__stat {
     flex-wrap: wrap;
   }
 
-  .client-dashboard__tip {
-    flex-direction: column;
-    align-items: flex-start;
+  .client-dashboard__attention-item {
+    flex-wrap: wrap;
+  }
+
+  .client-dashboard__attention-cta {
+    width: 100%;
+    justify-content: flex-end;
   }
 }
 

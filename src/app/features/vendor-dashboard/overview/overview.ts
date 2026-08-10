@@ -50,7 +50,7 @@ interface AvailabilitySummary {
 /** Bars in a fixed, meaningful order — colors picked to read at a glance (warm/waiting through to
  * negative outcomes), not just cycled from a generic palette. */
 const BOOKING_STATUS_CATEGORIES = ['Pending', 'Accepted', 'Completed', 'Cancelled', 'Rejected', 'Expired'];
-const BOOKING_STATUS_COLORS = ['#c48b72', '#e8654a', '#2f8a5b', '#8a8074', '#c4453a', '#cabdea'];
+const BOOKING_STATUS_COLORS = ['#a8763f', '#d8461f', '#1f6e5c', '#8f8477', '#b8341e', '#2b3a55'];
 
 /**
  * Single request that covers revenue trend, package performance, and the upcoming-bookings list —

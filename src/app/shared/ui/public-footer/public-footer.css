@@ -3,19 +3,48 @@
 }
 
 .public-footer {
-  background: var(--color-surface-container-low);
-  border-top: 1px solid var(--color-subtle-border);
-  padding: var(--space-2xl) var(--margin-desktop) var(--space-lg);
+  background: var(--gradient-ink);
+}
+
+/* ---- Closing CTA band — the bookend to the hero, same ink surface the
+   vendor onboarding shell and legal hero already use, so the last thing a
+   visitor sees ties back to the brand instead of trailing off into a plain
+   link list. ---- */
+.public-footer__cta {
+  border-bottom: 1px solid var(--color-ink-border);
+  padding: var(--space-2xl) var(--margin-desktop);
+}
+
+.public-footer__cta-inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.public-footer__cta-title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-headline-md-size);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--color-on-ink);
+  max-width: 28ch;
+}
+
+.public-footer__cta .btn-gold-gradient {
+  margin-top: var(--space-xs);
 }
 
 .public-footer__inner {
   max-width: var(--container-max);
   margin: 0 auto;
+  padding: var(--space-xl) var(--margin-desktop) var(--space-lg);
   display: grid;
   grid-template-columns: 1.6fr 1fr 1fr 1fr;
   gap: var(--space-lg);
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--color-subtle-border);
+  border-bottom: 1px solid var(--color-ink-border);
 }
 
 .public-footer__brand-name {
@@ -25,7 +54,7 @@
   font-family: var(--font-family-display);
   font-size: 1.3rem;
   font-weight: 600;
-  color: var(--color-charcoal);
+  color: var(--color-on-ink);
 }
 
 .public-footer__brand-name .material-symbols-outlined {
@@ -42,7 +71,7 @@
 
 .public-footer__brand p {
   margin-top: var(--space-sm);
-  color: var(--color-secondary);
+  color: var(--color-on-ink-muted);
   max-width: 280px;
 }
 
@@ -57,33 +86,40 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--color-secondary);
+  color: var(--color-on-ink-muted);
   margin-bottom: 0.15rem;
 }
 
 .public-footer__col a {
-  color: var(--color-dark-gray);
+  color: var(--color-on-ink);
+  opacity: 0.82;
   text-decoration: none;
   font-size: var(--font-label-md-size);
+  transition: opacity var(--dur-fast) var(--ease-smooth);
 }
 
 .public-footer__col a:hover {
-  color: var(--color-primary);
+  opacity: 1;
+  color: var(--color-primary-container);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .public-footer__copy {
   max-width: var(--container-max);
-  margin: var(--space-md) auto 0;
+  margin: 0 auto;
+  padding: var(--space-md) var(--margin-desktop) var(--space-lg);
   text-align: center;
-  color: var(--color-secondary);
+  color: var(--color-on-ink-muted);
   font-size: var(--font-label-sm-size);
 }
 
 @media (max-width: 900px) {
-  .public-footer {
-    padding: var(--space-xl) var(--margin-mobile) var(--space-lg);
+  .public-footer__cta,
+  .public-footer__inner,
+  .public-footer__copy {
+    padding-left: var(--margin-mobile);
+    padding-right: var(--margin-mobile);
   }
 
   .public-footer__inner {

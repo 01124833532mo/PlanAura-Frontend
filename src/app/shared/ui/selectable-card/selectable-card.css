@@ -6,8 +6,8 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 0.5rem;
-  padding: 1.25rem 1rem;
+  gap: 0.35rem;
+  padding: 0.85rem 1rem;
   background: var(--color-soft-beige);
   border: 1.5px solid var(--color-subtle-border);
   border-radius: var(--radius-xl);
@@ -31,7 +31,11 @@
     linear-gradient(var(--color-surface-container-lowest), var(--color-surface-container-lowest)) padding-box,
     var(--gradient-primary) border-box;
   border: 1.5px solid transparent;
-  box-shadow: var(--shadow-glow);
+  /* --shadow-glow (0 8px 20px, 28% opacity) is tuned for small button-sized
+     elements; stretched across a card this size it reads as a garish red
+     halo rather than a selection cue. A tighter, fainter shadow still signals
+     "selected" without looking like a rendering glitch. */
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
 .ui-card--selected:hover:not(.ui-card--disabled) {
@@ -71,7 +75,7 @@
 
 .ui-card__icon {
   color: var(--color-secondary);
-  font-size: 28px;
+  font-size: 22px;
   transition: color var(--dur-base) var(--ease-smooth);
 }
 

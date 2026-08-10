@@ -7,63 +7,65 @@
     </div>
   </div>
 
-  <div class="review-card card-luxe animate-fade-up stagger-1">
-    <h3 class="review-card__title">
-      <span class="material-symbols-outlined review-card__icon" aria-hidden="true">person</span>
-      Account
-    </h3>
-    <dl class="review-card__list">
-      <dt>Full name</dt>
-      <dd>{{ account.controls.fullName.value }}</dd>
-      <dt>Email</dt>
-      <dd>{{ account.controls.email.value }}</dd>
-      <dt>Phone</dt>
-      <dd>{{ account.controls.phoneNumber.value }}</dd>
-    </dl>
-  </div>
+  <div class="review-grid">
+    <div class="review-card card-luxe animate-fade-up stagger-1">
+      <h3 class="review-card__title">
+        <span class="material-symbols-outlined review-card__icon" aria-hidden="true">person</span>
+        Account
+      </h3>
+      <dl class="review-card__list">
+        <dt>Full name</dt>
+        <dd>{{ account.controls.fullName.value }}</dd>
+        <dt>Email</dt>
+        <dd>{{ account.controls.email.value }}</dd>
+        <dt>Phone</dt>
+        <dd>{{ account.controls.phoneNumber.value }}</dd>
+      </dl>
+    </div>
 
-  <div class="review-card card-luxe animate-fade-up stagger-2">
-    <h3 class="review-card__title">
-      <span class="material-symbols-outlined review-card__icon" aria-hidden="true">storefront</span>
-      Business
-    </h3>
-    <dl class="review-card__list">
-      <dt>Name</dt>
-      <dd>{{ business.controls.businessName.value }}</dd>
-      <dt>Type</dt>
-      <dd>{{ isBusiness ? 'Business' : 'Individual' }}</dd>
-      @if (categoryName) {
-        <dt>Category</dt>
-        <dd>{{ categoryName }}</dd>
-      }
-      @if (business.controls.city.value) {
-        <dt>City</dt>
-        <dd>{{ business.controls.city.value }}</dd>
-      }
-    </dl>
-  </div>
+    <div class="review-card card-luxe animate-fade-up stagger-2">
+      <h3 class="review-card__title">
+        <span class="material-symbols-outlined review-card__icon" aria-hidden="true">storefront</span>
+        Business
+      </h3>
+      <dl class="review-card__list">
+        <dt>Name</dt>
+        <dd>{{ business.controls.businessName.value }}</dd>
+        <dt>Type</dt>
+        <dd>{{ isBusiness ? 'Business' : 'Individual' }}</dd>
+        @if (categoryName) {
+          <dt>Category</dt>
+          <dd>{{ categoryName }}</dd>
+        }
+        @if (business.controls.city.value) {
+          <dt>City</dt>
+          <dd>{{ business.controls.city.value }}</dd>
+        }
+      </dl>
+    </div>
 
-  <div class="review-card card-luxe animate-fade-up stagger-3">
-    <h3 class="review-card__title">
-      <span class="material-symbols-outlined review-card__icon" aria-hidden="true">verified_user</span>
-      Documents
-    </h3>
-    <ul class="review-card__files">
-      <li>National ID (front): {{ documents.controls.nationalIdFront.value?.name ?? '—' }}</li>
-      <li>National ID (back): {{ documents.controls.nationalIdBack.value?.name ?? '—' }}</li>
-      <li>Selfie with ID: {{ documents.controls.selfieWithId.value?.name ?? '—' }}</li>
-      @if (isBusiness) {
-        <li>Commercial registration: {{ documents.controls.commercialRegistration.value?.name ?? '—' }}</li>
-        <li>Tax card: {{ documents.controls.taxCard.value?.name ?? '—' }}</li>
-      }
-    </ul>
-  </div>
+    <div class="review-card card-luxe animate-fade-up stagger-3">
+      <h3 class="review-card__title">
+        <span class="material-symbols-outlined review-card__icon" aria-hidden="true">verified_user</span>
+        Documents
+      </h3>
+      <ul class="review-card__files">
+        <li>National ID (front): {{ documents.controls.nationalIdFront.value?.name ?? '—' }}</li>
+        <li>National ID (back): {{ documents.controls.nationalIdBack.value?.name ?? '—' }}</li>
+        <li>Selfie with ID: {{ documents.controls.selfieWithId.value?.name ?? '—' }}</li>
+        @if (isBusiness) {
+          <li>Commercial registration: {{ documents.controls.commercialRegistration.value?.name ?? '—' }}</li>
+          <li>Tax card: {{ documents.controls.taxCard.value?.name ?? '—' }}</li>
+        }
+      </ul>
+    </div>
 
-  <div class="review-card card-luxe animate-fade-up stagger-4">
-    <h3 class="review-card__title">
-      <span class="material-symbols-outlined review-card__icon" aria-hidden="true">photo_library</span>
-      Portfolio
-    </h3>
-    <p class="text-body-md">{{ portfolio.controls.images.value.length }} image(s) attached.</p>
+    <div class="review-card card-luxe animate-fade-up stagger-4">
+      <h3 class="review-card__title">
+        <span class="material-symbols-outlined review-card__icon" aria-hidden="true">photo_library</span>
+        Portfolio
+      </h3>
+      <p class="text-body-md">{{ portfolio.controls.images.value.length }} image(s) attached.</p>
+    </div>
   </div>
 </div>

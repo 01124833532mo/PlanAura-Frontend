@@ -1,7 +1,7 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, forkJoin, of } from 'rxjs';
+import { catchError, firstValueFrom, forkJoin, of } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { Button } from '../../../../shared/ui/button/button';
 import { DocumentDownload } from '../../../../shared/ui/document-download/document-download';
@@ -11,6 +11,8 @@ import { AppError } from '../../../../core/interfaces/api-response.model';
 import {
   BookingPaymentStatus,
   BookingRequest,
+  BookingStatus,
+  PayRemainderResult,
 } from '../../../../core/interfaces/booking-request.model';
 import { EventPlan } from '../../../../core/interfaces/event-plan.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
@@ -19,6 +21,12 @@ import { BookingRequestService } from '../../../../core/services/booking-request
 import { EventPlanService } from '../../../../core/services/event-plan.service';
 import { VendorPackageService } from '../../../../core/services/vendor-package.service';
 import { VendorService } from '../../../../core/services/vendor.service';
+import { STRIPE_PUBLISHABLE_KEY } from '../../../../core/config/app-config';
+import { StripeService } from '../../../../core/services/stripe.service';
+import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
+
+/** The tab groups shown above the list — coarser than the 8 raw BookingStatus values so the bar stays scannable. */
+type BookingTab = 'all' | 'needsAction' | 'upcoming' | 'completed' | 'closed';
 
 /**
  * Read-only, navigational list of every booking the client has across all
@@ -44,12 +52,14 @@ import { VendorService } from '../../../../core/services/vendor.service';
 export class MyBookings implements OnInit {
   // Exposed so the template can reference enum members directly.
   protected readonly BookingPaymentStatus = BookingPaymentStatus;
+  protected readonly BookingStatus = BookingStatus;
 
   private readonly router = inject(Router);
   private readonly bookingService = inject(BookingRequestService);
   private readonly eventPlanService = inject(EventPlanService);
   private readonly vendorService = inject(VendorService);
   private readonly packageService = inject(VendorPackageService);
+  private readonly stripeService = inject(StripeService);
 
   protected readonly bookings = signal<BookingRequest[]>([]);
   protected readonly eventPlansById = signal<Map<number, EventPlan>>(new Map());
@@ -58,6 +68,123 @@ export class MyBookings implements OnInit {
 
   protected readonly loading = signal(true);
   protected readonly error = signal<AppError | null>(null);
+
+  // ---- Tabs ----
+  protected readonly activeTab = signal<BookingTab>('all');
+  protected readonly tabs: { key: BookingTab; label: string; icon: string }[] = [
+    { key: 'all', label: 'All', icon: 'list_alt' },
+    { key: 'needsAction', label: 'Needs action', icon: 'priority_high' },
+    { key: 'upcoming', label: 'Upcoming', icon: 'event_upcoming' },
+    { key: 'completed', label: 'Completed', icon: 'task_alt' },
+    { key: 'closed', label: 'Closed', icon: 'archive' },
+  ];
+
+  private tabMatch(tab: BookingTab, b: BookingRequest): boolean {
+    switch (tab) {
+      case 'all':
+        return true;
+      case 'needsAction':
+        return (
+          b.paymentStatus === BookingPaymentStatus.RemainderFailed ||
+          b.status === BookingStatus.AwaitingConfirmation ||
+          b.status === BookingStatus.Pending
+        );
+      case 'upcoming':
+        return (
+          b.status === BookingStatus.Accepted && new Date(b.eventDate).getTime() >= Date.now()
+        );
+      case 'completed':
+        return b.status === BookingStatus.Completed;
+      case 'closed':
+        return (
+          b.status === BookingStatus.Cancelled ||
+          b.status === BookingStatus.Rejected ||
+          b.status === BookingStatus.Expired
+        );
+    }
+  }
+
+  /** Per-tab counts against the full (unfiltered) list, so the bar shows what each tab holds before tapping it. */
+  protected readonly tabCounts = computed(() => {
+    const all = this.bookings();
+    const counts = {} as Record<BookingTab, number>;
+    for (const tab of this.tabs) {
+      counts[tab.key] = all.filter((b) => this.tabMatch(tab.key, b)).length;
+    }
+    return counts;
+  });
+
+  protected readonly filteredBookings = computed(() =>
+    this.bookings().filter((b) => this.tabMatch(this.activeTab(), b)),
+  );
+
+  protected selectTab(tab: BookingTab): void {
+    this.activeTab.set(tab);
+  }
+
+  // ---- Pay remainder (DepositPaid / RemainderFailed) — same on-session SCA flow as
+  // event-plan-detail.ts / booking-details.ts, so it's resolvable from every list this booking appears in.
+  protected readonly payingRemainderId = signal<number | null>(null);
+  protected readonly remainderStatusMessage = signal<string | null>(null);
+
+  protected async payRemainder(booking: BookingRequest): Promise<void> {
+    this.payingRemainderId.set(booking.id);
+    this.remainderStatusMessage.set(null);
+
+    try {
+      const result: PayRemainderResult = await firstValueFrom(
+        this.bookingService.payRemainder(booking.id),
+      );
+
+      if (result.requiresAction && result.clientSecret) {
+        const stripe = await this.stripeService.getStripe(STRIPE_PUBLISHABLE_KEY);
+        if (!stripe) {
+          throw new Error('Payments are unavailable right now. Please try again.');
+        }
+        this.remainderStatusMessage.set('Confirming your payment…');
+        const { error, paymentIntent } = await stripe.confirmCardPayment(result.clientSecret);
+        if (error) {
+          throw new Error(error.message ?? 'Card authentication failed.');
+        }
+        if (paymentIntent?.status !== 'succeeded') {
+          throw new Error('The payment was not completed. Please try again.');
+        }
+        this.remainderStatusMessage.set('Finalizing payment…');
+        await this.pollUntilPaid(booking.id);
+      } else {
+        await this.refreshBooking(booking.id);
+      }
+
+      this.payingRemainderId.set(null);
+      this.remainderStatusMessage.set(null);
+      notifySuccess('Payment complete — your booking is fully paid.');
+    } catch (err: unknown) {
+      this.payingRemainderId.set(null);
+      this.remainderStatusMessage.set(null);
+      const message = (err as { message?: string })?.message ?? 'The payment could not be completed.';
+      notifyError('Could not complete payment', message);
+    }
+  }
+
+  private async pollUntilPaid(id: number): Promise<void> {
+    for (let attempt = 0; attempt < 8; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const updated = await this.refreshBooking(id);
+      if (updated?.paymentStatus === BookingPaymentStatus.Paid) {
+        return;
+      }
+    }
+  }
+
+  private async refreshBooking(id: number): Promise<BookingRequest | null> {
+    try {
+      const updated = await firstValueFrom(this.bookingService.getBooking(id));
+      this.bookings.update((list) => list.map((b) => (b.id === id ? updated : b)));
+      return updated;
+    } catch {
+      return null;
+    }
+  }
 
   ngOnInit(): void {
     this.loading.set(true);

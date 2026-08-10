@@ -154,7 +154,34 @@
         }
 
         @if (b.status === BookingStatus.Accepted) {
-          <p class="text-body-md">Confirmed and paid. Need to back out? You can request a cancellation.</p>
+          @if (b.paymentStatus === BookingPaymentStatus.DepositPaid) {
+            <p class="text-body-md">
+              Your deposit is paid. <strong>{{ currency() }} {{ remainderAmount() | number: '1.0-2' }}</strong>
+              remains due before your event.
+            </p>
+            <ui-button [loading]="payingRemainder()" (click)="payRemainder()">
+              <span class="material-symbols-outlined">payments</span>
+              Pay remainder now
+            </ui-button>
+            @if (payingRemainder() && remainderStatusMessage(); as msg) {
+              <p class="text-label-sm booking-details-refund-note">{{ msg }}</p>
+            }
+          } @else if (b.paymentStatus === BookingPaymentStatus.RemainderFailed) {
+            <p class="text-body-md">
+              We couldn't charge the remaining
+              <strong>{{ currency() }} {{ remainderAmount() | number: '1.0-2' }}</strong>. Please pay to
+              keep your booking.
+            </p>
+            <ui-button [loading]="payingRemainder()" (click)="payRemainder()">
+              <span class="material-symbols-outlined">payments</span>
+              Pay remainder now
+            </ui-button>
+            @if (payingRemainder() && remainderStatusMessage(); as msg) {
+              <p class="text-label-sm booking-details-refund-note">{{ msg }}</p>
+            }
+          } @else {
+            <p class="text-body-md">Confirmed and paid. Need to back out? You can request a cancellation.</p>
+          }
           <ui-button variant="outline" (click)="openRequestCancellation()">
             <span class="material-symbols-outlined">event_busy</span>
             Request cancellation

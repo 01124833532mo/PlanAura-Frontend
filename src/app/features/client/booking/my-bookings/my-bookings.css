@@ -4,24 +4,13 @@
   gap: var(--space-md);
 }
 
+.my-bookings-page__header .kicker {
+  margin-bottom: 0.5rem;
+}
+
 .my-bookings-page__header p.text-body-md {
   color: var(--color-secondary);
   margin-top: 0.25rem;
-}
-
-.my-bookings-page__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 700;
-  margin-bottom: 0.35rem;
-}
-
-.my-bookings-page__eyebrow .material-symbols-outlined {
-  font-size: 16px;
 }
 
 .my-bookings-page__empty {
@@ -70,6 +59,82 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   Status filter tabs
+   ========================================================================== */
+
+.my-bookings-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.35rem;
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-xs);
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.my-bookings-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding: 0.55rem 1rem;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-secondary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-label-md-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-smooth), color var(--dur-fast) var(--ease-smooth);
+}
+
+.my-bookings-tab .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.my-bookings-tab:hover {
+  background: var(--color-soft-beige);
+  color: var(--color-primary);
+}
+
+.my-bookings-tab--active {
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.my-bookings-tab__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.3rem;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.08);
+  font-size: 0.72rem;
+}
+
+.my-bookings-tab--active .my-bookings-tab__count {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+@media (max-width: 768px) {
+  .my-bookings-tabs {
+    width: 100%;
+  }
+
+  .my-bookings-tab {
+    padding: 0.5rem 0.8rem;
   }
 }
 
@@ -193,9 +258,14 @@
 .my-bookings-row__view-link {
   display: inline-flex;
   align-items: center;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.25rem;
   color: var(--color-primary);
+  font-family: var(--font-family-base);
   font-weight: 600;
   font-size: var(--font-label-sm-size);
+  cursor: pointer;
 }
 
 .my-bookings-row__view-link .material-symbols-outlined {

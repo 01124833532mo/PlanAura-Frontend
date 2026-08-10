@@ -1,21 +1,21 @@
 .agreement-review {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3, 0.75rem);
-  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
-  border-radius: var(--radius-lg, 0.75rem);
-  padding: var(--space-4, 1rem);
-  background: var(--color-surface, #fff);
+  gap: var(--space-sm);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  background: var(--color-surface-container-lowest);
 }
 
 .agreement-review__header {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-3, 0.75rem);
+  gap: var(--space-sm);
 }
 
 .agreement-review__icon {
-  color: var(--color-primary, #6b4eff);
+  color: var(--color-primary);
 }
 
 .agreement-review__title {
@@ -24,27 +24,27 @@
 
 .agreement-review__subtitle {
   margin: 0.15rem 0 0;
-  color: var(--color-text-muted, rgba(0, 0, 0, 0.6));
+  color: var(--color-secondary);
 }
 
 .agreement-review__state {
   display: flex;
   align-items: center;
-  gap: var(--space-3, 0.75rem);
+  gap: var(--space-sm);
   min-height: 8rem;
   justify-content: center;
-  color: var(--color-text-muted, rgba(0, 0, 0, 0.6));
+  color: var(--color-secondary);
 }
 
 .agreement-review__state--error {
-  color: var(--color-danger, #d33);
+  color: var(--color-error);
 }
 
 .agreement-review__spinner {
   width: 1.25rem;
   height: 1.25rem;
-  border: 2px solid var(--color-border, rgba(0, 0, 0, 0.2));
-  border-top-color: var(--color-primary, #6b4eff);
+  border: 2px solid var(--color-subtle-border);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: agreement-review-spin 0.8s linear infinite;
 }
@@ -58,10 +58,10 @@
 .agreement-review__viewer {
   width: 100%;
   height: clamp(18rem, 45vh, 32rem);
-  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
-  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid var(--color-subtle-border);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  background: var(--color-surface-alt, #f5f5f7);
+  background: var(--color-surface-container);
 }
 
 .agreement-review__frame {
@@ -74,7 +74,7 @@
 .agreement-review__consent {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-2, 0.5rem);
+  gap: var(--space-sm);
   cursor: pointer;
   user-select: none;
 }
@@ -85,7 +85,7 @@
   height: 1.05rem;
   flex-shrink: 0;
   cursor: pointer;
-  accent-color: var(--color-primary, #6b4eff);
+  accent-color: var(--color-primary);
 }
 
 /* ==========================================================================

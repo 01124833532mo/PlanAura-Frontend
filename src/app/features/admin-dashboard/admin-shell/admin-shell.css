@@ -142,9 +142,9 @@
 }
 
 .admin-sidebar__link--active {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.24), rgba(139, 92, 246, 0.16));
+  background: linear-gradient(135deg, rgba(38, 73, 124, 0.42), rgba(77, 106, 160, 0.24));
   color: #fff;
-  box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(113, 161, 219, 0.38);
 }
 .admin-sidebar__link--active:hover {
   transform: none;
@@ -173,7 +173,7 @@
 
 .admin-sidebar__logout:hover {
   background: rgba(239, 68, 68, 0.16);
-  color: #fca5a5;
+  color: #f0a3a3;
 }
 
 .admin-sidebar__collapse-toggle {
@@ -210,7 +210,7 @@
 .admin-sidebar-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(11, 15, 26, 0.5);
+  background: rgba(6, 14, 31, 0.55);
   z-index: 35;
 }
 
@@ -393,7 +393,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: var(--admin-danger, #e11d48);
+  background: var(--admin-danger-500);
   color: #fff;
   font-size: 0.62rem;
   font-weight: 700;
@@ -475,10 +475,10 @@
   border-bottom: none;
 }
 .admin-topbar__notif-item:hover {
-  background: var(--admin-slate-50, rgba(99, 102, 241, 0.04));
+  background: var(--admin-slate-50, rgba(31, 58, 99, 0.04));
 }
 .admin-topbar__notif-item--unread {
-  background: rgba(99, 102, 241, 0.06);
+  background: rgba(31, 58, 99, 0.06);
 }
 
 .admin-topbar__notif-title {
@@ -505,7 +505,7 @@
   margin-top: 8px;
   padding: 10px;
   border-radius: var(--admin-radius-md);
-  background: rgba(99, 102, 241, 0.06);
+  background: rgba(31, 58, 99, 0.06);
   border: 1px solid var(--admin-border);
 }
 

@@ -5,6 +5,7 @@
   <select
     class="ui-field__input ui-select"
     [class.ui-field__input--invalid]="!!errorMessage"
+    [class.ui-field__input--compact]="compact"
     [id]="fieldId"
     [disabled]="disabled"
     [value]="value ?? ''"

@@ -93,10 +93,10 @@
 
 .stat-card--indigo { --stat-accent-soft: var(--admin-indigo-100); --stat-accent-solid: var(--admin-indigo-600); --stat-accent-gradient: var(--admin-gradient-brand); }
 .stat-card--purple { --stat-accent-soft: var(--admin-purple-100); --stat-accent-solid: var(--admin-purple-600); --stat-accent-gradient: var(--admin-gradient-accent); }
-.stat-card--cyan { --stat-accent-soft: var(--admin-cyan-100); --stat-accent-solid: #0e7490; --stat-accent-gradient: linear-gradient(135deg, var(--admin-cyan-400), var(--admin-indigo-500)); }
-.stat-card--success { --stat-accent-soft: var(--admin-success-100); --stat-accent-solid: var(--admin-success-600); --stat-accent-gradient: linear-gradient(135deg, var(--admin-success-500), var(--admin-cyan-400)); }
-.stat-card--warning { --stat-accent-soft: var(--admin-warning-100); --stat-accent-solid: var(--admin-warning-600); --stat-accent-gradient: linear-gradient(135deg, var(--admin-warning-500), var(--admin-purple-500)); }
-.stat-card--danger { --stat-accent-soft: var(--admin-danger-100); --stat-accent-solid: var(--admin-danger-600); --stat-accent-gradient: linear-gradient(135deg, var(--admin-danger-500), var(--admin-purple-500)); }
+.stat-card--cyan { --stat-accent-soft: var(--admin-cyan-100); --stat-accent-solid: #3f7dc9; --stat-accent-gradient: linear-gradient(135deg, var(--admin-cyan-400), var(--admin-cyan-500)); }
+.stat-card--success { --stat-accent-soft: var(--admin-success-100); --stat-accent-solid: var(--admin-success-600); --stat-accent-gradient: linear-gradient(135deg, var(--admin-success-500), var(--admin-purple-400)); }
+.stat-card--warning { --stat-accent-soft: var(--admin-warning-100); --stat-accent-solid: var(--admin-warning-600); --stat-accent-gradient: linear-gradient(135deg, var(--admin-warning-500), var(--admin-cyan-500)); }
+.stat-card--danger { --stat-accent-soft: var(--admin-danger-100); --stat-accent-solid: var(--admin-danger-600); --stat-accent-gradient: linear-gradient(135deg, var(--admin-danger-500), var(--admin-indigo-600)); }
 
 /* ==========================================================================
    Responsive

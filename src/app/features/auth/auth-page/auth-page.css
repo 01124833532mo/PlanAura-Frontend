@@ -168,6 +168,10 @@
   box-shadow: var(--shadow-lg);
 }
 
+.auth-shell__glass-kicker {
+  margin-bottom: var(--space-sm);
+}
+
 .auth-shell__glass-title {
   font-family: var(--font-family-display);
   font-size: var(--font-display-lg-size);
@@ -214,14 +218,16 @@
    Then was a normal in-flow flex item, which fixed the layout math but the
    overlap kept happening anyway: Chromium has a known compositing bug where
    an element with BOTH `background-clip: text` (a transparent-fill gradient
-   mark) AND a `transform`-based entrance animation on the very same element
-   can paint at the wrong offset while its layout box stays correct — so
-   DevTools/the box model look fine, but the rendered pixels land on top of
-   the next row. Root fix: split the two concerns across two elements. The
-   outer `.auth-shell__brand` gets the entrance animation (opacity/transform)
-   and a real bottom border to anchor it as its own header row; the inner
-   `.auth-shell__brand-name` gets the gradient-clipped text and nothing else
-   — no animation, no transform, ever, on the clipped element itself. */
+   mark) AND a `transform`-based entrance animation ANYWHERE in its ancestor
+   chain can paint at the wrong offset while the layout box stays correct —
+   so DevTools/the box model look fine, but the rendered pixels land on top
+   of the next row. Splitting the animation and the gradient-clip across two
+   elements (outer row vs. inner name span) was not sufficient — the bug
+   still fired because the outer row's animation used `transform`. Root fix:
+   this row now animates with `animate-fade-in` (opacity only, no transform)
+   instead of `animate-fade-down`, which removes the trigger entirely rather
+   than trying to out-position it. A real bottom border still anchors it as
+   its own header row so nothing below it can ever visually merge with it. */
 .auth-shell__brand {
   position: relative;
   z-index: 2;
@@ -232,6 +238,9 @@
   flex-shrink: 0;
   width: 100%;
   padding-bottom: var(--space-md);
+  /* This gap was never the actual bug (see `.auth-shell__center` below for
+     the real cause) — var(--space-lg) is enough on its own now that the
+     overflow that was swallowing it is fixed. */
   margin-bottom: var(--space-lg);
   border-bottom: 1px solid var(--color-subtle-border);
 }
@@ -261,9 +270,31 @@
   color: transparent;
 }
 
-/* Content + footer are centered together in whatever vertical space is left
-   after the brand row above — not the whole column, so the brand can never
-   be pushed into by a tall centered block. */
+/* ROOT CAUSE of the "Create an account" / logo overlap, confirmed by
+   inspecting the live DOM: this box is `flex: 1` inside `.auth-shell__form-side`,
+   so on the register form (6 fields) its own content is regularly TALLER
+   than the space actually left over after `.auth-shell__brand` takes its
+   slice. With `justify-content: center` and no overflow handling, the CSS
+   flexbox spec does not clip or shrink an over-sized centered child — it
+   overflows the container symmetrically in BOTH directions, pushing the
+   top of `.auth-shell__content` (and the "Create an account" heading near
+   its top) up and OUT of this box, straight into the brand row above it.
+   That's why no amount of margin on the brand row ever fixed it: the
+   overlap wasn't a spacing deficit, it was this box being asked to center
+   more content than it had room for. Every stagger/animation class further
+   up is irrelevant to this bug.
+   Fix, verified against the live DOM: `justify-content: flex-start` instead
+   of `center`, plus `overflow-y: auto`. Chrome's CSS Box Alignment "safe
+   centering" fallback (auto-switching an overflowing centered box to
+   start-alignment) did not trigger here even with a scroll container, so
+   this stops relying on that fallback and states start-alignment directly.
+   With `flex-start`, this box's content always begins exactly at this
+   box's own top edge — it is now geometrically impossible for it to render
+   above `.auth-shell__brand`, regardless of viewport height or how many
+   fields the register form has. `overflow-y: auto` still lets the (now
+   correctly top-anchored) content scroll internally on short viewports
+   instead of pushing past the card's fixed height. Horizontal centering
+   (`align-items: center`) is unaffected — only the vertical axis changes. */
 .auth-shell__center {
   flex: 1;
   min-height: 0;
@@ -271,9 +302,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  overflow-y: auto;
 }
 
+/* Single source of truth for the vertical rhythm between header / toggle /
+   alert banners / form: the flex `gap` below. Each of those blocks used to
+   ALSO carry its own ad-hoc margin (0.25rem here, 0.25rem there), which
+   stacks with `gap` rather than replacing it — so the actual rendered
+   spacing jumped between 8px and 12px depending on which two blocks were
+   next to each other, with no visible logic to it. One `gap` value now
+   does the whole job. */
 .auth-shell__content {
   width: 100%;
   max-width: 420px;
@@ -282,16 +321,10 @@
   gap: var(--space-sm);
 }
 
-.auth-shell__header {
-  margin-bottom: 0.25rem;
-}
-
 .auth-shell__header p {
+  /* Deliberately tighter than the section rhythm above — the subtitle
+     belongs visually to the heading, not to the block after it. */
   margin-top: 0.25rem;
-}
-
-.auth-shell__toggle {
-  margin: 0.25rem 0 0.25rem;
 }
 
 .auth-shell__form {
@@ -316,11 +349,14 @@
   }
 }
 
+/* No margin-bottom here: the parent `.auth-shell__form` gap already spaces
+   this from the email field below at the same 8px rhythm as every other
+   field-to-field gap in the form, so the role cards don't sit visually
+   closer to or further from their neighbor than any other pair. */
 .auth-shell__roles {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--gutter);
-  margin-bottom: 0.25rem;
 }
 
 .auth-shell__cta {

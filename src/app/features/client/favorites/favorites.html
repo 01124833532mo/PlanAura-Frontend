@@ -1,0 +1,37 @@
+<div class="favorites-page">
+  <div class="favorites-page__header animate-fade-up">
+    <span class="kicker">Saved Vendors</span>
+    <h3 class="text-headline-sm">Your favorites</h3>
+    <p class="text-body-md">Vendors you've saved while browsing, all in one place.</p>
+  </div>
+
+  @if (ids().size === 0) {
+    <div class="card-luxe luxe-shadow favorites-page__empty-card animate-fade-up stagger-1">
+      <span class="material-symbols-outlined favorites-page__empty-icon" aria-hidden="true">favorite_border</span>
+      <h4 class="text-headline-sm">No saved vendors yet</h4>
+      <p class="text-body-md">
+        Tap the heart on any vendor card while browsing to save it here for later.
+      </p>
+      <ui-button [fullWidth]="false" (click)="goToVendors()">Browse vendors</ui-button>
+    </div>
+  } @else if (loading()) {
+    <div class="favorites-grid">
+      <div class="skeleton favorites-grid__skeleton"></div>
+      <div class="skeleton favorites-grid__skeleton"></div>
+      <div class="skeleton favorites-grid__skeleton"></div>
+    </div>
+  } @else if (favoriteVendors().length === 0) {
+    <div class="card-luxe luxe-shadow favorites-page__empty-card animate-fade-up stagger-1">
+      <span class="material-symbols-outlined favorites-page__empty-icon" aria-hidden="true">error_outline</span>
+      <h4 class="text-headline-sm">Couldn't load your saved vendors</h4>
+      <p class="text-body-md">They may no longer be available. Try browsing for more.</p>
+      <ui-button [fullWidth]="false" (click)="goToVendors()">Browse vendors</ui-button>
+    </div>
+  } @else {
+    <div class="favorites-grid">
+      @for (vendor of favoriteVendors(); track vendor.id) {
+        <ui-vendor-card class="animate-fade-up" [vendor]="vendor" />
+      }
+    </div>
+  }
+</div>

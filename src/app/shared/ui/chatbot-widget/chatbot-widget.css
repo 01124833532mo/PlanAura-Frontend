@@ -12,10 +12,16 @@
    Floating action button
    ========================================================================== */
 
+/* bottom: 3.5rem (was 2rem) — the bottom-right corner is also where a
+   browser-level "Stripe" indicator sits (not part of this page's DOM, so
+   it can't be targeted or moved from here); the FAB was low enough to sit
+   partly behind it. Raising only the `bottom` offset — no transform, no
+   hardcoded top-based hack — keeps the button anchored to the same corner
+   and lets it clear that overlay with a clean, comfortable gap. */
 .chatbot-fab {
   position: fixed;
   right: 2rem;
-  bottom: 2rem;
+  bottom: 3.5rem;
   width: 64px;
   height: 64px;
   border: none;
@@ -112,14 +118,19 @@
    Chat panel
    ========================================================================== */
 
+/* bottom shifted up by the same +1.5rem as .chatbot-fab, so the panel
+   keeps opening in the same spot relative to the button — only the whole
+   widget's corner offset changed, not the relationship between its parts.
+   max-height's subtracted amount grows by the same 1.5rem for the same
+   reason. */
 .chatbot-panel {
   position: fixed;
   right: 2rem;
-  bottom: 6.25rem;
+  bottom: 7.75rem;
   width: 380px;
   max-width: calc(100vw - 2rem);
   height: 560px;
-  max-height: calc(100vh - 8.5rem);
+  max-height: calc(100vh - 10rem);
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-2xl);
@@ -379,7 +390,7 @@
 
 .chatbot-panel__send:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(232, 101, 74, 0.32);
+  box-shadow: 0 12px 28px rgba(216, 70, 31, 0.32);
 }
 
 .chatbot-panel__send:active {
@@ -395,9 +406,11 @@
    ========================================================================== */
 
 @media (max-width: 520px) {
+  /* Same +1.5rem raise as desktop, kept proportionate to the smaller FAB
+     and tighter corner margin used on small screens. */
   .chatbot-fab {
     right: 1.25rem;
-    bottom: 1.25rem;
+    bottom: 2.75rem;
     width: 58px;
     height: 58px;
   }
@@ -405,7 +418,7 @@
   .chatbot-panel {
     right: 0.75rem;
     left: 0.75rem;
-    bottom: 5.75rem;
+    bottom: 7.25rem;
     width: auto;
     max-width: none;
     height: min(600px, 74vh);

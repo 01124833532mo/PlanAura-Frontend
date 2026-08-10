@@ -33,7 +33,7 @@
 .notif-bell-btn:focus-visible {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(232, 101, 74, 0.16);
+  box-shadow: 0 0 0 3px rgba(216, 70, 31, 0.16);
 }
 
 .notif-bell-badge {
@@ -54,7 +54,7 @@
   /* A light ring so the badge reads as a clean overlapping dot, not a
      smudge, against whatever it happens to sit on top of. */
   border: 2px solid var(--color-surface-container-lowest);
-  box-shadow: 0 1px 3px rgba(232, 101, 74, 0.35);
+  box-shadow: 0 1px 3px rgba(216, 70, 31, 0.35);
 }
 
 .notif-bell-backdrop {

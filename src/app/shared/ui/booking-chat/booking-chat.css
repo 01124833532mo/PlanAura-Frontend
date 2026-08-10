@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+  border-top: 1px solid var(--color-subtle-border);
   padding-top: 1rem;
   margin-top: 0.5rem;
 }
@@ -59,7 +59,7 @@
 }
 
 .booking-chat__sender {
-  color: var(--color-primary, #6b4eff);
+  color: var(--color-primary, #d8461f);
   font-weight: 700;
 }
 
@@ -84,7 +84,7 @@
   flex: 1;
   min-width: 0;
   padding: 0.6rem 0.85rem;
-  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.15));
+  border: 1px solid var(--color-subtle-border);
   border-radius: var(--radius-full, 999px);
   font-family: inherit;
   font-size: 0.95rem;
@@ -105,7 +105,7 @@
   justify-content: center;
   border: none;
   border-radius: 50%;
-  background: var(--color-primary, #6b4eff);
+  background: var(--color-primary, #d8461f);
   color: var(--color-on-primary, #fff);
   cursor: pointer;
 }

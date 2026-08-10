@@ -228,7 +228,7 @@
 }
 
 .request-row__price {
-  font-size: var(--font-title-sm-size);
+  font-size: var(--font-body-md-size);
   font-weight: 700;
   color: var(--color-charcoal);
   white-space: nowrap;

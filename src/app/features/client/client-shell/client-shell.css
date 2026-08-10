@@ -203,7 +203,7 @@
   /* A soft cast shadow (not just a hairline) gives the sticky bar real
      elevation over the content scrolling beneath it — a flat 1px border
      alone reads as a plain admin-template divider, not a floating app bar. */
-  box-shadow: 0 4px 16px rgba(36, 31, 28, 0.03);
+  box-shadow: 0 4px 16px rgba(26, 22, 19, 0.03);
   position: sticky;
   top: 0;
   z-index: 5;
@@ -319,7 +319,7 @@
 .client-nav-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(36, 31, 28, 0.45);
+  background: rgba(26, 22, 19, 0.45);
   backdrop-filter: blur(2px);
   /* Above the chatbot FAB (z-index 1000), which otherwise floats over the open
      drawer in the strip of screen the drawer doesn't cover — and stays tappable

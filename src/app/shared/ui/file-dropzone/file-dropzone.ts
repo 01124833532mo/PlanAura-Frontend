@@ -1,5 +1,12 @@
-import { Component, EventEmitter, Input, Output, forwardRef, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, forwardRef, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+
+/** A selected file paired with an object-URL thumbnail so the dropzone can show a real image
+ * preview instead of a bare filename — every accepted extension here is an image format. */
+interface FilePreview {
+  file: File;
+  url: string;
+}
 
 /**
  * Client-side mirror of Planura.Infrastructure.AttachementService.AttachmentService's
@@ -24,7 +31,7 @@ let nextId = 0;
     },
   ],
 })
-export class FileDropzone implements ControlValueAccessor {
+export class FileDropzone implements ControlValueAccessor, OnDestroy {
   @Input() label = '';
   @Input() hint = 'PNG or JPG, up to 2 MB';
   @Input() multiple = false;
@@ -34,6 +41,10 @@ export class FileDropzone implements ControlValueAccessor {
   protected readonly fieldId = `ui-file-dropzone-${nextId++}`;
   protected readonly dragging = signal(false);
   protected files: File[] = [];
+  /** Thumbnail previews kept in lockstep with `files` — rebuilt (and old object URLs revoked)
+   * every time the file list changes, so the dropzone can show what was actually selected
+   * instead of just its filename. */
+  protected previews: FilePreview[] = [];
   protected disabled = false;
 
   private onChange: (value: File | File[] | null) => void = () => {};
@@ -41,6 +52,16 @@ export class FileDropzone implements ControlValueAccessor {
 
   writeValue(value: File | File[] | null): void {
     this.files = value ? (Array.isArray(value) ? value : [value]) : [];
+    this.rebuildPreviews();
+  }
+
+  ngOnDestroy(): void {
+    this.previews.forEach((p) => URL.revokeObjectURL(p.url));
+  }
+
+  private rebuildPreviews(): void {
+    this.previews.forEach((p) => URL.revokeObjectURL(p.url));
+    this.previews = this.files.map((file) => ({ file, url: URL.createObjectURL(file) }));
   }
 
   registerOnChange(fn: (value: File | File[] | null) => void): void {
@@ -85,6 +106,7 @@ export class FileDropzone implements ControlValueAccessor {
 
   protected removeFile(index: number): void {
     this.files = this.files.filter((_, i) => i !== index);
+    this.rebuildPreviews();
     this.emitValue();
   }
 
@@ -111,6 +133,7 @@ export class FileDropzone implements ControlValueAccessor {
     }
 
     this.files = this.multiple ? [...this.files, ...valid] : [valid[0]];
+    this.rebuildPreviews();
     this.emitValue();
     this.onTouched();
   }

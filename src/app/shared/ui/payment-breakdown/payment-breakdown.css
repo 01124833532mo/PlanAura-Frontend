@@ -158,8 +158,8 @@
 /* State colouring. Held and due are deliberately distinct from paid: money held on a card is not
    money taken, and the UI must not blur the two. */
 .pay-breakdown__stage[data-state='paid'] {
-  border-color: var(--color-success-container, #cfe8d4);
-  background: var(--color-success-fixed, #f2f9f3);
+  border-color: var(--color-success-container);
+  background: color-mix(in srgb, var(--color-success-container) 55%, var(--color-surface-container-lowest));
 }
 
 .pay-breakdown__stage[data-state='paid'] .pay-breakdown__stage-icon {
@@ -168,8 +168,8 @@
 
 .pay-breakdown__stage[data-state='held'],
 .pay-breakdown__stage[data-state='due'] {
-  border-color: var(--color-primary-container, #f3d3c8);
-  background: var(--color-primary-fixed, #fdf1ec);
+  border-color: var(--color-primary-container, #f2703c);
+  background: var(--color-primary-fixed, #ffe0d1);
 }
 
 .pay-breakdown__stage[data-state='held'] .pay-breakdown__stage-icon,

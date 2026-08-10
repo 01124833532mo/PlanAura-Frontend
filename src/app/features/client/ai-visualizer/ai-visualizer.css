@@ -33,7 +33,7 @@
 
 .aiv-hero__subtitle {
   margin-top: var(--space-xs);
-  color: var(--color-on-surface-variant, inherit);
+  color: var(--color-secondary);
 }
 
 /* ==========================================================================
@@ -92,7 +92,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-sm);
-  color: var(--color-on-surface-variant, inherit);
+  color: var(--color-secondary);
   text-align: center;
   padding: var(--space-lg);
 }

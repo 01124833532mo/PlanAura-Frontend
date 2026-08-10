@@ -5,7 +5,9 @@
 }
 
 /* ==========================================================================
-   Hero
+   Hero — editorial split: headline + integrated search on the left, one
+   dominant framed photo on the right (replaces the old 3-photo scrapbook
+   collage, which read as a template device rather than a deliberate shot).
    ========================================================================== */
 
 .home-hero {
@@ -13,37 +15,6 @@
   padding: var(--space-2xl) var(--margin-desktop) var(--space-xl);
   background: var(--gradient-warm-bg);
   overflow: hidden;
-}
-
-.home-hero__blob {
-  z-index: 0;
-}
-
-.home-hero__blob--one {
-  width: 420px;
-  height: 420px;
-  top: -160px;
-  left: -120px;
-  background: var(--color-primary-fixed);
-}
-
-.home-hero__blob--two {
-  width: 320px;
-  height: 320px;
-  bottom: -120px;
-  right: 4%;
-  background: var(--color-lavender);
-  animation-delay: 2.4s;
-}
-
-.home-hero__blob--three {
-  width: 220px;
-  height: 220px;
-  top: 30%;
-  right: 30%;
-  background: var(--color-pink-soft);
-  opacity: 0.3;
-  animation-delay: 4.2s;
 }
 
 .home-hero__inner {
@@ -59,7 +30,7 @@
 
 @media (min-width: 992px) {
   .home-hero__inner {
-    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-columns: 1.08fr 0.92fr;
   }
 }
 
@@ -71,26 +42,6 @@
   text-align: left;
 }
 
-.home-hero__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.9rem;
-  border-radius: var(--radius-full);
-  background: var(--color-surface-container-lowest);
-  border: 1px solid var(--color-subtle-border);
-  color: var(--color-primary);
-  font-size: var(--font-label-sm-size);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  box-shadow: var(--shadow-xs);
-}
-
-.home-hero__eyebrow .material-symbols-outlined {
-  font-size: 16px;
-}
-
 .home-hero__headline {
   font-family: var(--font-family-display);
   font-size: var(--font-display-lg-size);
@@ -98,7 +49,7 @@
   letter-spacing: -0.02em;
   line-height: 1.08;
   color: var(--color-charcoal);
-  max-width: 640px;
+  max-width: 620px;
 }
 
 @media (min-width: 992px) {
@@ -110,49 +61,98 @@
 .home-hero__subhead {
   font-size: var(--font-body-lg-size);
   color: var(--color-secondary);
-  max-width: 500px;
+  max-width: 480px;
 }
 
-.home-hero__actions {
+/* ---- Search, now integrated into the hero rather than a separate section ---- */
+
+.home-hero__search {
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-sm);
+  padding: var(--space-sm);
+  width: 100%;
+  max-width: 640px;
+  border-radius: var(--radius-full);
   margin-top: var(--space-xs);
 }
 
-.home-hero__cta {
-  border-radius: var(--radius-full);
-  padding: 1rem 1.75rem;
+.home-hero__search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 180px;
+  padding: 0.7rem 1.1rem;
+  color: var(--color-secondary);
 }
 
-.home-hero__cta-secondary {
-  display: inline-flex;
+.home-hero__search-field .material-symbols-outlined {
+  color: var(--color-primary);
+  font-size: 20px;
+}
+
+.home-hero__search-field input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-family: var(--font-family-base);
+  font-size: var(--font-body-md-size);
+  color: var(--color-charcoal);
+  text-align: left;
+}
+
+.home-hero__search-field--city {
+  flex: 0 1 160px;
+}
+
+.home-hero__search-divider {
+  display: none;
+  width: 1px;
+  height: 1.6rem;
+  background: var(--color-subtle-border);
+}
+
+@media (min-width: 640px) {
+  .home-hero__search-divider {
+    display: block;
+  }
+}
+
+.home-hero__search-btn {
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.home-hero__chips {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  padding: 1rem 1.6rem;
+}
+
+.home-hero__chip {
+  padding: 0.5rem 1rem;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-subtle-border);
   background: var(--color-surface-container-lowest);
   color: var(--color-charcoal);
+  font-size: var(--font-label-sm-size);
   font-weight: 600;
-  font-size: var(--font-label-md-size);
-  text-decoration: none;
-  transition: border-color var(--dur-base) var(--ease-smooth), transform var(--dur-base) var(--ease-smooth);
+  cursor: pointer;
+  transition: border-color var(--dur-base) var(--ease-smooth), color var(--dur-base) var(--ease-smooth),
+    transform var(--dur-base) var(--ease-smooth);
 }
 
-.home-hero__cta-secondary:hover {
+.home-hero__chip:hover {
   border-color: var(--color-primary);
+  color: var(--color-primary);
   transform: translateY(-1px);
 }
 
-.home-hero__cta-secondary .material-symbols-outlined {
-  font-size: 18px;
-  color: var(--color-primary);
-}
-
-/* ---- Hero visual: layered photo collage + floating stat card ---- */
+/* ---- Hero visual: single framed photo + ghost numeral + floating stat card ---- */
 
 .home-hero__visual {
   position: relative;
@@ -162,64 +162,50 @@
   min-height: 360px;
 }
 
-.home-hero__collage {
+.home-hero__ghost {
+  position: absolute;
+  top: -2.4rem;
+  left: -1rem;
+  z-index: 0;
+  font-size: clamp(5rem, 4rem + 4vw, 8rem);
+}
+
+.home-hero__frame {
   position: relative;
+  z-index: 1;
   width: 100%;
-  max-width: 420px;
-  aspect-ratio: 1 / 1;
+  max-width: 440px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  border: 6px solid var(--color-surface-container-lowest);
 }
 
 .home-hero__photo {
-  position: absolute;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  border: 4px solid var(--color-surface-container-lowest);
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.home-hero__photo--one {
-  width: 62%;
-  height: 68%;
-  top: 0;
-  left: 0;
-  z-index: 2;
+.home-hero__visual:hover .home-hero__photo {
+  transform: scale(1.04);
 }
 
-.home-hero__photo--two {
-  width: 52%;
-  height: 46%;
-  bottom: 6%;
-  right: 0;
-  z-index: 3;
-}
-
-.home-hero__photo--three {
-  width: 42%;
-  height: 38%;
-  top: 12%;
-  right: 4%;
-  z-index: 1;
-  opacity: 0.95;
-}
-
-.home-hero__visual:hover .home-hero__photo--one {
-  transform: translateY(-6px) rotate(-1deg);
-}
-
-.home-hero__visual:hover .home-hero__photo--two {
-  transform: translateY(-8px) rotate(1.5deg);
-}
-
-.home-hero__visual:hover .home-hero__photo--three {
-  transform: translateY(-4px) rotate(-2deg);
+.home-hero__frame-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(200deg, rgba(216, 70, 31, 0.22) 0%, transparent 45%),
+    linear-gradient(0deg, rgba(26, 22, 19, 0.32) 0%, transparent 32%);
+  pointer-events: none;
 }
 
 .home-hero__floatcard {
   position: absolute;
-  left: -8%;
-  bottom: 4%;
-  z-index: 4;
+  left: -6%;
+  bottom: 6%;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 0.65rem;
@@ -263,122 +249,15 @@
     max-width: 640px;
   }
 
-  .home-hero__actions {
-    align-items: center;
-    width: 100%;
+  .home-hero__search,
+  .home-hero__chips {
+    justify-content: center;
+    margin-inline: auto;
   }
 
   .home-hero__visual {
     margin-top: var(--space-lg);
   }
-
-  .home-hero__floatcard {
-    left: 4%;
-  }
-}
-
-/* ==========================================================================
-   Discover / Search
-   ========================================================================== */
-
-.home-discover {
-  padding: var(--space-xl) var(--margin-desktop);
-  max-width: var(--container-max);
-  margin: 0 auto;
-  width: 100%;
-}
-
-.home-discover__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
-  text-align: center;
-}
-
-.home-discover__inner .home-section__header {
-  align-items: center;
-}
-
-.home-discover__search {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm);
-  width: 100%;
-  max-width: 680px;
-  border-radius: var(--radius-full);
-}
-
-.home-discover__search-field {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex: 1;
-  min-width: 180px;
-  padding: 0.7rem 1.1rem;
-  color: var(--color-secondary);
-}
-
-.home-discover__search-field .material-symbols-outlined {
-  color: var(--color-primary);
-  font-size: 20px;
-}
-
-.home-discover__search-field input {
-  border: none;
-  background: transparent;
-  outline: none;
-  width: 100%;
-  font-family: var(--font-family-base);
-  font-size: var(--font-body-md-size);
-  color: var(--color-charcoal);
-  text-align: left;
-}
-
-.home-discover__search-divider {
-  display: none;
-  width: 1px;
-  height: 1.6rem;
-  background: var(--color-subtle-border);
-}
-
-@media (min-width: 640px) {
-  .home-discover__search-divider {
-    display: block;
-  }
-}
-
-.home-discover__search-btn {
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-}
-
-.home-discover__chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.6rem;
-  max-width: 720px;
-}
-
-.home-discover__chip {
-  padding: 0.55rem 1.1rem;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-subtle-border);
-  background: var(--color-surface-container-lowest);
-  color: var(--color-charcoal);
-  font-size: var(--font-label-md-size);
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color var(--dur-base) var(--ease-smooth), color var(--dur-base) var(--ease-smooth), transform var(--dur-base) var(--ease-smooth);
-}
-
-.home-discover__chip:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  transform: translateY(-1px);
 }
 
 /* ==========================================================================
@@ -395,22 +274,15 @@
   width: 100%;
 }
 
-.home-section__header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+.home-section--tint {
+  max-width: none;
+  background: var(--color-soft-beige);
 }
 
-.home-section__eyebrow {
-  color: var(--color-rose-gold);
-  font-size: var(--font-label-sm-size);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.home-section__subhead {
-  color: var(--color-secondary);
+.home-section--tint > * {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  width: 100%;
 }
 
 .home-section__empty {
@@ -516,12 +388,25 @@
 }
 
 /* ==========================================================================
-   How it works
+   How it works — a connected rail with a through-line, not four boxed cards.
    ========================================================================== */
 
 .home-how {
-  background: var(--color-soft-beige);
+  background: var(--color-charcoal);
   padding: var(--space-xl) var(--margin-desktop);
+}
+
+.home-how .kicker {
+  color: var(--color-primary-fixed);
+}
+
+.home-how .section-title h2,
+.home-how .section-title p {
+  color: #fff;
+}
+
+.home-how .section-title p {
+  color: rgba(255, 255, 255, 0.66);
 }
 
 .home-how__inner {
@@ -529,13 +414,35 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
 }
 
-.home-how__steps {
+.home-how__rail {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--gutter);
+}
+
+/* The through-line: a single hairline connecting all four steps on desktop,
+   sitting behind the icon row — the one signature detail that reads as
+   "sequence", not "four separate feature boxes". */
+@media (min-width: 860px) {
+  .home-how__rail::before {
+    content: '';
+    position: absolute;
+    top: 2.65rem;
+    left: 8%;
+    right: 8%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.22) 10%,
+      rgba(255, 255, 255, 0.22) 90%,
+      transparent 100%
+    );
+  }
 }
 
 .home-how__step {
@@ -543,44 +450,47 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  padding: var(--space-lg);
-  background: var(--color-surface-container-lowest);
-  border: 1px solid var(--color-subtle-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xs);
-  transition: box-shadow var(--dur-base) var(--ease-smooth), transform var(--dur-base) var(--ease-smooth);
 }
 
-.home-how__step:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-4px);
-}
-
-.home-how__step-index {
+.home-how__step-num {
   position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
-  font-family: var(--font-family-display);
-  font-size: var(--font-headline-sm-size);
-  color: var(--color-subtle-border);
+  top: -0.6rem;
+  right: 0;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.16);
+  font-size: clamp(2.4rem, 2rem + 1.6vw, 3.4rem);
 }
 
 .home-how__step-icon {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
+  width: 3.25rem;
+  height: 3.25rem;
   border-radius: var(--radius-lg);
-  background: var(--gradient-primary-soft);
-  color: var(--color-primary);
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
   font-size: 24px;
-  margin-bottom: 0.35rem;
+  box-shadow: var(--shadow-glow);
+  margin-bottom: 0.6rem;
+}
+
+.home-how__step h3 {
+  color: #fff;
+}
+
+.home-how__step p {
+  color: rgba(255, 255, 255, 0.66);
 }
 
 .home-how__more {
   display: flex;
   justify-content: center;
+}
+
+.home-how__more .home-section__more-link {
+  color: var(--color-primary-fixed);
 }
 
 /* ==========================================================================
@@ -601,29 +511,85 @@
 }
 
 /* ==========================================================================
-   Trust / Value
+   Trust / Value — one full-width featured tile, then three equal tiles in
+   their own row underneath. Two independent blocks (.home-trust__lead and
+   .home-trust__grid), not one grid where every tile fights over column
+   spans — that arithmetic (a 6-column track shared by a span-6 tile and
+   three span-2 tiles) was the actual bug: a later, equal-specificity media
+   query rule was silently overriding the lead tile's span and squeezing it
+   down to the same width as the others, while the real third card wrapped
+   alone onto its own row with empty trailing columns.
    ========================================================================== */
 
-.home-trust {
+.home-trust__bento {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
-  padding: var(--space-xl) var(--margin-desktop);
-  max-width: var(--container-max);
-  margin: 0 auto;
-  width: 100%;
+  gap: var(--gutter);
 }
+
+/* ---- Featured tile: horizontal composition, not a tall stacked block ---- */
+
+.home-trust__lead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-lg) var(--space-xl);
+  border-radius: var(--radius-xl);
+  background: var(--gradient-primary-soft);
+}
+
+.home-trust__lead-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  /* Caps the line length so paragraph text stays readable and the tile
+     reads as a balanced, centered composition even on very wide screens,
+     instead of one long line stretched edge to edge. */
+  max-width: 640px;
+}
+
+.home-trust__icon--lead {
+  width: 3.5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  font-size: 28px;
+  margin-bottom: 0;
+  background: var(--color-surface-container-lowest);
+  box-shadow: var(--shadow-xs);
+}
+
+@media (max-width: 560px) {
+  .home-trust__lead {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    padding: var(--space-lg);
+  }
+}
+
+/* ---- Three equal supporting tiles ---- */
 
 .home-trust__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--gutter);
+  align-items: stretch;
+}
+
+/* Never an in-between "2 per row, 3rd one alone" state — that layout has
+   no clean resolution for exactly three items, so this jumps straight
+   from 3-across to a single column once there isn't room for three
+   comfortably. */
+@media (max-width: 700px) {
+  .home-trust__grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .home-trust__card {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
   padding: var(--space-lg);
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-subtle-border);
@@ -653,7 +619,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   padding: var(--space-2xl) var(--space-xl);
   margin: 0 var(--margin-desktop) var(--space-xl);
   border-radius: var(--radius-2xl);
@@ -679,6 +645,12 @@
   opacity: 0.35;
 }
 
+.home-cta__kicker {
+  position: relative;
+  z-index: 1;
+  color: var(--color-primary-fixed);
+}
+
 .home-cta h2,
 .home-cta p {
   position: relative;
@@ -686,9 +658,14 @@
   color: #ffffff;
 }
 
+.home-cta h2 .ink {
+  color: var(--color-primary-container);
+}
+
 .home-cta p {
   color: rgba(255, 255, 255, 0.72);
   max-width: 480px;
+  margin-top: -0.5rem;
 }
 
 .home-cta a.btn-gold-gradient {
@@ -696,6 +673,7 @@
   z-index: 1;
   border-radius: var(--radius-full);
   padding: 1rem 2rem;
+  margin-top: var(--space-xs);
 }
 
 /* ==========================================================================
@@ -705,18 +683,12 @@
 @media (max-width: 900px) {
   .home-hero,
   .home-section,
-  .home-how,
-  .home-discover,
-  .home-trust {
+  .home-how {
     padding-left: var(--margin-mobile);
     padding-right: var(--margin-mobile);
   }
 
-  .home-hero__actions {
-    justify-content: center;
-  }
-
-  .home-discover__search {
+  .home-hero__search {
     border-radius: var(--radius-xl);
   }
 
@@ -728,8 +700,6 @@
 
 /* ---- <= 1024px — tablet ---- */
 @media (max-width: 1024px) {
-  /* The collage is only half the hero's width on desktop; once the hero stacks
-     it gets the full column and no longer needs a 360px reservation. */
   .home-hero__visual {
     min-height: auto;
   }
@@ -743,30 +713,38 @@
     padding: var(--space-xl) var(--space-md);
   }
 
-  .home-hero__actions a,
-  .home-hero__actions button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .home-hero__actions {
-    display: flex;
+  .home-hero__search {
     flex-direction: column;
-    gap: var(--space-sm);
+    align-items: stretch;
+    border-radius: var(--radius-xl);
   }
 
-  /* The float card hangs 8% past the collage's left edge — fine inside a
-     half-width column, an overflow source at full width. */
+  .home-hero__search-field--city {
+    flex: 1;
+  }
+
+  .home-hero__search-btn {
+    width: 100%;
+    border-radius: var(--radius-lg);
+  }
+
+  .home-hero__ghost {
+    display: none;
+  }
+
   .home-hero__floatcard {
     left: 0;
     bottom: 0;
     padding: 0.6rem 0.8rem;
   }
 
-  /* Carousel arrows sit outside the track; on touch the strip is swipeable, so
-     they are redundant as well as overflowing. */
   .home-category-carousel__nav {
     display: none;
+  }
+
+  .home-trust__card,
+  .home-trust__card--lead {
+    grid-column: span 6;
   }
 }
 
@@ -776,18 +754,7 @@
     padding-top: var(--space-xl);
   }
 
-  .category-tile {
-    width: min(300px, 84vw);
-  }
-
-  /* Two stats per row instead of a 4-wide strip that wraps unevenly. */
-  .home-stats__item {
-    min-width: 0;
-    flex: 1 1 40%;
-  }
-
-  .home-testimonial,
-  .home-how__step {
-    padding: var(--space-md);
+  .home-how__step-num {
+    display: none;
   }
 }

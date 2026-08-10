@@ -1,5 +1,9 @@
+/* Compact spacing system for this component (dot size 24px, tight gaps) —
+   the previous 28px dots + 0.5rem gaps + 32px bottom margin made the
+   stepper read as its own oversized section rather than a slim progress
+   indicator sitting between the intro and the step content. */
 .ui-stepper-wrap {
-  margin: 0 0 var(--space-lg);
+  margin: 0 0 var(--space-sm);
 }
 
 .ui-stepper {
@@ -7,7 +11,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .ui-stepper__item {
@@ -17,16 +21,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.3rem;
   text-align: center;
 }
 
 .ui-stepper__item:not(:last-child)::after {
   content: '';
   position: absolute;
-  top: 14px;
-  left: calc(50% + 18px);
-  width: calc(100% - 36px);
+  top: 12px;
+  left: calc(50% + 15px);
+  width: calc(100% - 30px);
   height: 2px;
   background: var(--color-subtle-border);
   transition: background var(--dur-slow) var(--ease-smooth);
@@ -40,8 +44,8 @@
 .ui-stepper__dot {
   position: relative;
   z-index: 1;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   flex: 0 0 auto;
   border-radius: 50%;
   display: flex;
@@ -121,7 +125,7 @@
 
 .ui-stepper__caption-label {
   display: block;
-  font-size: var(--font-title-sm-size, 1rem);
+  font-size: var(--font-body-md-size);
   font-weight: 600;
   color: var(--color-charcoal);
 }

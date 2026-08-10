@@ -1,24 +1,30 @@
+/* Reverted from a fixed-height/internal-scroll card back to natural page
+   flow, per explicit request: this page should have exactly ONE scrollbar,
+   on the page/body, when content doesn't fit — never a scrollbar nested
+   inside the card. `min-height` (not `height`) means the host is a FLOOR,
+   not a cap: it's always at least one viewport tall, but happily grows
+   past that if the card's content needs more room, which is what lets the
+   page itself scroll instead of anything inside it. No `overflow: hidden`
+   anywhere in this chain — nothing here is allowed to clip content. */
 :host {
   display: block;
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--gradient-warm-bg);
 }
 
 .onboarding-shell {
   position: relative;
   isolation: isolate;
-  min-height: 100vh;
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: var(--space-lg) var(--margin-mobile) var(--space-xl);
-  overflow: hidden;
+  padding: var(--space-md) var(--margin-mobile);
 }
 
 @media (min-width: 768px) {
   .onboarding-shell {
-    align-items: center;
-    padding: var(--space-2xl) var(--margin-desktop);
+    padding: var(--space-lg) var(--margin-desktop);
   }
 }
 
@@ -40,26 +46,32 @@
   animation-delay: 3s;
 }
 
+/* No `height`, no `max-height`, no `overflow` — the card is a normal block
+   box that is exactly as tall as its content needs. If that's taller than
+   the viewport, the page itself grows and scrolls; this box never clips or
+   scrolls on its own. Padding is kept at the compacted values (was
+   --space-xl/--space-2xl before that pass) — this is purely about removing
+   the internal-scroll mechanism, not about undoing the density work. */
 .onboarding-shell__card {
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
   border-radius: var(--radius-xl);
-  padding: var(--space-xl) var(--margin-mobile);
+  padding: var(--space-md) var(--margin-mobile);
   position: relative;
 }
 
 @media (min-width: 768px) {
   .onboarding-shell__card {
     border-radius: var(--radius-2xl);
-    padding: var(--space-xl) var(--space-2xl);
+    padding: var(--space-md) var(--space-xl);
   }
 }
 
 .onboarding-shell__header {
   display: flex;
   justify-content: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .onboarding-shell__brand {
@@ -78,20 +90,41 @@
   color: var(--color-rose-gold);
 }
 
+/* Plain block column now — no flex, no flex:1, no min-height:0. Every
+   child (intro, stepper, alert, step content, nav) just stacks in normal
+   document flow and takes exactly the height it needs, which is what lets
+   height propagate all the way up to the card and host instead of being
+   trapped and scrolled inside a constrained box. */
 .onboarding-shell__content {
+  width: 100%;
   max-width: 560px;
   margin: 0 auto;
 }
 
 .onboarding-shell__intro-block {
   text-align: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .onboarding-shell__intro {
-  margin-top: var(--space-sm);
+  margin-top: 0.25rem;
 }
 
+/* Vertical rhythm for this whole flow, in three deliberate tiers:
+     tight  (~5px)  — a label to its own input; content that's one unit.
+     medium (16px)  — one field/row to the next within a step, and a step's
+                       header to its first field. These belong to the same
+                       section, so they read as a group, not a wall of text.
+     larger (32px)  — between actually distinct sections: the stepper to
+                       the step content, and the step content to the
+                       Back/Next footer. This is the "next section" break,
+                       and is the ONLY place that gets the bigger gap — it
+                       would read as excessive whitespace if every field
+                       gap were this size, and cramped if this boundary
+                       used the same 16px as a field-to-field gap.
+   No overflow-y here — a step's content (e.g. an uploaded-heavy Portfolio
+   grid) is simply allowed to make this box, the card, and the page taller;
+   it never scrolls on its own. */
 .onboarding-shell__step-viewport {
   position: relative;
   margin-top: var(--space-lg);
@@ -106,8 +139,8 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--space-sm);
-  margin-top: var(--space-xl);
-  padding-top: var(--space-lg);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-sm);
   border-top: 1px solid var(--color-subtle-border);
 }
 
@@ -117,7 +150,7 @@
   align-items: center;
   text-align: center;
   gap: var(--space-md);
-  padding: var(--space-xl) 0;
+  padding: var(--space-lg) 0;
 }
 
 .onboarding-shell__success-icon {
@@ -129,18 +162,25 @@
   padding: var(--space-md);
 }
 
+/* The "medium" tier: one field (or paired row) to the next within a step.
+   16px keeps fields grouped as one form rather than separate sections,
+   while still reading as clearly more than the tight label-to-input gap
+   inside each field. */
 ::ng-deep .wizard-step {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
+/* Step header to its first field is also "medium" — they belong to the
+   same section (this step), just like field-to-field. Was --space-xs
+   (4px), which read as the header and the first input touching. */
 ::ng-deep .step-header {
   display: flex;
   align-items: flex-start;
   gap: var(--space-sm);
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-md);
 }
 
 ::ng-deep .step-header__icon {
@@ -148,12 +188,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-lg);
   background: var(--gradient-primary-soft);
   color: var(--color-primary);
-  font-size: 22px;
+  font-size: 20px;
 }
 
 ::ng-deep .step-header__text {
@@ -169,9 +209,44 @@
   gap: var(--gutter);
 }
 
+/* Pairs two shorter fields on one row (Full Name + Phone, Password +
+   Confirm Password, Category + City) — a real layout change, not shrunk
+   fonts, that removes whole field-heights from a step's vertical stack.
+   This is what makes the Account step's 5 fields fit in 3 rows instead of
+   5, which is what actually keeps that step out of internal scroll on
+   normal laptop screens. */
+::ng-deep .wizard-step__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gutter);
+}
+
+@media (max-width: 480px) {
+  ::ng-deep .wizard-step__row {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+}
+
+/* Review cards: --space-md padding on both axes reads as comfortable
+   rather than cramped now that they're arranged 2-up (see .review-grid)
+   instead of stacked full-width — there's room to give each card proper
+   breathing room without the step getting tall. */
 ::ng-deep .review-card {
   padding: var(--space-md);
-  margin-bottom: var(--space-md);
+  margin-bottom: 0;
+}
+
+::ng-deep .review-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+
+@media (min-width: 640px) {
+  ::ng-deep .review-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 ::ng-deep .review-card__title {

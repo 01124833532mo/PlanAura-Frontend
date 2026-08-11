@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+  border-top: 1px solid var(--color-subtle-border);
   padding-top: 1rem;
   margin-top: 0.5rem;
 }
@@ -24,7 +24,7 @@
 }
 
 .booking-timeline__state--error {
-  color: var(--color-danger, #d33);
+  color: var(--color-error);
 }
 
 .booking-timeline__list {
@@ -42,7 +42,7 @@
   display: flex;
   gap: 0.75rem;
   padding: 0.6rem 0;
-  border-bottom: 1px dashed var(--color-border, rgba(0, 0, 0, 0.08));
+  border-bottom: 1px dashed var(--color-subtle-border);
 }
 
 .booking-timeline__item:last-child {
@@ -58,7 +58,7 @@
   align-items: center;
   justify-content: center;
   background: var(--color-primary-fixed, rgba(107, 78, 255, 0.1));
-  color: var(--color-primary, #6b4eff);
+  color: var(--color-primary, #d8461f);
   font-size: 1rem;
 }
 

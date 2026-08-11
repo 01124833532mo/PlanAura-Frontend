@@ -258,7 +258,7 @@
 .vendor-nav-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(36, 31, 28, 0.45);
+  background: rgba(26, 22, 19, 0.45);
   backdrop-filter: blur(2px);
   /* Above the chatbot FAB (z-index 1000), which otherwise floats over the open
      drawer in the strip of screen the drawer doesn't cover — and stays tappable

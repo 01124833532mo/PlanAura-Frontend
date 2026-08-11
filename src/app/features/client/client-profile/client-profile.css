@@ -131,7 +131,7 @@
 
 .cp-hero__name {
   font-family: var(--font-family-display);
-  font-size: var(--font-headline-lg-size, 2rem);
+  font-size: var(--font-headline-md-size);
   font-weight: 600;
   color: var(--color-charcoal);
 }
@@ -363,7 +363,7 @@
   height: 32px;
   flex-shrink: 0;
   border-radius: var(--radius-md);
-  background: rgba(36, 31, 28, 0.04);
+  background: rgba(26, 22, 19, 0.04);
   color: var(--color-primary);
   font-size: 17px;
 }
@@ -446,7 +446,7 @@
   padding: 0.65rem 1rem;
   border: 1px solid var(--color-subtle-border);
   border-radius: var(--radius-md);
-  background: rgba(36, 31, 28, 0.03);
+  background: rgba(26, 22, 19, 0.03);
   color: var(--color-secondary);
   font-weight: 600;
   cursor: not-allowed;

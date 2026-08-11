@@ -17,7 +17,7 @@
 }
 
 .vendor-card:hover .vendor-card__media {
-  box-shadow: inset 0 0 0 1px rgba(36, 31, 28, 0.06), var(--shadow-sm);
+  box-shadow: inset 0 0 0 1px rgba(26, 22, 19, 0.06), var(--shadow-sm);
 }
 
 .vendor-card__media {
@@ -28,7 +28,7 @@
   background: var(--color-surface-container);
   /* A hairline ring, not a shadow — definition for the image against a
      same-tone page background without adding card "chrome" weight. */
-  box-shadow: inset 0 0 0 1px rgba(36, 31, 28, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(26, 22, 19, 0.06);
 }
 
 .vendor-card__image {
@@ -41,6 +41,19 @@
 
 .vendor-card:hover .vendor-card__image {
   transform: scale(1.045);
+}
+
+/* A quiet scrim at the foot of the photo — legibility for the trust badge
+   without boxing it in a flat white chip, and a bit of editorial-photography
+   depth instead of a flat marketplace thumbnail. */
+.vendor-card__media::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: auto 0 0 0;
+  height: 42%;
+  background: linear-gradient(0deg, rgba(26, 22, 19, 0.38) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .vendor-card__image-placeholder {
@@ -56,6 +69,7 @@
 
 .vendor-card__favorite {
   position: absolute;
+  z-index: 1;
   top: 0.65rem;
   right: 0.65rem;
   width: 32px;
@@ -65,7 +79,7 @@
   justify-content: center;
   border: none;
   border-radius: var(--radius-full);
-  background: rgba(36, 31, 28, 0.28);
+  background: rgba(26, 22, 19, 0.28);
   color: #ffffff;
   cursor: pointer;
   transition: transform var(--dur-fast) var(--ease-spring), background var(--dur-fast) var(--ease-smooth);
@@ -95,6 +109,7 @@
 
 .vendor-card__trust {
   position: absolute;
+  z-index: 1;
   bottom: 0.65rem;
   left: 0.65rem;
   display: inline-flex;
@@ -141,8 +156,9 @@
 
 .vendor-card__title {
   margin: 0;
-  font-size: 1.02rem;
-  font-weight: 700;
+  font-family: var(--font-family-display);
+  font-size: 1.08rem;
+  font-weight: 600;
   letter-spacing: -0.005em;
   color: var(--color-charcoal);
   overflow: hidden;

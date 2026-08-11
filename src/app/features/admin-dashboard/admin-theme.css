@@ -1,112 +1,138 @@
 /* ==========================================================================
-   PlanAura Admin — design system
-   Deliberately distinct from the main app's warm coral/rose theme. Evokes
-   modern SaaS admin panels (Vercel / Stripe / Linear / Clerk / Notion):
-   dark slate + indigo/purple accents, cyan highlights, soft gray surfaces,
-   white cards, subtle gradients. All tokens are scoped under `.admin-app`
-   (the AdminShell host class) so nothing here leaks into, or is overridden
-   by, the main site's `:root` tokens in styles.css.
+   PlanAura Admin — "Control Center" design system
+   Deliberately its own professional visual language, distinct from the
+   warm, expressive Ember/Pine public and vendor/client experience: a deep
+   navy + cool slate + soft-blue system built for a data-dense operations
+   console rather than a marketing surface. The two still share typography
+   (Inter), the same restrained radius/shadow philosophy, and the same
+   motion language — enough for both to read as "Planura" — but nothing here
+   is colour-derived from the public palette. The sidebar carries the deep
+   navy identity; the workspace itself stays light (white / cool gray / soft
+   blue surfaces) so dense tables and long review workflows stay readable.
+   All tokens stay scoped under `.admin-app` (the AdminShell host class) so
+   nothing here leaks into, or is overridden by, the main site's `:root`
+   tokens in styles.css.
    ========================================================================== */
 
 .admin-app {
-  /* ---- Core neutrals ---- */
-  --admin-slate-950: #0b0f1a;
-  --admin-slate-900: #0f1420;
-  --admin-slate-800: #171d2c;
-  --admin-slate-700: #232a3d;
-  --admin-slate-600: #333c54;
-  --admin-slate-500: #4b5570;
-  --admin-slate-400: #6b7590;
-  --admin-slate-300: #9aa3ba;
-  --admin-slate-200: #c7cddc;
-  --admin-slate-100: #e6e9f2;
-  --admin-slate-50: #f4f6fb;
+  /* ---- Deep navy scale — the sidebar/control-panel surface, not used on
+     the light workspace itself. ---- */
+  --admin-navy-950: #060e1f;
+  --admin-navy-900: #0b1b33;
+  --admin-navy-800: #13294a;
+  --admin-navy-700: #1c3a63;
+  --admin-navy-600: #26497c;
 
-  /* ---- Brand accents ---- */
-  --admin-indigo-700: #4338ca;
-  --admin-indigo-600: #4f46e5;
-  --admin-indigo-500: #6366f1;
-  --admin-indigo-400: #818cf8;
-  --admin-indigo-100: #e0e2fc;
+  /* ---- Core neutrals — cool slate, not warm paper. This is what makes the
+     workspace read as "operations console" rather than "public site in a
+     different color". ---- */
+  --admin-slate-950: #0b1220;
+  --admin-slate-900: #121a2c;
+  --admin-slate-800: #1e293c;
+  --admin-slate-700: #334155;
+  --admin-slate-600: #47536b;
+  --admin-slate-500: #64748b;
+  --admin-slate-400: #94a3b8;
+  --admin-slate-300: #c2cbd9;
+  --admin-slate-200: #dde3ec;
+  --admin-slate-100: #edf1f7;
+  --admin-slate-50: #f6f8fb;
 
-  --admin-purple-600: #7c3aed;
-  --admin-purple-500: #8b5cf6;
-  --admin-purple-400: #a78bfa;
-  --admin-purple-100: #ede6fd;
+  /* ---- Brand accents ----
+     Primary = deep navy blue (buttons, active states, links on the light
+     workspace — deliberately more muted/enterprise than a bright "Bootstrap
+     blue"). Secondary = slate blue. Tertiary = a softer sky blue used
+     sparingly for a third data-viz series / info accents. */
+  --admin-indigo-700: #14213b;
+  --admin-indigo-600: #1f3a63;
+  --admin-indigo-500: #2c4f82;
+  --admin-indigo-400: #5578ac;
+  --admin-indigo-100: #e1e8f4;
 
-  --admin-cyan-500: #06b6d4;
-  --admin-cyan-400: #22d3ee;
-  --admin-cyan-300: #67e8f9;
-  --admin-cyan-100: #cffafe;
+  --admin-purple-600: #34497a;
+  --admin-purple-500: #4d6aa0;
+  --admin-purple-400: #7c96c2;
+  --admin-purple-100: #e8ecf7;
 
-  /* ---- Semantic ---- */
-  --admin-success-600: #059669;
-  --admin-success-500: #10b981;
-  --admin-success-100: #d1fae5;
+  --admin-cyan-500: #3f7dc9;
+  --admin-cyan-400: #71a1db;
+  --admin-cyan-300: #a3c4e9;
+  --admin-cyan-100: #e6f0fb;
 
-  --admin-warning-600: #d97706;
-  --admin-warning-500: #f59e0b;
-  --admin-warning-100: #fef3c7;
+  /* ---- Semantic — clean, professional, not candy-coloured ---- */
+  --admin-success-600: #146c38;
+  --admin-success-500: #1a8a46;
+  --admin-success-100: #ddf3e3;
 
-  --admin-danger-600: #dc2626;
-  --admin-danger-500: #ef4444;
-  --admin-danger-100: #fee2e2;
+  --admin-warning-600: #a15a09;
+  --admin-warning-500: #c17a1f;
+  --admin-warning-100: #faead0;
 
-  --admin-info-500: var(--admin-indigo-500);
-  --admin-info-100: var(--admin-indigo-100);
+  --admin-danger-600: #ab1f1f;
+  --admin-danger-500: #cc3333;
+  --admin-danger-100: #fbe2e2;
 
-  /* ---- Surfaces & backgrounds ---- */
-  --admin-bg: #f5f6fa;
-  --admin-bg-alt: #eef0f8;
+  --admin-info-500: var(--admin-cyan-500);
+  --admin-info-100: var(--admin-cyan-100);
+
+  /* ---- Surfaces & backgrounds — white workspace on a faint cool-blue
+     tint, not warm paper. The tint is subtle on purpose: enough to read as
+     "not the public site" without turning the whole console into a colour
+     block. ---- */
+  --admin-bg: #f2f5f9;
+  --admin-bg-alt: #eaeff6;
   --admin-surface: #ffffff;
   --admin-surface-raised: #ffffff;
-  --admin-surface-muted: #f8f9fd;
-  --admin-border: #e5e8f2;
-  --admin-border-strong: #d8dce9;
+  --admin-surface-muted: #f5f8fb;
+  --admin-border: #e2e8f0;
+  --admin-border-strong: #cbd5e1;
 
   /* ---- Text ---- */
-  --admin-text-primary: #101527;
-  --admin-text-secondary: #48506b;
-  --admin-text-muted: #7b839c;
+  --admin-text-primary: #101828;
+  --admin-text-secondary: #47536b;
+  --admin-text-muted: #6b7891;
   --admin-text-inverse: #ffffff;
   --admin-text-on-brand: #ffffff;
 
   /* ---- Gradients ---- */
-  --admin-gradient-brand: linear-gradient(135deg, var(--admin-indigo-600) 0%, var(--admin-purple-600) 100%);
-  --admin-gradient-brand-soft: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+  --admin-gradient-brand: linear-gradient(135deg, var(--admin-indigo-600) 0%, var(--admin-indigo-500) 100%);
+  --admin-gradient-brand-soft: linear-gradient(135deg, rgba(31, 58, 99, 0.08) 0%, rgba(44, 79, 130, 0.08) 100%);
   --admin-gradient-accent: linear-gradient(135deg, var(--admin-purple-500) 0%, var(--admin-cyan-400) 100%);
-  --admin-gradient-sidebar: linear-gradient(180deg, var(--admin-slate-950) 0%, var(--admin-slate-900) 60%, #131a2c 100%);
-  --admin-gradient-page-bg: radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.06) 0%, transparent 40%),
-    radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.05) 0%, transparent 40%),
-    var(--admin-bg);
+  --admin-gradient-sidebar: linear-gradient(180deg, var(--admin-navy-950) 0%, var(--admin-navy-900) 55%, var(--admin-navy-800) 100%);
+  --admin-gradient-page-bg: var(--admin-bg);
 
-  /* ---- Radius scale ---- */
-  --admin-radius-sm: 8px;
-  --admin-radius-md: 12px;
-  --admin-radius-lg: 16px;
-  --admin-radius-xl: 20px;
+  /* ---- Radius scale — slightly tighter than the public site's: crisper
+     corners read as more "serious enterprise console", less "consumer app". ---- */
+  --admin-radius-sm: 5px;
+  --admin-radius-md: 8px;
+  --admin-radius-lg: 12px;
+  --admin-radius-xl: 16px;
   --admin-radius-full: 9999px;
 
-  /* ---- Shadows ---- */
-  --admin-shadow-xs: 0 1px 2px rgba(16, 21, 39, 0.04);
-  --admin-shadow-sm: 0 1px 3px rgba(16, 21, 39, 0.06), 0 1px 2px rgba(16, 21, 39, 0.04);
-  --admin-shadow-md: 0 4px 12px rgba(16, 21, 39, 0.08), 0 2px 4px rgba(16, 21, 39, 0.04);
-  --admin-shadow-lg: 0 12px 32px rgba(16, 21, 39, 0.12), 0 4px 8px rgba(16, 21, 39, 0.04);
-  --admin-shadow-glow-indigo: 0 0 0 1px rgba(99, 102, 241, 0.15), 0 8px 24px rgba(99, 102, 241, 0.18);
-  --admin-shadow-glow-cyan: 0 0 0 1px rgba(34, 211, 238, 0.15), 0 8px 24px rgba(34, 211, 238, 0.16);
+  /* ---- Shadows — tight, cool-tinted (navy, not warm charcoal) ---- */
+  --admin-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --admin-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --admin-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.10), 0 2px 4px rgba(15, 23, 42, 0.05);
+  --admin-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.14), 0 4px 8px rgba(15, 23, 42, 0.05);
+  --admin-shadow-glow-indigo: 0 0 0 1px rgba(31, 58, 99, 0.18), 0 8px 20px rgba(31, 58, 99, 0.22);
+  --admin-shadow-glow-cyan: 0 0 0 1px rgba(63, 125, 201, 0.18), 0 8px 20px rgba(63, 125, 201, 0.18);
 
-  /* ---- Spacing ---- */
+  /* ---- Spacing ----
+     Trimmed from the previous scale: an operations console with dense
+     tables and multi-field review workflows should feel information-dense,
+     not airy like the marketing site. This cascades into every card,
+     page-header, and stat-grid gap below without having to touch each one. */
   --admin-space-2xs: 4px;
-  --admin-space-xs: 8px;
-  --admin-space-sm: 12px;
-  --admin-space-md: 16px;
-  --admin-space-lg: 24px;
-  --admin-space-xl: 32px;
-  --admin-space-2xl: 48px;
-  --admin-space-3xl: 64px;
+  --admin-space-xs: 7px;
+  --admin-space-sm: 10px;
+  --admin-space-md: 14px;
+  --admin-space-lg: 20px;
+  --admin-space-xl: 28px;
+  --admin-space-2xl: 40px;
+  --admin-space-3xl: 56px;
   --admin-sidebar-width: 264px;
   --admin-sidebar-width-collapsed: 76px;
-  --admin-topbar-height: 68px;
+  --admin-topbar-height: 64px;
 
   /* ---- Typography ---- */
   --admin-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -116,10 +142,10 @@
   --admin-text-sm: 13px;
   --admin-text-base: 14px;
   --admin-text-md: 15px;
-  --admin-text-lg: 18px;
-  --admin-text-xl: 22px;
-  --admin-text-2xl: 28px;
-  --admin-text-3xl: 34px;
+  --admin-text-lg: 17px;
+  --admin-text-xl: 21px;
+  --admin-text-2xl: 26px;
+  --admin-text-3xl: 30px;
 
   /* ---- Motion ---- */
   --admin-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -258,7 +284,7 @@
 
 .admin-badge--indigo { background: var(--admin-indigo-100); color: var(--admin-indigo-700); }
 .admin-badge--purple { background: var(--admin-purple-100); color: var(--admin-purple-600); }
-.admin-badge--cyan { background: var(--admin-cyan-100); color: #0e7490; }
+.admin-badge--cyan { background: var(--admin-cyan-100); color: var(--admin-purple-600); }
 .admin-badge--success { background: var(--admin-success-100); color: var(--admin-success-600); }
 .admin-badge--warning { background: var(--admin-warning-100); color: var(--admin-warning-600); }
 .admin-badge--danger { background: var(--admin-danger-100); color: var(--admin-danger-600); }
@@ -325,12 +351,12 @@
 .admin-btn--danger {
   background: var(--admin-danger-500);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.22);
+  box-shadow: 0 4px 12px rgba(204, 51, 51, 0.22);
 }
 .admin-btn--danger:not(:disabled):hover {
   background: var(--admin-danger-600);
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.28);
+  box-shadow: 0 8px 20px rgba(204, 51, 51, 0.28);
 }
 
 .admin-btn--sm { padding: 7px 14px; font-size: var(--admin-text-sm); border-radius: var(--admin-radius-sm); }
@@ -634,7 +660,7 @@
 .admin-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(11, 15, 26, 0.6);
+  background: rgba(6, 14, 31, 0.55);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -655,7 +681,7 @@
   overflow-y: auto;
   background: var(--admin-surface);
   border-radius: var(--admin-radius-xl);
-  box-shadow: 0 24px 64px rgba(16, 21, 39, 0.28);
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.28);
   padding: var(--admin-space-xl);
   text-align: center;
 }
@@ -865,7 +891,7 @@
   letter-spacing: 0.06em;
   color: var(--admin-text-muted);
   background: var(--admin-surface-muted);
-  padding: 13px 20px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--admin-border);
   white-space: nowrap;
 }
@@ -929,7 +955,7 @@
 .swal-admin-toast {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
   border-radius: 12px !important;
-  box-shadow: 0 12px 32px rgba(16, 21, 39, 0.16) !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16) !important;
 }
 
 .swal-admin-popup {

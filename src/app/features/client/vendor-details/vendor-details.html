@@ -8,10 +8,23 @@
       <div class="skeleton vendor-details-page__skeleton-line"></div>
     </div>
   } @else if (vendor(); as v) {
-    <button type="button" class="vendor-details-back" (click)="goBack()">
-      <span class="material-symbols-outlined">arrow_back</span>
-      Back to vendors
-    </button>
+    <div class="vendor-details-toprow">
+      <button type="button" class="vendor-details-back" (click)="goBack()">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back to vendors
+      </button>
+
+      <button
+        type="button"
+        class="vendor-details-favorite"
+        [class.vendor-details-favorite--active]="isFavorite()"
+        [attr.aria-pressed]="isFavorite()"
+        (click)="toggleFavorite()"
+      >
+        <span class="material-symbols-outlined">{{ isFavorite() ? 'favorite' : 'favorite_border' }}</span>
+        {{ isFavorite() ? 'Saved' : 'Save vendor' }}
+      </button>
+    </div>
 
     <!-- ============ Cover hero ============ -->
     <header class="vendor-details-hero card-luxe luxe-shadow animate-blur-reveal">
@@ -47,7 +60,19 @@
             </span>
           </div>
 
-          <h1 class="text-headline-md">{{ v.businessName }}</h1>
+          <div class="vendor-details-hero__title-row">
+            <h1 class="text-headline-md">{{ v.businessName }}</h1>
+
+            <!-- The one solid, high-emphasis booking action on the page — lives here so
+                 it's visible on every breakpoint (the sticky sidebar CTA below is desktop-only
+                 and intentionally styled as secondary so the two never compete). -->
+            @if (packages().length > 0) {
+              <a class="btn-gold-gradient vendor-details-hero__cta" href="#packages">
+                <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
+                Book Now
+              </a>
+            }
+          </div>
 
           <div class="vendor-details-hero__meta">
             @if (v.totalReviews > 0) {
@@ -78,9 +103,10 @@
       </div>
     </header>
 
-      <div class="vendor-details-layout__main">
+      <div class="vendor-details-layout">
+        <div class="vendor-details-layout__main">
         <!-- ============ Portfolio ============ -->
-        <section class="vendor-details-section animate-fade-up stagger-1">
+        <section id="portfolio" class="vendor-details-section animate-fade-up stagger-1">
           <h3 class="text-headline-sm vendor-details-section__heading">
             <span class="material-symbols-outlined" aria-hidden="true">photo_library</span>
             Portfolio
@@ -114,7 +140,7 @@
         </section>
 
         <!-- ============ Packages ============ -->
-        <section class="vendor-details-section animate-fade-up stagger-2">
+        <section id="packages" class="vendor-details-section animate-fade-up stagger-2">
           <h3 class="text-headline-sm vendor-details-section__heading">
             <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
             Packages
@@ -163,12 +189,12 @@
                       </span>
                     }
                     <button
-                      class="btn-gold-gradient"
+                      class="vendor-package-card__book-btn"
                       type="button"
                       (click)="bookPackage(pkg); $event.stopPropagation()"
                     >
-                      <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
-                      Book this package
+                      Select
+                      <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
                     </button>
                   </div>
                 </div>
@@ -178,7 +204,7 @@
         </section>
 
         <!-- ============ Reviews ============ -->
-        <section class="vendor-details-section animate-fade-up stagger-3">
+        <section id="reviews" class="vendor-details-section animate-fade-up stagger-3">
           <h3 class="text-headline-sm vendor-details-section__heading">
             <span class="material-symbols-outlined" aria-hidden="true">reviews</span>
             Reviews
@@ -249,6 +275,63 @@
             </div>
           }
         </section>
+        </div>
+
+        <!-- ============ Sticky facts + jump nav — keeps trust signals and a way back
+             to "book" visible without re-scrolling a page with three long sections. ============ -->
+        <aside class="vendor-details-aside">
+          <div class="vendor-details-aside__card card-luxe luxe-shadow">
+            <dl class="vendor-details-aside__facts">
+              @if (v.totalReviews > 0) {
+                <div class="vendor-details-aside__fact">
+                  <dt>Rating</dt>
+                  <dd>
+                    <span class="material-symbols-outlined" aria-hidden="true">star</span>
+                    {{ v.avgRating | number: '1.1-1' }} ({{ v.totalReviews }})
+                  </dd>
+                </div>
+              }
+              @if (v.city) {
+                <div class="vendor-details-aside__fact">
+                  <dt>Location</dt>
+                  <dd>{{ v.city }}</dd>
+                </div>
+              }
+              <div class="vendor-details-aside__fact">
+                <dt>Trust</dt>
+                <dd>{{ formatStatus(v.verificationStatus) }}</dd>
+              </div>
+              @if (v.totalCompletedBookings > 0) {
+                <div class="vendor-details-aside__fact">
+                  <dt>Experience</dt>
+                  <dd>{{ v.totalCompletedBookings }} events completed</dd>
+                </div>
+              }
+            </dl>
+
+            @if (packages().length > 0) {
+              <a class="vendor-details-aside__cta" href="#packages">
+                View packages
+                <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+              </a>
+            }
+
+            <nav class="vendor-details-aside__jump" aria-label="Jump to section">
+              <a href="#portfolio">
+                <span class="material-symbols-outlined">photo_library</span>
+                Portfolio
+              </a>
+              <a href="#packages">
+                <span class="material-symbols-outlined">inventory_2</span>
+                Packages
+              </a>
+              <a href="#reviews">
+                <span class="material-symbols-outlined">reviews</span>
+                Reviews
+              </a>
+            </nav>
+          </div>
+        </aside>
       </div>
   }
 </div>

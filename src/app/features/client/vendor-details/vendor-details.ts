@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertBanner } from '../../../shared/ui/alert-banner/alert-banner';
 import { AppError } from '../../../core/interfaces/api-response.model';
@@ -7,6 +7,7 @@ import { PortfolioMediaItem } from '../../../core/interfaces/portfolio.model';
 import { Review, ReviewSummary } from '../../../core/interfaces/review.model';
 import { VendorPackage } from '../../../core/interfaces/vendor-package.model';
 import { VendorProfile } from '../../../core/interfaces/vendor-profile.model';
+import { FavoritesService } from '../../../core/services/favorites.service';
 import { ReviewService } from '../../../core/services/review.service';
 import { VendorPackageService } from '../../../core/services/vendor-package.service';
 import { VendorService } from '../../../core/services/vendor.service';
@@ -32,6 +33,7 @@ export class VendorDetails implements OnInit {
   private readonly vendorService = inject(VendorService);
   private readonly packageService = inject(VendorPackageService);
   private readonly reviewService = inject(ReviewService);
+  private readonly favoritesService = inject(FavoritesService);
 
   protected readonly vendor = signal<VendorProfile | null>(null);
   protected readonly packages = signal<VendorPackage[]>([]);
@@ -45,6 +47,8 @@ export class VendorDetails implements OnInit {
   protected readonly reviews = signal<Review[]>([]);
   protected readonly reviewSummary = signal<ReviewSummary | null>(null);
   protected readonly reviewsLoading = signal(false);
+
+  protected readonly isFavorite = computed(() => this.favoritesService.isFavorite(this.vendorId));
 
   private vendorId = 0;
   private eventPlanId: number | null = null;
@@ -139,6 +143,10 @@ export class VendorDetails implements OnInit {
     this.lightboxIndex.update((i) =>
       i === null || items.length === 0 ? i : (i - 1 + items.length) % items.length,
     );
+  }
+
+  protected toggleFavorite(): void {
+    this.favoritesService.toggle(this.vendorId);
   }
 
   protected bookPackage(pkg: VendorPackage): void {

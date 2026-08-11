@@ -16,19 +16,8 @@
   margin-top: 0.25rem;
 }
 
-.event-plan-page__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 700;
-  margin-bottom: 0.35rem;
-}
-
-.event-plan-page__eyebrow .material-symbols-outlined {
-  font-size: 16px;
+.event-plan-page__kicker {
+  margin-bottom: 0.5rem;
 }
 
 .event-plan-page__empty {

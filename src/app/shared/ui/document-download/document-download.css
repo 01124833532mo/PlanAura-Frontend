@@ -5,7 +5,7 @@
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--color-primary, #e8654a);
+  color: var(--color-primary, #d8461f);
   text-decoration: none;
   cursor: pointer;
   transition: opacity 0.15s ease;
@@ -23,7 +23,7 @@
 .doc-download--button {
   padding: 0.45rem 0.9rem;
   border-radius: var(--radius-full, 9999px);
-  background: var(--gradient-primary, #e8654a);
+  background: var(--gradient-primary, #d8461f);
   color: var(--color-on-primary, #fff);
   text-decoration: none;
 }

@@ -50,6 +50,10 @@
                 <span class="material-symbols-outlined">event_available</span>
                 My Bookings
               </a>
+              <a routerLink="/client/favorites" role="menuitem" (click)="accountMenuOpen.set(false)">
+                <span class="material-symbols-outlined">favorite</span>
+                Favorites
+              </a>
               <a routerLink="/client/profile" role="menuitem" (click)="accountMenuOpen.set(false)">
                 <span class="material-symbols-outlined">account_circle</span>
                 My Profile
@@ -101,6 +105,7 @@
       @if (isAuthenticated() && isClient()) {
         <a routerLink="/client/dashboard" (click)="closeMobileMenu()">My Account</a>
         <a routerLink="/client/bookings" (click)="closeMobileMenu()">My Bookings</a>
+        <a routerLink="/client/favorites" (click)="closeMobileMenu()">Favorites</a>
         <a routerLink="/client/profile" (click)="closeMobileMenu()">My Profile</a>
         <button type="button" (click)="logout()">Log Out</button>
       } @else if (isAuthenticated()) {

@@ -32,9 +32,11 @@ export interface AdminChartConfig {
   plotOptions?: ApexPlotOptions;
 }
 
-/** Brand-tinted palette applied by default so every chart matches the admin theme without each
- * page having to repeat the same color array. */
-export const ADMIN_CHART_PALETTE = ['#4f46e5', '#06b6d4', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
+/** Admin's own navy/slate-blue data-viz palette — deliberately not the vendor dashboard's
+ * Ember/Pine VENDOR_CHART_PALETTE, matching the admin console's distinct visual identity. Ordered
+ * for a typical multi-series chart: deep navy primary, slate blue, soft blue, then semantic
+ * success/warning/danger for status-distribution charts. */
+export const ADMIN_CHART_PALETTE = ['#1f3a63', '#4d6aa0', '#3f7dc9', '#1a8a46', '#c17a1f', '#cc3333'];
 
 /**
  * Titled card wrapping ng-apexcharts' <apx-chart>. Used for every chart on the Analytics/Reports

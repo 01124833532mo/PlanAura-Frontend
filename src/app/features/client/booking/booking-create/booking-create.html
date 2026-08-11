@@ -12,10 +12,7 @@
 
   <div class="booking-create-page checkout-shell__content">
   <div class="booking-create-page__header animate-fade-up">
-    <p class="text-label-sm booking-create-page__eyebrow">
-      <span class="material-symbols-outlined">event_available</span>
-      Booking
-    </p>
+    <span class="kicker">Booking</span>
     <h3 class="text-headline-sm">Request a booking</h3>
     <p class="text-body-md">Pick a date and share a few details so the vendor can confirm your event.</p>
   </div>
@@ -351,7 +348,12 @@
                 <span class="material-symbols-outlined">arrow_back</span>
                 Edit details
               </ui-button>
-              <ui-button type="button" [fullWidth]="false" [disabled]="quoteLoading()" (click)="goToContract()">
+              <ui-button
+                type="button"
+                [fullWidth]="false"
+                [disabled]="quoteLoading() || agreementLoading()"
+                (click)="goToContract()"
+              >
                 Continue to contract
                 <span class="material-symbols-outlined">arrow_forward</span>
               </ui-button>

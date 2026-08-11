@@ -1,57 +1,66 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* ==========================================================================
-   Planura design system
-   Premium warm palette (coral / rose / peach / rose-gold) with a soft,
-   gender-neutral, glassmorphic aesthetic. Token NAMES are preserved from the
-   previous iteration so every component that already consumes
-   var(--color-*) / var(--space-*) / var(--radius-*) keeps working — only the
-   values (and a set of new tokens for motion, glass and gradients) changed.
+   Planura design system — "Ember & Pine"
+   A premium, editorial marketplace aesthetic: confident terracotta-ember
+   primary against warm paper neutrals, a deep pine-teal counterpoint for
+   secondary/success moments, crisp hairline borders and tight, precise
+   elevation instead of diffuse pastel glow. Token NAMES are preserved from
+   the previous iteration so every one of the ~85 components that already
+   consumes var(--color-*) / var(--space-*) / var(--radius-*) keeps working —
+   the VALUES (and the decorative language built on top of them) changed.
    ========================================================================== */
 
 :root {
-  /* ---- Color: warm coral / rose / peach "premium" palette ---- */
-  --color-primary: #e8654a; /* soft coral — primary actions */
-  --color-primary-container: #f6a26f; /* warm peach — gradient partner */
+  /* ---- Color: Ember (primary) ---- */
+  --color-primary: #d8461f; /* confident burnt ember — primary actions */
+  --color-primary-container: #f2703c; /* lighter ember — gradient partner */
   --color-on-primary: #ffffff;
-  --color-primary-fixed: #ffd9c2; /* pale peach tint */
-  --color-primary-hover: #d6543a;
+  --color-primary-fixed: #ffe0d1; /* pale ember tint, for soft badges */
+  --color-primary-hover: #b83a19;
 
-  --color-rose: #e0828c; /* rose */
-  --color-rose-gold: #c48b72; /* rose gold accent */
-  --color-pink-soft: #f3c1cb; /* soft pink — sparing accent */
-  --color-lavender: #cabdea; /* light lavender — optional accent */
+  /* ---- Color: Pine (secondary / counterpoint accent) ---- */
+  --color-rose: #1f6e5c; /* repurposed token: deep pine — secondary accent */
+  --color-rose-gold: #a8763f; /* warm bronze accent, sparing use (ratings, premium marks) */
+  --color-pink-soft: #dcece6; /* pale pine tint */
+  --color-lavender: #2b3a55; /* deep ink-navy, optional cool accent for charts */
 
-  --color-charcoal: #241f1c;
-  --color-on-background: #241f1c;
-  --color-secondary: #8a8074; /* warm gray */
-  --color-on-secondary-container: #6b6357;
-  --color-dark-gray: #4a433d;
+  --color-charcoal: #1a1613;
+  --color-on-background: #1a1613;
+  --color-secondary: #756a5e; /* warm gray — secondary text */
+  --color-on-secondary-container: #5a5145;
+  --color-dark-gray: #3c352d;
 
-  --color-surface: #fdfaf7; /* off white */
+  --color-surface: #faf7f3; /* warm paper */
   --color-surface-bright: #ffffff;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #fbf6f0;
-  --color-surface-container: #f5ede3;
-  --color-soft-beige: #f6efe6;
-  --color-subtle-border: #ece1d3;
-  --color-outline-variant: #e2d2bf;
+  --color-surface-container-low: #f7f3ee;
+  --color-surface-container: #f0e9e0;
+  --color-soft-beige: #f3ede4;
+  --color-subtle-border: #e6ddd0;
+  --color-outline-variant: #d9cdba;
 
-  --color-error: #c4453a;
-  --color-error-container: #ffe0dc;
+  --color-error: #b8341e;
+  --color-error-container: #fbe2db;
   --color-on-error: #ffffff;
 
-  --color-success: #2f8a5b;
-  --color-success-container: #dcf5e3;
+  --color-success: #1f6e5c;
+  --color-success-container: #dcece6;
 
-  /* ---- Gradients ---- */
-  --gradient-primary: linear-gradient(135deg, #e8654a 0%, #ef8b62 55%, #f6b085 100%);
-  --gradient-primary-soft: linear-gradient(135deg, rgba(232, 101, 74, 0.12) 0%, rgba(246, 176, 133, 0.12) 100%);
-  --gradient-warm-bg: linear-gradient(160deg, #fff6f1 0%, #fdf3ee 35%, #f4ecf7 100%);
-  --gradient-rose-gold: linear-gradient(135deg, #e0828c 0%, #c48b72 100%);
-  --gradient-mesh: radial-gradient(circle at 15% 20%, rgba(246, 176, 133, 0.35) 0%, transparent 45%),
-    radial-gradient(circle at 85% 15%, rgba(202, 189, 234, 0.28) 0%, transparent 45%),
-    radial-gradient(circle at 50% 90%, rgba(224, 130, 140, 0.22) 0%, transparent 50%);
+  /* ---- Ink (dark surfaces — navbars, footers, contrast sections) ---- */
+  --color-ink: #17140f;
+  --color-ink-raised: #211c16;
+  --color-on-ink: #f6f1ea;
+  --color-on-ink-muted: #b5a99a;
+  --color-ink-border: rgba(246, 241, 234, 0.1);
+
+  /* ---- Gradients — used sparingly, on primary CTAs and one hero moment only ---- */
+  --gradient-primary: linear-gradient(135deg, #d8461f 0%, #ea5a2d 100%);
+  --gradient-primary-soft: linear-gradient(135deg, rgba(216, 70, 31, 0.1) 0%, rgba(234, 90, 45, 0.1) 100%);
+  --gradient-warm-bg: linear-gradient(180deg, #faf7f3 0%, #f3ede4 100%);
+  --gradient-rose-gold: linear-gradient(135deg, #1f6e5c 0%, #14493d 100%);
+  --gradient-ink: linear-gradient(160deg, #17140f 0%, #241e17 100%);
+  --gradient-mesh: none;
 
   /* ---- Spacing scale ---- */
   --space-xs: 4px;
@@ -64,16 +73,14 @@
   --margin-mobile: 16px;
   --margin-desktop: 64px;
   --container-max: 1280px;
-  /* Narrower cap for single-column/form-heavy pages (e.g. account profile)
-     that would otherwise stretch uncomfortably wide on large screens. */
   --container-narrow: 1080px;
 
-  /* ---- Radius scale (large, soft corners) ---- */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.85rem;
-  --radius-lg: 1.25rem;
-  --radius-xl: 1.75rem;
-  --radius-2xl: 2.25rem;
+  /* ---- Radius scale — restrained, structured (not bubbly) ---- */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.9rem;
+  --radius-xl: 1.15rem;
+  --radius-2xl: 1.5rem;
   --radius-full: 9999px;
 
   /* ---- Typography ---- */
@@ -81,48 +88,42 @@
   --font-family-display: 'Fraunces', 'Inter', serif;
 
   --font-label-sm-size: 12px;
-  --font-label-sm-weight: 500;
+  --font-label-sm-weight: 600;
   --font-label-md-size: 14px;
   --font-label-md-weight: 600;
   --font-body-md-size: 16px;
   --font-body-lg-size: 18px;
-  /* Headline/display sizes are fluid: they hit the historical desktop value at
-     the top of the clamp and shrink with the viewport, so a 64px hero headline
-     never forces horizontal scroll on a 360px phone. Body/label sizes stay
-     fixed — shrinking them below 14px hurts readability more than it helps. */
   --font-headline-sm-size: clamp(20px, 1.2rem + 0.7vw, 24px);
   --font-headline-md-size: clamp(22px, 1.25rem + 1.3vw, 30px);
-  --font-display-lg-size: clamp(30px, 1.6rem + 3.4vw, 48px);
-  --font-display-xl-size: clamp(34px, 1.75rem + 5vw, 64px);
+  --font-display-lg-size: clamp(30px, 1.5rem + 3.6vw, 50px);
+  --font-display-xl-size: clamp(36px, 1.7rem + 5.4vw, 72px);
 
-  /* ---- Elevation ---- */
-  --shadow-xs: 0 2px 6px rgba(36, 31, 28, 0.05);
-  --shadow-sm: 0 6px 16px rgba(36, 31, 28, 0.06);
-  --shadow-md: 0 12px 28px rgba(36, 31, 28, 0.08);
-  --shadow-lg: 0 24px 48px rgba(36, 31, 28, 0.1);
-  --shadow-xl: 0 32px 64px rgba(36, 31, 28, 0.14);
-  --shadow-luxe: 0 20px 40px rgba(36, 31, 28, 0.07);
-  --shadow-glow: 0 12px 32px rgba(232, 101, 74, 0.28);
+  /* ---- Elevation — tight and precise, not diffuse ---- */
+  --shadow-xs: 0 1px 2px rgba(23, 20, 15, 0.06);
+  --shadow-sm: 0 2px 8px rgba(23, 20, 15, 0.07);
+  --shadow-md: 0 6px 16px rgba(23, 20, 15, 0.09);
+  --shadow-lg: 0 12px 28px rgba(23, 20, 15, 0.12);
+  --shadow-xl: 0 24px 48px rgba(23, 20, 15, 0.16);
+  --shadow-luxe: 0 8px 20px rgba(23, 20, 15, 0.08);
+  --shadow-glow: 0 8px 20px rgba(216, 70, 31, 0.28);
 
-  /* ---- Glassmorphism ---- */
-  --glass-bg: rgba(255, 255, 255, 0.62);
-  --glass-bg-strong: rgba(255, 255, 255, 0.78);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-blur: blur(24px);
+  /* ---- Glass — reserved for exactly one surface (sticky nav on scroll) ---- */
+  --glass-bg: rgba(255, 255, 255, 0.86);
+  --glass-bg-strong: rgba(255, 255, 255, 0.94);
+  --glass-border: rgba(23, 20, 15, 0.06);
+  --glass-blur: blur(14px);
 
   /* ---- Motion ---- */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --dur-fast: 160ms;
-  --dur-base: 320ms;
-  --dur-slow: 560ms;
+  --dur-fast: 140ms;
+  --dur-base: 260ms;
+  --dur-slow: 440ms;
 
-  /* ---- Layout chrome consumed by the app shells ----
-     The shells offset their <main> by these instead of hard-coded pixels, so
-     the mobile layer below can zero the rail width in one place. */
+  /* ---- Layout chrome consumed by the app shells ---- */
   --nav-rail-width: 260px;
-  --topbar-height: 88px;
+  --topbar-height: 84px;
 }
 
 /* ==========================================================================
@@ -132,10 +133,6 @@
      <=  768px   md   tablet portrait / large phone  <- the "mobile" switch
      <=  480px   sm   phones
      <=  380px   xs   small phones (iPhone SE / Galaxy S-mini)
-
-   Media queries can't read custom properties, so these live as a documented
-   convention rather than tokens. Always use these four values — mixing in
-   ad-hoc 900px/992px queries is what made the layout drift in the first place.
    ========================================================================== */
 
 * {
@@ -145,7 +142,7 @@
 .material-symbols-outlined {
   font-variation-settings:
     'FILL' 0,
-    'wght' 400,
+    'wght' 500,
     'GRAD' 0,
     'opsz' 24;
 }
@@ -221,27 +218,28 @@ a {
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-subtle-border);
   box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--dur-base) var(--ease-smooth), transform var(--dur-base) var(--ease-smooth);
+  transition: box-shadow var(--dur-base) var(--ease-smooth), transform var(--dur-base) var(--ease-smooth), border-color var(--dur-base) var(--ease-smooth);
 }
 
 .text-headline-md {
   font-family: var(--font-family-display);
   font-size: var(--font-headline-md-size);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-charcoal);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
 .text-headline-sm {
   font-family: var(--font-family-display);
   font-size: var(--font-headline-sm-size);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-charcoal);
 }
 
 .text-body-md {
   font-size: var(--font-body-md-size);
   color: var(--color-secondary);
+  line-height: 1.6;
 }
 
 .text-label-md {
@@ -249,7 +247,7 @@ a {
   font-weight: var(--font-label-md-weight);
 }
 
-/* ---- Glassmorphism surface ---- */
+/* ---- Glassmorphism surface — now a restrained, near-opaque panel ---- */
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -260,46 +258,25 @@ a {
 
 /* ---- Hover-lift, used on cards / interactive tiles ---- */
 .hover-lift {
-  transition: transform var(--dur-base) var(--ease-out-expo), box-shadow var(--dur-base) var(--ease-out-expo);
+  transition: transform var(--dur-base) var(--ease-out-expo), box-shadow var(--dur-base) var(--ease-out-expo), border-color var(--dur-base) var(--ease-out-expo);
 }
 
 .hover-lift:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
+  border-color: var(--color-outline-variant);
 }
 
-/* ---- Floating decorative blobs (purely visual, aria-hidden in markup) ---- */
+/* ---- Decorative blobs — retired from the default visual language. Kept as
+   an inert no-op class so existing markup doesn't need touching everywhere
+   at once; each page removes the element as it's rebuilt. ---- */
 .bg-mesh {
   position: relative;
   isolation: isolate;
 }
 
-.bg-mesh::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--gradient-mesh);
-  pointer-events: none;
-  z-index: -1;
-}
-
 .floating-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.5;
-  pointer-events: none;
-  animation: float-y 9s var(--ease-smooth) infinite;
-}
-
-@keyframes float-y {
-  0%,
-  100% {
-    transform: translateY(0) translateX(0);
-  }
-  50% {
-    transform: translateY(-24px) translateX(10px);
-  }
+  display: none;
 }
 
 /* ==========================================================================
@@ -318,7 +295,7 @@ a {
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -329,7 +306,7 @@ a {
 @keyframes fade-down {
   from {
     opacity: 0;
-    transform: translateY(-16px);
+    transform: translateY(-12px);
   }
   to {
     opacity: 1;
@@ -340,7 +317,7 @@ a {
 @keyframes scale-in {
   from {
     opacity: 0;
-    transform: scale(0.94);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
@@ -355,15 +332,15 @@ a {
   }
   to {
     opacity: 0;
-    transform: scale(0.94);
+    transform: scale(0.96);
   }
 }
 
 @keyframes blur-reveal {
   from {
     opacity: 0;
-    filter: blur(12px);
-    transform: translateY(12px);
+    filter: blur(8px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -475,9 +452,144 @@ a {
 }
 
 /* ==========================================================================
-   Shared vendor-dashboard chrome (modal, icon buttons) — used by both the
-   packages and availability features, so it lives here instead of being
-   duplicated per feature.
+   Signature system — a small set of distinctive, reusable marks that give
+   Planura's surfaces a consistent editorial identity. Deliberately more
+   restrained than the previous iteration: a hairline "kicker" rule, a solid
+   colour-block emphasis mark (replacing the hand-drawn squiggle), a large
+   ghost numeral for step sequences, and an editorial split-rule grid.
+   ========================================================================== */
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-primary);
+  font-size: var(--font-label-sm-size);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.kicker::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.kicker--center {
+  justify-content: center;
+}
+
+.kicker--on-ink {
+  color: var(--color-primary-container);
+}
+
+/* ---- Emphasis mark: a solid colour-block behind an inline span, the one
+   deliberately "designed" emphasis device used across headlines instead of
+   a hand-drawn underline. Reads as confident/editorial, not whimsical. ---- */
+.ink {
+  position: relative;
+  display: inline-block;
+  color: var(--color-primary);
+  font-style: italic;
+  font-family: var(--font-family-display);
+}
+
+/* ---- Ghost numeral: an oversized display-serif number used as quiet texture
+   behind sequential content (how-it-works, booking steps). ---- */
+.ghost-index {
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--color-outline-variant);
+  font-size: clamp(2.75rem, 2rem + 2.6vw, 4.5rem);
+  user-select: none;
+}
+
+/* ---- Editorial rule-grid: a two-column layout with a hairline vertical
+   divider between columns. ---- */
+.rule-grid {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+@media (min-width: 900px) {
+  .rule-grid--2 {
+    grid-template-columns: 1fr 1px 1fr;
+  }
+
+  .rule-grid--2 > .rule-grid__divider {
+    background: var(--color-subtle-border);
+    width: 1px;
+  }
+}
+
+.rule-grid__divider {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .rule-grid__divider {
+    display: block;
+  }
+}
+
+/* ---- Section title block: kicker + display headline + optional dek ---- */
+.section-title {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.section-title--center {
+  align-items: center;
+  text-align: center;
+}
+
+.section-title h2 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-display-lg-size);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  color: var(--color-charcoal);
+  max-width: 30ch;
+}
+
+.section-title p {
+  font-size: var(--font-body-lg-size);
+  color: var(--color-secondary);
+  max-width: 52ch;
+}
+
+/* ---- Eyebrow pill: a small solid badge used sparingly for status/labels on
+   ink or photo backgrounds where the kicker rule reads too quiet. ---- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-label-sm-size);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: var(--color-primary-fixed);
+  color: var(--color-primary-hover);
+}
+
+.pill--ink {
+  background: rgba(246, 241, 234, 0.12);
+  color: var(--color-on-ink);
+  border: 1px solid var(--color-ink-border);
+}
+
+/* ==========================================================================
+   Shared vendor-dashboard chrome (modal, icon buttons)
    ========================================================================== */
 
 .icon-btn {
@@ -510,8 +622,8 @@ a {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(36, 31, 28, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(23, 20, 15, 0.55);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -539,6 +651,7 @@ a {
 .package-table-wrap {
   overflow-x: auto;
   border-radius: var(--radius-lg);
+  border: 1px solid var(--color-subtle-border);
 }
 
 .package-table {
@@ -610,9 +723,7 @@ a {
 }
 
 /* ==========================================================================
-   Coral-gradient primary action button — shared across client-facing
-   features. Same visual language as ui-btn--primary (the shared <ui-button>
-   component), for places that need a plain anchor/button element instead.
+   Ember primary action button — shared across client-facing features.
    ========================================================================== */
 
 .btn-gold-gradient {
@@ -622,7 +733,7 @@ a {
   gap: 0.6rem;
   padding: 0.85rem 1.25rem;
   border: none;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   background: var(--gradient-primary);
   color: var(--color-on-primary);
   font-family: var(--font-family-base);
@@ -630,15 +741,15 @@ a {
   font-weight: var(--font-label-md-weight);
   text-decoration: none;
   cursor: pointer;
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-md);
   transition: box-shadow var(--dur-base) var(--ease-smooth), opacity var(--dur-base) var(--ease-smooth),
     transform var(--dur-fast) var(--ease-smooth);
 }
 
 .btn-gold-gradient:hover {
-  opacity: 0.94;
+  opacity: 0.96;
   transform: translateY(-2px);
-  box-shadow: 0 16px 36px rgba(232, 101, 74, 0.34);
+  box-shadow: var(--shadow-glow);
 }
 
 .btn-gold-gradient:active {
@@ -646,18 +757,13 @@ a {
 }
 
 /* ==========================================================================
-   SweetAlert2 theming — used for the logout confirmation dialog (and any
-   future Swal-based confirmations). Swal renders its markup directly on
-   <body>, outside any component's view encapsulation, so this has to live
-   here in the global stylesheet rather than in a component .css file.
-   Visually mirrors the app's native `.modal-backdrop` / `.modal-card` /
-   `confirm-dialog` pattern (same radius, shadow, gradient button language).
+   SweetAlert2 theming
    ========================================================================== */
 
 .swal-planura-container.swal2-container {
-  background: rgba(36, 31, 28, 0.5);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(23, 20, 15, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 }
 
 .swal-planura-popup.swal2-popup {
@@ -676,7 +782,7 @@ a {
   margin: 0 0 var(--space-sm);
   font-family: var(--font-family-display);
   font-size: var(--font-headline-sm-size);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-charcoal);
 }
 
@@ -703,7 +809,7 @@ a {
   gap: 0.6rem;
   margin: 0;
   padding: 1rem 1.5rem;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   font-family: var(--font-family-base);
   font-size: var(--font-label-md-size);
   font-weight: var(--font-label-md-weight);
@@ -724,26 +830,23 @@ a {
   transform: scale(0.98);
 }
 
-/* Confirm — same gradient treatment as ui-btn--primary / .btn-gold-gradient */
 .swal-planura-btn--confirm {
   background: var(--gradient-primary);
   color: var(--color-on-primary);
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-md);
 }
 
 .swal-planura-btn--confirm:hover {
-  opacity: 0.94;
-  box-shadow: 0 16px 36px rgba(232, 101, 74, 0.34);
+  opacity: 0.96;
+  box-shadow: var(--shadow-glow);
 }
 
-/* Cancel — neutral outline, same as ui-btn--outline */
 .swal-planura-btn--cancel {
   background: var(--color-surface-container-lowest);
   color: var(--color-charcoal);
   border-color: var(--color-subtle-border);
 }
 
-/* ---- Toast variant (used by notifySuccess) — compact, top-right, no actions ---- */
 .swal-planura-toast.swal2-popup {
   padding: 0.85rem 1.25rem;
   border-radius: var(--radius-lg);
@@ -770,11 +873,7 @@ a {
 }
 
 /* ==========================================================================
-   Legal pages (Terms of Service / Privacy Policy) — shared chrome so both
-   pages, and any future legal page (Cookie Policy, etc.), look identical:
-   a mesh hero header, a sticky section table-of-contents, and card-luxe
-   section blocks. Page-specific content lives in each component's own
-   template; only this shared layout/typography lives globally.
+   Legal pages (Terms of Service / Privacy Policy)
    ========================================================================== */
 
 .legal-page {
@@ -787,13 +886,13 @@ a {
 .legal-hero {
   position: relative;
   padding: var(--space-2xl) var(--margin-desktop) var(--space-xl);
-  background: var(--gradient-warm-bg);
+  background: var(--gradient-ink);
   overflow: hidden;
   text-align: center;
 }
 
 .legal-hero__blob {
-  z-index: 0;
+  display: none;
 }
 
 .legal-hero__inner {
@@ -825,7 +924,7 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: var(--color-primary);
+  color: var(--color-primary-container);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 700;
@@ -837,12 +936,12 @@ a {
   font-size: var(--font-display-lg-size);
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--color-charcoal);
+  color: var(--color-on-ink);
 }
 
 .legal-hero__subtitle {
   font-size: var(--font-body-lg-size);
-  color: var(--color-secondary);
+  color: var(--color-on-ink-muted);
   max-width: 560px;
 }
 
@@ -853,20 +952,17 @@ a {
   margin-top: var(--space-sm);
   padding: 0.4rem 0.9rem;
   border-radius: var(--radius-full);
-  background: var(--color-surface-container-lowest);
-  border: 1px solid var(--color-subtle-border);
-  color: var(--color-secondary);
+  background: rgba(246, 241, 234, 0.08);
+  border: 1px solid var(--color-ink-border);
+  color: var(--color-on-ink-muted);
   font-size: var(--font-label-sm-size);
   font-weight: 600;
-  box-shadow: var(--shadow-xs);
 }
 
 .legal-hero__meta .material-symbols-outlined {
   font-size: 16px;
-  color: var(--color-rose-gold);
+  color: var(--color-primary-container);
 }
-
-/* ---- Body layout: sticky table-of-contents + section cards ---- */
 
 .legal-layout {
   max-width: var(--container-max);
@@ -952,7 +1048,7 @@ a {
 .legal-section__header h2 {
   font-family: var(--font-family-display);
   font-size: var(--font-headline-sm-size);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-charcoal);
 }
 
@@ -1019,16 +1115,8 @@ a {
 
 /* ==========================================================================
    GLOBAL RESPONSIVE LAYER
-   Everything below is app-wide mobile behaviour. Per-component tweaks stay in
-   the component's own .css; this file only holds rules that would otherwise be
-   copy-pasted into all 85 of them.
    ========================================================================== */
 
-/* ---- Overflow guards -------------------------------------------------------
-   One over-wide element used to drag the entire page sideways. `clip` (rather
-   than `hidden`) contains it WITHOUT turning <html> into a scroll container,
-   which would silently break every `position: sticky` topbar in the app.
-   `hidden` is declared first as the fallback for browsers without `clip`. */
 html,
 body {
   max-width: 100%;
@@ -1036,7 +1124,6 @@ body {
   overflow-x: clip;
 }
 
-/* Replaced elements never push the layout wider than their column. */
 img,
 video,
 canvas,
@@ -1051,8 +1138,6 @@ canvas {
   height: auto;
 }
 
-/* Long unbroken strings (emails, URLs, IDs, base64 previews) are the other
-   classic source of horizontal overflow on narrow screens. */
 p,
 h1,
 h2,
@@ -1070,8 +1155,6 @@ figcaption {
   overflow-wrap: break-word;
 }
 
-/* Form controls inherit the app font instead of the UA's, and never exceed
-   their container — several forms set explicit `size`/`cols` attributes. */
 input,
 select,
 textarea,
@@ -1084,10 +1167,6 @@ textarea {
   resize: vertical;
 }
 
-/* ---- Utilities -------------------------------------------------------------
-   `.table-scroll` is the wrapper every data table should sit in: the table
-   keeps its natural column widths and the WRAPPER scrolls, instead of columns
-   collapsing into unreadable slivers. */
 .table-scroll {
   width: 100%;
   overflow-x: auto;
@@ -1095,9 +1174,6 @@ textarea {
   overscroll-behavior-x: contain;
 }
 
-/* Escape hatches for markup that genuinely can't be reflowed (e.g. a secondary
-   column with no mobile home). `revert` restores the element's own UA display
-   so a flex container doesn't come back as an inline box. */
 .show-on-mobile {
   display: none !important;
 }
@@ -1111,15 +1187,12 @@ textarea {
     --space-2xl: 64px;
     --margin-desktop: 40px;
     --gutter: 20px;
-    /* Tablet: the client/vendor rails drop their labels and become a 76px
-       icon rail. Below 768px they leave the flow entirely (see each shell). */
     --nav-rail-width: 76px;
   }
 }
 
 /* ==========================================================================
-   <= 768px — THE mobile switch. Side rails become drawers, multi-column grids
-   become single column, and the page gutter drops to the mobile margin.
+   <= 768px — THE mobile switch.
    ========================================================================== */
 @media (max-width: 768px) {
   :root {
@@ -1130,24 +1203,16 @@ textarea {
     --gutter: 16px;
     --topbar-height: 64px;
     --nav-rail-width: 0px;
-
-    /* Softer corners: a 2.25rem radius on a full-bleed mobile card reads as a
-       mistake rather than a style. */
-    --radius-xl: 1.25rem;
-    --radius-2xl: 1.5rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.25rem;
   }
 
-  /* iOS Safari zooms the whole viewport when a focused input's font-size is
-     under 16px. This is the fix — it must be exactly 16px, not 1rem. */
   input,
   select,
   textarea {
     font-size: 16px;
   }
 
-  /* Modals become bottom sheets: full-bleed, anchored to the bottom edge where
-     a thumb can reach them, and capped so the sheet can't cover the whole
-     screen with no way back. */
   .modal-backdrop {
     padding: 0;
     align-items: flex-end;
@@ -1163,7 +1228,6 @@ textarea {
     animation: slide-up var(--dur-base) var(--ease-out-expo) both;
   }
 
-  /* Data tables scroll horizontally rather than crushing their columns. */
   .package-table {
     min-width: 640px;
   }
@@ -1172,24 +1236,13 @@ textarea {
     display: none !important;
   }
 
-  /* `revert` restores the element's own UA display, so a flex container comes
-     back as a flex container — `initial` would force it to inline. */
   .show-on-mobile {
     display: revert !important;
   }
 
-  /* Hover-lift is meaningless on touch and leaves cards stuck in the lifted
-     state after a tap. */
   .hover-lift:hover {
     transform: none;
     box-shadow: var(--shadow-sm);
-  }
-
-  /* Decorative blur blobs are the single biggest paint cost on mobile GPUs and
-     are frequently what pushes the page sideways. */
-  .floating-blob {
-    filter: blur(40px);
-    opacity: 0.35;
   }
 }
 
@@ -1211,16 +1264,9 @@ textarea {
 }
 
 /* ==========================================================================
-   Touch pointers — applies to every phone/tablet regardless of width.
-   Apple's HIG and Material both put the minimum tap target at ~44px; several
-   icon-only controls in the app were 32px.
+   Touch pointers
    ========================================================================== */
 @media (hover: none) and (pointer: coarse) {
-  /* Deliberately NOT a blanket `button { min-height: 44px }`: min-height beats
-     an explicit height, so that rule stretches every fixed-size square icon
-     button (32x32 favourite/close/nav chips) into a distorted oval. Only
-     padding-sized controls are grown here; fixed-size ones are bumped
-     individually in their own component's mobile block. */
   .ui-btn,
   .admin-btn,
   .icon-btn {
@@ -1233,8 +1279,6 @@ textarea {
     justify-content: center;
   }
 
-  /* :hover styles latch on after a tap on touch devices — neutralise the ones
-     that move things around. */
   .hover-lift:hover,
   .card-luxe:hover {
     transform: none;

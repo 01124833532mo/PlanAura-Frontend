@@ -45,6 +45,32 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 14%, transparent);
 }
 
+/* Chrome/Edge paint autofilled inputs with their own pale blue/yellow fill
+   that ignores `background`, so an autofilled email sits in a different
+   shade than every field around it. The only way to override that fill is
+   this inset-box-shadow trick (a transparent background-color won't work),
+   paired with a very long background-color transition delay so the native
+   fill never even flashes before our shadow paints over it. */
+.ui-field__input:-webkit-autofill,
+.ui-field__input:-webkit-autofill:hover {
+  -webkit-text-fill-color: var(--color-charcoal);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface-container-lowest) inset;
+  box-shadow: 0 0 0 1000px var(--color-surface-container-lowest) inset;
+  caret-color: var(--color-charcoal);
+  transition: background-color 999999s ease-in-out 0s;
+}
+
+.ui-field__input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-charcoal);
+  -webkit-box-shadow:
+    0 0 0 1000px var(--color-surface-container-lowest) inset,
+    0 0 0 4px color-mix(in srgb, var(--color-primary) 16%, transparent);
+  box-shadow:
+    0 0 0 1000px var(--color-surface-container-lowest) inset,
+    0 0 0 4px color-mix(in srgb, var(--color-primary) 16%, transparent);
+  caret-color: var(--color-charcoal);
+}
+
 .ui-field__textarea {
   resize: vertical;
   min-height: 6rem;

@@ -1,14 +1,30 @@
 <div class="my-bookings-page">
   <div class="my-bookings-page__header animate-fade-up">
-    <p class="text-label-sm my-bookings-page__eyebrow">
-      <span class="material-symbols-outlined">event_available</span>
-      My Bookings
-    </p>
+    <span class="kicker">My Bookings</span>
     <h3 class="text-headline-sm">All your bookings</h3>
     <p class="text-body-md">Every request you've sent, across every event plan.</p>
   </div>
 
   <ui-alert-banner [message]="error()?.message ?? null" [details]="error()?.fieldErrors ?? []" />
+
+  @if (!loading() && bookings().length > 0) {
+    <div class="my-bookings-tabs animate-fade-up stagger-1" role="tablist" aria-label="Filter bookings">
+      @for (tab of tabs; track tab.key) {
+        <button
+          type="button"
+          role="tab"
+          class="my-bookings-tab"
+          [class.my-bookings-tab--active]="activeTab() === tab.key"
+          [attr.aria-selected]="activeTab() === tab.key"
+          (click)="selectTab(tab.key)"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">{{ tab.icon }}</span>
+          {{ tab.label }}
+          <span class="my-bookings-tab__count">{{ tabCounts()[tab.key] }}</span>
+        </button>
+      }
+    </div>
+  }
 
   @if (loading()) {
     <div class="my-bookings-page__state animate-fade-up">
@@ -21,9 +37,15 @@
       <p class="text-body-md">You haven't requested any bookings yet.</p>
       <ui-button [fullWidth]="false" (click)="goToVendors()">Browse vendors</ui-button>
     </div>
+  } @else if (filteredBookings().length === 0) {
+    <div class="card-luxe luxe-shadow my-bookings-page__empty-card animate-fade-up stagger-1">
+      <span class="material-symbols-outlined my-bookings-page__state-icon">search_off</span>
+      <p class="text-body-md">Nothing in this view right now.</p>
+      <ui-button variant="outline" [fullWidth]="false" (click)="selectTab('all')">Show all bookings</ui-button>
+    </div>
   } @else {
     <div class="booking-list">
-      @for (booking of bookings(); track booking.id) {
+      @for (booking of filteredBookings(); track booking.id) {
         <div class="card-luxe luxe-shadow hover-lift booking-row" (click)="openBooking(booking)">
           <div class="booking-row__main">
             <div class="booking-row__vendor">
@@ -94,11 +116,29 @@
                   We couldn't charge the remaining {{ priceCurrency(booking) }}
                   {{ remainderAmount(booking) | number: '1.0-2' }}. Please pay to keep your booking.
                 </p>
-                <!-- "Pay remainder" button — coming in the next piece. -->
+              }
+              @if (
+                payingRemainderId() === booking.id && remainderStatusMessage();
+                as msg
+              ) {
+                <p class="text-label-sm booking-row__status-note">{{ msg }}</p>
               }
             </div>
 
-            <div class="booking-row__actions">
+            <div class="booking-row__actions" (click)="$event.stopPropagation()">
+              @if (
+                booking.paymentStatus === BookingPaymentStatus.DepositPaid ||
+                booking.paymentStatus === BookingPaymentStatus.RemainderFailed
+              ) {
+                <ui-button
+                  [fullWidth]="false"
+                  [loading]="payingRemainderId() === booking.id"
+                  (click)="payRemainder(booking)"
+                >
+                  <span class="material-symbols-outlined" aria-hidden="true">payments</span>
+                  Pay remainder
+                </ui-button>
+              }
               @if (booking.contractDocumentUrl) {
                 <app-document-download
                   [url]="booking.contractDocumentUrl"
@@ -106,10 +146,10 @@
                   icon="description"
                 />
               }
-              <span class="my-bookings-row__view-link">
+              <button type="button" class="my-bookings-row__view-link" (click)="openBooking(booking)">
                 View details
                 <span class="material-symbols-outlined">chevron_right</span>
-              </span>
+              </button>
             </div>
           </div>
         </div>

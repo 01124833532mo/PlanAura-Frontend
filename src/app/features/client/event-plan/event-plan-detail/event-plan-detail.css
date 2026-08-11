@@ -116,7 +116,7 @@
 }
 
 .event-plan-detail-header__value--over {
-  color: var(--color-danger, #d33);
+  color: var(--color-error);
   font-weight: 700;
 }
 
@@ -138,7 +138,7 @@
 }
 
 .checklist-list__item--satisfied {
-  color: var(--color-text, inherit);
+  color: var(--color-charcoal);
 }
 
 .checklist-list__item--satisfied .material-symbols-outlined:first-child {
@@ -156,7 +156,7 @@
 }
 
 .checklist-list__remove:hover {
-  color: var(--color-danger, #d33);
+  color: var(--color-error);
 }
 
 .checklist-add {
@@ -170,7 +170,7 @@
   flex: 1;
   padding: 0.5rem 0.75rem;
   border-radius: var(--radius-md, 0.5rem);
-  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.15));
+  border: 1px solid var(--color-subtle-border);
   background: var(--color-surface, #fff);
 }
 

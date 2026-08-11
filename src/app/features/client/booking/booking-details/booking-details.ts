@@ -2,7 +2,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Subscription, interval, startWith, switchMap } from 'rxjs';
+import { Subscription, firstValueFrom, interval, startWith, switchMap } from 'rxjs';
 import { AlertBanner } from '../../../../shared/ui/alert-banner/alert-banner';
 import { BookingChat } from '../../../../shared/ui/booking-chat/booking-chat';
 import { Button } from '../../../../shared/ui/button/button';
@@ -20,6 +20,7 @@ import {
   BookingStatus,
   BookingStatusHistoryEntry,
   CancellationQuote,
+  PayRemainderResult,
 } from '../../../../core/interfaces/booking-request.model';
 import { EventPlan } from '../../../../core/interfaces/event-plan.model';
 import { VendorPackage } from '../../../../core/interfaces/vendor-package.model';
@@ -29,6 +30,8 @@ import { EventPlanService } from '../../../../core/services/event-plan.service';
 import { ReviewService } from '../../../../core/services/review.service';
 import { VendorPackageService } from '../../../../core/services/vendor-package.service';
 import { VendorService } from '../../../../core/services/vendor.service';
+import { STRIPE_PUBLISHABLE_KEY } from '../../../../core/config/app-config';
+import { StripeService } from '../../../../core/services/stripe.service';
 import { notifyError, notifySuccess } from '../../../../shared/utils/notify';
 
 /**
@@ -70,6 +73,7 @@ export class BookingDetails implements OnInit, OnDestroy {
   private readonly packageService = inject(VendorPackageService);
   private readonly eventPlanService = inject(EventPlanService);
   private readonly reviewService = inject(ReviewService);
+  private readonly stripeService = inject(StripeService);
 
   protected readonly BookingStatus = BookingStatus;
   protected readonly BookingPaymentStatus = BookingPaymentStatus;
@@ -94,6 +98,13 @@ export class BookingDetails implements OnInit, OnDestroy {
 
   /** agreedPrice has no currency field of its own — sourced from the package, EGP fallback otherwise. */
   protected readonly currency = computed(() => this.pkg()?.currency ?? 'EGP');
+
+  // ---- Pay remainder (DepositPaid / RemainderFailed) — same on-session SCA
+  // flow already shipped on event-plan-detail.ts, ported here so the
+  // canonical single-booking page can actually resolve this state instead
+  // of sending the client hunting for the parent event plan to find the button.
+  protected readonly payingRemainder = signal(false);
+  protected readonly remainderStatusMessage = signal<string | null>(null);
 
   protected readonly showCancel = signal(false);
 
@@ -303,6 +314,86 @@ export class BookingDetails implements OnInit, OnDestroy {
           notifyError('Could not request cancellation', err.message);
         },
       });
+  }
+
+  /** The outstanding remainder on a deposit booking (total − deposit), server-recorded on the DTO. */
+  protected remainderAmount(): number {
+    const b = this.booking();
+    return b ? (b.totalAmount ?? 0) - (b.depositAmount ?? 0) : 0;
+  }
+
+  /**
+   * Client pays the outstanding remainder on-session. Calls the backend; if SCA is required, completes
+   * 3-D Secure with Stripe.js (the saved card is already on the PaymentIntent, so no card input), then
+   * polls the booking until the webhook finalizes it as Paid. A decline/error leaves the booking
+   * RemainderFailed and lets the client retry. Mirrors event-plan-detail.ts's payRemainder exactly.
+   */
+  protected async payRemainder(): Promise<void> {
+    const booking = this.booking();
+    if (!booking) {
+      return;
+    }
+
+    this.payingRemainder.set(true);
+    this.remainderStatusMessage.set(null);
+
+    try {
+      const result: PayRemainderResult = await firstValueFrom(
+        this.bookingService.payRemainder(booking.id),
+      );
+
+      if (result.requiresAction && result.clientSecret) {
+        // Browser-only: getStripe returns null during SSR, but this only runs on a user click.
+        const stripe = await this.stripeService.getStripe(STRIPE_PUBLISHABLE_KEY);
+        if (!stripe) {
+          throw new Error('Payments are unavailable right now. Please try again.');
+        }
+        this.remainderStatusMessage.set('Confirming your payment…');
+        const { error, paymentIntent } = await stripe.confirmCardPayment(result.clientSecret);
+        if (error) {
+          throw new Error(error.message ?? 'Card authentication failed.');
+        }
+        if (paymentIntent?.status !== 'succeeded') {
+          throw new Error('The payment was not completed. Please try again.');
+        }
+        this.remainderStatusMessage.set('Finalizing payment…');
+        await this.pollUntilPaid(booking.id);
+      } else {
+        await this.refreshBookingAfterPayment(booking.id);
+      }
+
+      this.payingRemainder.set(false);
+      this.remainderStatusMessage.set(null);
+      this.loadTimeline();
+      notifySuccess('Payment complete — your booking is fully paid.');
+    } catch (err: unknown) {
+      this.payingRemainder.set(false);
+      this.remainderStatusMessage.set(null);
+      const message = (err as { message?: string })?.message ?? 'The payment could not be completed.';
+      notifyError('Could not complete payment', message);
+    }
+  }
+
+  /** Polls the booking (2s × up to 8 ≈ 16s) until the webhook marks it Paid, refreshing the header each time. */
+  private async pollUntilPaid(id: number): Promise<void> {
+    for (let attempt = 0; attempt < 8; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const updated = await this.refreshBookingAfterPayment(id);
+      if (updated?.paymentStatus === BookingPaymentStatus.Paid) {
+        return;
+      }
+    }
+    // Timed out waiting for the webhook — the payment did succeed at Stripe; the page will catch up on reload.
+  }
+
+  private async refreshBookingAfterPayment(id: number): Promise<BookingRequest | null> {
+    try {
+      const updated = await firstValueFrom(this.bookingService.getBooking(id));
+      this.updateBooking(updated);
+      return updated;
+    } catch {
+      return null;
+    }
   }
 
   // ---- Confirm service delivered (AwaitingConfirmation) ----

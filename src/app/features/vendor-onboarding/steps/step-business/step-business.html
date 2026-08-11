@@ -24,26 +24,36 @@
     />
   </div>
 
-  <ui-text-field
-    class="animate-fade-up stagger-2"
-    label="Business Name"
-    placeholder="e.g. Luxe Events Co."
-    formControlName="businessName"
-    [errorMessage]="touchedInvalid('businessName') ? 'Business name is required.' : null"
-  />
+  <div class="wizard-step__row animate-fade-up stagger-2">
+    <ui-text-field
+      label="Business Name"
+      placeholder="e.g. Luxe Events Co."
+      formControlName="businessName"
+      [compact]="true"
+      [errorMessage]="touchedInvalid('businessName') ? 'Business name is required.' : null"
+    />
+    <ui-select-field
+      label="Category (optional)"
+      placeholder="Select a category"
+      [options]="categoryOptions"
+      formControlName="categoryId"
+      [compact]="true"
+    />
+  </div>
   <ui-text-field
     class="animate-fade-up stagger-3"
     label="Business Description (optional)"
     placeholder="A short description of your services"
     formControlName="businessDescription"
+    [compact]="true"
   />
-  <ui-select-field
-    class="animate-fade-up stagger-4"
-    label="Category (optional)"
-    placeholder="Select a category"
-    [options]="categoryOptions"
-    formControlName="categoryId"
-  />
-  <ui-text-field class="animate-fade-up stagger-5" label="City (optional)" placeholder="e.g. Cairo" formControlName="city" />
-  <ui-text-field class="animate-fade-up stagger-6" label="Address (optional)" placeholder="Street address" formControlName="address" />
+  <div class="wizard-step__row animate-fade-up stagger-4">
+    <ui-text-field label="City (optional)" placeholder="e.g. Cairo" formControlName="city" [compact]="true" />
+    <ui-text-field
+      label="Address (optional)"
+      placeholder="Street address"
+      formControlName="address"
+      [compact]="true"
+    />
+  </div>
 </div>

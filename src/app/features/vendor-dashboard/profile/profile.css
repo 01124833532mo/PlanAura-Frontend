@@ -36,7 +36,7 @@
 .vp-cover__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(36, 31, 28, 0) 40%, rgba(36, 31, 28, 0.35) 100%);
+  background: linear-gradient(180deg, rgba(26, 22, 19, 0) 40%, rgba(26, 22, 19, 0.35) 100%);
 }
 
 .vp-hero__body {
@@ -445,7 +445,7 @@
   height: 32px;
   flex-shrink: 0;
   border-radius: var(--radius-md);
-  background: rgba(36, 31, 28, 0.04);
+  background: rgba(26, 22, 19, 0.04);
   color: var(--color-primary);
   font-size: 17px;
 }
@@ -487,7 +487,7 @@
 }
 
 .vp-services-list__icon {
-  color: #2f9e63;
+  color: var(--color-success);
   font-size: 20px;
 }
 
@@ -533,14 +533,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(36, 31, 28, 0);
+  background: rgba(26, 22, 19, 0);
   color: transparent;
   cursor: pointer;
   transition: background var(--dur-base, 0.2s) ease, color var(--dur-base, 0.2s) ease;
 }
 
 .vp-gallery__item:hover .vp-gallery__overlay {
-  background: rgba(36, 31, 28, 0.35);
+  background: rgba(26, 22, 19, 0.35);
   color: #fff;
 }
 
@@ -690,8 +690,8 @@
 }
 
 .vp-availability-badge--available {
-  background: rgba(47, 158, 99, 0.12);
-  color: #2f9e63;
+  background: rgba(31, 110, 92, 0.12);
+  color: var(--color-success);
 }
 
 .vp-availability-badge--booked {
@@ -700,7 +700,7 @@
 }
 
 .vp-availability-badge--blocked {
-  background: rgba(36, 31, 28, 0.08);
+  background: rgba(26, 22, 19, 0.08);
   color: var(--color-secondary);
 }
 
@@ -737,7 +737,7 @@
 }
 
 .vp-star--filled {
-  color: #f0b429 !important;
+  color: var(--color-rose-gold) !important;
   font-variation-settings: 'FILL' 1;
 }
 

@@ -32,15 +32,16 @@ export interface VendorChartConfig {
   plotOptions?: ApexPlotOptions;
 }
 
-/** Planura's warm brand palette applied to vendor dashboard charts, distinct from the admin
- * dashboard's cooler indigo/cyan palette — coral primary, rose gold, success green, muted tones. */
+/** Planura's Ember/Pine brand palette applied to vendor dashboard charts — the same palette used
+ * everywhere else in the app (admin included), so a chart never looks like it belongs to a
+ * different product: ember primary, pine success, bronze accent, warm neutral, ink-navy, error. */
 export const VENDOR_CHART_PALETTE = [
-  '#e8654a', // primary coral
-  '#2f8a5b', // success
-  '#c48b72', // rose gold
-  '#8a8074', // secondary/neutral
-  '#cabdea', // lavender
-  '#c4453a', // error
+  '#d8461f', // primary ember
+  '#1f6e5c', // pine / success
+  '#a8763f', // bronze accent
+  '#8f8477', // secondary/neutral
+  '#2b3a55', // ink-navy (cool outlier for series contrast)
+  '#b8341e', // error
 ];
 
 /**

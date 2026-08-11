@@ -7,43 +7,48 @@
     </div>
   </div>
 
-  <ui-text-field
-    class="animate-fade-up stagger-1"
-    label="Full Name"
-    placeholder="e.g. Julian Hart"
-    formControlName="fullName"
-    [errorMessage]="touchedInvalid('fullName') ? 'Full name must be between 2 and 150 characters.' : null"
-  />
+  <div class="wizard-step__row animate-fade-up stagger-1">
+    <ui-text-field
+      label="Full Name"
+      placeholder="e.g. Julian Hart"
+      formControlName="fullName"
+      [compact]="true"
+      [errorMessage]="touchedInvalid('fullName') ? 'Full name must be between 2 and 150 characters.' : null"
+    />
+    <ui-text-field
+      label="Phone Number"
+      type="tel"
+      placeholder="e.g. 01012345678"
+      formControlName="phoneNumber"
+      [compact]="true"
+      [errorMessage]="touchedInvalid('phoneNumber') ? 'Phone number is required.' : null"
+    />
+  </div>
   <ui-text-field
     class="animate-fade-up stagger-2"
     label="Email Address"
     type="email"
     placeholder="e.g. julian@luxe.com"
     formControlName="email"
+    [compact]="true"
     [errorMessage]="touchedInvalid('email') ? 'A valid email address is required.' : null"
   />
-  <ui-text-field
-    class="animate-fade-up stagger-3"
-    label="Phone Number"
-    type="tel"
-    placeholder="e.g. 01012345678"
-    formControlName="phoneNumber"
-    [errorMessage]="touchedInvalid('phoneNumber') ? 'Phone number is required.' : null"
-  />
-  <ui-password-field
-    class="animate-fade-up stagger-4"
-    label="Password"
-    formControlName="password"
-    [errorMessage]="
-      touchedInvalid('password')
-        ? 'Password must be at least 8 characters, with an uppercase letter, a lowercase letter, and a digit.'
-        : null
-    "
-  />
-  <ui-password-field
-    class="animate-fade-up stagger-5"
-    label="Confirm Password"
-    formControlName="confirmPassword"
-    [errorMessage]="passwordMismatch() ? 'Passwords do not match.' : null"
-  />
+  <div class="wizard-step__row animate-fade-up stagger-3">
+    <ui-password-field
+      label="Password"
+      formControlName="password"
+      [compact]="true"
+      [errorMessage]="
+        touchedInvalid('password')
+          ? 'Password must be at least 8 characters, with an uppercase letter, a lowercase letter, and a digit.'
+          : null
+      "
+    />
+    <ui-password-field
+      label="Confirm Password"
+      formControlName="confirmPassword"
+      [compact]="true"
+      [errorMessage]="passwordMismatch() ? 'Passwords do not match.' : null"
+    />
+  </div>
 </div>

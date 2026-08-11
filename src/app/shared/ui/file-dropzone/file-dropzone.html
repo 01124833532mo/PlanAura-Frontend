@@ -22,20 +22,28 @@
     <span class="ui-dropzone__icon-wrap" aria-hidden="true">
       <span class="material-symbols-outlined">upload_file</span>
     </span>
-    <span class="ui-dropzone__prompt-text">Drag & drop, or click to browse</span>
-    <span class="ui-dropzone__hint">{{ hint }}</span>
+    <span class="ui-dropzone__prompt-body">
+      <span class="ui-dropzone__prompt-text">Drag & drop, or click to browse</span>
+      <span class="ui-dropzone__hint">{{ hint }}</span>
+    </span>
   </label>
 </div>
 
-@if (files.length) {
-  <ul class="ui-dropzone__list">
-    @for (file of files; track file.name + file.size; let i = $index) {
-      <li class="ui-dropzone__chip">
-        <span class="material-symbols-outlined">image</span>
-        <span class="ui-dropzone__chip-name">{{ file.name }}</span>
-        <button type="button" class="ui-dropzone__chip-remove" (click)="removeFile(i)" aria-label="Remove file">
+@if (previews.length) {
+  <ul class="ui-dropzone__previews">
+    @for (preview of previews; track preview.file.name + preview.file.size; let i = $index) {
+      <li class="ui-dropzone__preview">
+        <img class="ui-dropzone__preview-img" [src]="preview.url" [alt]="preview.file.name" />
+        <div class="ui-dropzone__preview-scrim"></div>
+        <button
+          type="button"
+          class="ui-dropzone__preview-remove"
+          (click)="removeFile(i)"
+          [attr.aria-label]="'Remove ' + preview.file.name"
+        >
           <span class="material-symbols-outlined">close</span>
         </button>
+        <span class="ui-dropzone__preview-name">{{ preview.file.name }}</span>
       </li>
     }
   </ul>

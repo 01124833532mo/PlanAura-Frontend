@@ -37,6 +37,15 @@
     </a>
     <a
       class="client-nav__link"
+      routerLink="/client/favorites"
+      routerLinkActive="client-nav__link--active"
+      (click)="closeMobileNav()"
+    >
+      <span class="material-symbols-outlined client-nav__link-icon">favorite</span>
+      <span class="text-label-md">Favorites</span>
+    </a>
+    <a
+      class="client-nav__link"
       routerLink="/client/ai-visualizer"
       routerLinkActive="client-nav__link--active"
       (click)="closeMobileNav()"

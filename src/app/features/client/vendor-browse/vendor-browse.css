@@ -30,25 +30,6 @@
   max-width: 640px;
 }
 
-.browse-hero__eyebrow {
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.browse-hero__eyebrow-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--color-primary);
-}
-
 .browse-hero__title {
   margin: 0;
   font-family: var(--font-family-display);
@@ -80,13 +61,13 @@
   border: 1px solid var(--color-subtle-border);
   border-radius: var(--radius-full);
   padding: var(--space-xs) var(--space-xs) var(--space-xs) var(--space-md);
-  box-shadow: 0 2px 10px rgba(36, 31, 28, 0.06);
+  box-shadow: 0 2px 10px rgba(26, 22, 19, 0.06);
   transition: box-shadow var(--dur-fast) var(--ease-smooth), border-color var(--dur-fast) var(--ease-smooth);
 }
 
 .browse-hero__search:focus-within {
   border-color: var(--color-charcoal);
-  box-shadow: 0 6px 22px rgba(36, 31, 28, 0.12);
+  box-shadow: 0 6px 22px rgba(26, 22, 19, 0.12);
 }
 
 .browse-hero__search-icon {
@@ -127,7 +108,7 @@
 
 .browse-hero__search-btn:hover {
   transform: scale(1.06);
-  box-shadow: 0 4px 14px rgba(232, 101, 74, 0.35);
+  box-shadow: 0 4px 14px rgba(216, 70, 31, 0.35);
 }
 
 .browse-hero__search-btn .material-symbols-outlined {
@@ -188,7 +169,7 @@
 .filter-segment__trigger:focus-visible {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(232, 101, 74, 0.16);
+  box-shadow: 0 0 0 3px rgba(216, 70, 31, 0.16);
 }
 
 .filter-segment__icon {
@@ -289,7 +270,7 @@
 
 .filter-toolbar__clear:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(232, 101, 74, 0.16);
+  box-shadow: 0 0 0 3px rgba(216, 70, 31, 0.16);
 }
 
 .filter-toolbar__clear .material-symbols-outlined {
@@ -355,21 +336,21 @@
 }
 
 .dropdown-option:hover {
-  background: rgba(232, 101, 74, 0.08);
+  background: rgba(216, 70, 31, 0.08);
 }
 
 .dropdown-option--selected {
-  background: rgba(232, 101, 74, 0.1);
+  background: rgba(216, 70, 31, 0.1);
   font-weight: 600;
 }
 
 .dropdown-option--selected:hover {
-  background: rgba(232, 101, 74, 0.14);
+  background: rgba(216, 70, 31, 0.14);
 }
 
 .dropdown-option:focus-visible {
   outline: none;
-  box-shadow: inset 0 0 0 2px rgba(232, 101, 74, 0.35);
+  box-shadow: inset 0 0 0 2px rgba(216, 70, 31, 0.35);
 }
 
 .dropdown-option .material-symbols-outlined {

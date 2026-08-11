@@ -15,10 +15,10 @@
 .public-nav__inner {
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0.85rem var(--margin-desktop);
+  padding: 0.65rem var(--margin-desktop);
   display: flex;
   align-items: center;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
 }
 
 /* ---- Brand ---- */
@@ -50,32 +50,53 @@
   letter-spacing: -0.01em;
 }
 
-/* ---- Primary links ---- */
+/* ---- Primary links — a quiet underline instead of a filled pill, so the bar
+   reads as editorial wayfinding rather than another dashboard tab strip. ---- */
 .public-nav__links {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-md);
   flex: 1;
 }
 
 .public-nav__links a {
-  padding: 0.55rem 0.9rem;
-  border-radius: var(--radius-full);
+  position: relative;
+  padding: 0.5rem 0.1rem;
   color: var(--color-dark-gray);
   text-decoration: none;
   font-size: var(--font-label-md-size);
   font-weight: var(--font-label-md-weight);
-  transition: background var(--dur-fast) var(--ease-smooth), color var(--dur-fast) var(--ease-smooth);
+  transition: color var(--dur-fast) var(--ease-smooth);
+}
+
+.public-nav__links a::after {
+  content: '';
+  position: absolute;
+  left: 0.1rem;
+  right: 0.1rem;
+  bottom: 0.15rem;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) var(--ease-out-expo);
 }
 
 .public-nav__links a:hover {
-  background: var(--color-soft-beige);
   color: var(--color-charcoal);
 }
 
+.public-nav__links a:hover::after {
+  transform: scaleX(1);
+}
+
 .public-nav__links a.public-nav__link--active {
-  background: var(--gradient-primary-soft);
   color: var(--color-primary);
+}
+
+.public-nav__links a.public-nav__link--active::after {
+  transform: scaleX(1);
 }
 
 /* ---- Right-side actions ---- */

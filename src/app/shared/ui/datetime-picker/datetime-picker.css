@@ -86,7 +86,7 @@
 }
 
 .dtp__month {
-  font-size: var(--font-label-lg-size, 0.95rem);
+  font-size: var(--font-body-md-size);
   font-weight: 700;
   color: var(--color-charcoal);
 }

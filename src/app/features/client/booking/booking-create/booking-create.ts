@@ -812,6 +812,15 @@ export class BookingCreate implements OnInit, OnDestroy {
    * the embedded viewer. The returned token binds this exact agreement to the booking on confirm.
    */
   private loadAgreement(): void {
+    // In-flight guard: this is the only Gemini-triggering call in the booking flow, and each call
+    // costs 2-3 real Gemini requests. Without this, a fast double-click/double-tap on "Continue to
+    // contract" (its [disabled] binding only tracks the earlier payment-quote load, not this call)
+    // fires loadAgreement() twice before the summary step's view is torn down, doubling Gemini spend
+    // for a single user action. Re-entrant calls while one is already outstanding are no-ops.
+    if (this.agreementLoading()) {
+      return;
+    }
+
     const slotId = this.selectedSlotId();
     const raw = this.form.getRawValue();
     const eventPlanId = this.eventPlanIdFromQuery ?? raw.eventPlanId;
